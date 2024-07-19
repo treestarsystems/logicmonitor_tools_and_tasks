@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { Axios } from 'axios';
+import { catchError, firstValueFrom } from 'rxjs';
+import { ResponseObject } from './models.service';
+import e from 'express';
+// import { Axios } from 'axios';
+// import { scrypt } from 'crypto';
 
 @Injectable()
 export class UtilsService {
@@ -74,13 +78,13 @@ export class UtilsService {
     return true;
   }
 
-  // defaultErrorHandler(error: Error): Object {
+  // defaultErrorHandler(error: string |Error): ResponseObject {
   //   let returnObj = { "status": "", "message": "", "payload": "" };
   //   //This is done just incase you use the "throw" keyword to produce your own error.
-  //   let errorMessage = ((error.message) ? error.message : error);
+  //   let errorMessage = ((error?.message) ? error?.message : error);
   //   returnObj.status = "failure";
   //   returnObj.message = `Function: ${arguments.callee.caller.name} - Error: ${errorMessage}`;
-  //   returnObj.payload = error;
+  //   returnObj.payload = errorMessage;
   //   return returnObj;
   // }
 
