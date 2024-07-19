@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { catchError, firstValueFrom } from 'rxjs';
+// import { catchError, firstValueFrom } from 'rxjs';
 import { ResponseObject } from './models.service';
 import e from 'express';
 // import { Axios } from 'axios';
