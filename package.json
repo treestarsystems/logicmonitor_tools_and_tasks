@@ -62,7 +62,8 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "collectCoverage": true,
+    "rootDir": "test",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
