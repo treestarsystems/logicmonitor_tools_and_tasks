@@ -5,6 +5,7 @@ import { UtilsModule } from './utils/utils.module';
 import { ToolsModule } from './tools/tools.module';
 import { TasksModule } from './tasks/tasks.module';
 import { ApiModule } from './api/api.module';
+import { SchedulesModule } from './schedules/schedules.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -20,6 +21,7 @@ import { ApiModule } from './api/api.module';
     ToolsModule,
     TasksModule,
     ApiModule,
+    SchedulesModule,
   ],
   controllers: [],
   providers: [],
