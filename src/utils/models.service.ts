@@ -13,7 +13,7 @@ export class ResponseObjectDefault {
 
   @IsArray()
   @ApiProperty()
-  payload: any[];
+  payload: any[any];
 }
 
 export class RequestObjectLMApi {
@@ -26,8 +26,8 @@ export class RequestObjectLMApi {
   @IsString()
   accessKey: string;
 
-  @IsDate()
-  epoch: string;
+  @IsNumber()
+  epoch: number;
 
   @IsString()
   resourcePath: string;

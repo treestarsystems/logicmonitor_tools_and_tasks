@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ResponseObjectDefault, RequestObjectLMApi } from './models.service';
 import * as crypto from 'crypto';
 import { Axios, AxiosRequestConfig, AxiosResponse } from 'axios';
@@ -158,24 +158,18 @@ export class UtilsService {
 
   /**
    * Error handler for API calls
-   * @param error The error object or string
+   * @param error The error string
    * @returns An object with status, message, and payload properties
    * @example
    * defaultErrorHandler('Error: Something went wrong')
    * // returns { status: 'failure', message: 'Function: defaultErrorHandler - Error: Error: Something went wrong', payload: [] }
    */
-  defaultErrorHandler(error: Error): ResponseObjectDefault {
-    let returnObj: ResponseObjectDefault = {
-      status: '',
-      message: '',
+  defaultErrorHandler(err): ResponseObjectDefault {
+    return {
+      status: 'failure',
+      message: err,
       payload: [],
     };
-    //This is done just incase you use the "throw" keyword to produce your own error.
-    let errorMessage = error?.message ? error?.message : error;
-    returnObj.status = 'failure';
-    returnObj.message = `Function: ${arguments.callee.caller.name} - Error: ${errorMessage}`;
-    returnObj.payload = [];
-    return returnObj;
   }
 
   /**
@@ -227,13 +221,13 @@ export class UtilsService {
     requestObjectLMApi: RequestObjectLMApi,
   ): Promise<ResponseObjectDefault> {
     let returnObj: ResponseObjectDefault = {
-      status: '',
+      status: 'success',
       message: '',
       payload: [],
     };
-    const { method, requestData, queryParams, apiVersion } = requestObjectLMApi;
-    let { url } = requestObjectLMApi;
-    let urlString: string = `${url()}?size=1000&`;
+    const { method, requestData, queryParams, apiVersion, resourcePath, url } =
+      requestObjectLMApi;
+    let urlString: string = `${url(resourcePath)}?size=1000&`;
     if (queryParams) {
       urlString += `?${queryParams}`;
     }
@@ -241,10 +235,10 @@ export class UtilsService {
     if (methodRegEx.test(method)) {
       delete requestObjectLMApi.requestData;
     }
-
     try {
-      let authString: string = this.generateAuthString(requestObjectLMApi);
-      if (authString.toLowerCase().includes('lmv1')) {
+      const { generateAuthString } = this;
+      let authString: string = generateAuthString(requestObjectLMApi);
+      if (!authString.toLowerCase().includes('lmv1')) {
         throw 'Error: Invalid authString';
       }
       let axiosParametersObj: AxiosRequestConfig = {
@@ -286,7 +280,7 @@ export class UtilsService {
         returnObj.payload = [data];
         return returnObj;
       }
-      return returnObj;
+      // return returnObj;
     } catch (err) {
       return this.defaultErrorHandler(err);
     }
