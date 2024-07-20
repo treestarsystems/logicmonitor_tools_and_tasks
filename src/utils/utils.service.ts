@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 // import { catchError, firstValueFrom } from 'rxjs';
-import { ResponseObject } from './models.service';
+import { DefaultResponseObject, LMRequestObject } from './models.service';
 import e from 'express';
 // import { Axios } from 'axios';
 // import { scrypt } from 'crypto';
@@ -162,13 +162,17 @@ export class UtilsService {
   /**
    * Error handler for API calls
    * @param error The error object or string
-   * @returns An object with status, message, and payload
+   * @returns An object with status, message, and payload properties
    * @example
    * defaultErrorHandler('Error: Something went wrong')
    * // returns { status: 'failure', message: 'Function: defaultErrorHandler - Error: Error: Something went wrong', payload: [] }
    */
-  defaultErrorHandler(error: Error): ResponseObject {
-    let returnObj: ResponseObject = { status: '', message: '', payload: [] };
+  defaultErrorHandler(error: Error): DefaultResponseObject {
+    let returnObj: DefaultResponseObject = {
+      status: '',
+      message: '',
+      payload: [],
+    };
     //This is done just incase you use the "throw" keyword to produce your own error.
     let errorMessage = error?.message ? error?.message : error;
     returnObj.status = 'failure';
@@ -176,9 +180,10 @@ export class UtilsService {
     returnObj.payload = [];
     return returnObj;
   }
+
   /**
    * Generate an authentication string for LogicMonitor API calls
-   * @param obj
+   * @param requestObject An object containing method, epoch, requestData, resourcePath, accessId, and accessKey
    * @returns
    * @example
    * generateAuthString({
@@ -191,7 +196,7 @@ export class UtilsService {
    * })
    * // returns 'LMv1 accessId:signature:epoch'
    */
-  generateAuthString(obj): string {
+  generateAuthString(requestObject: LMRequestObject): string {
     try {
       let requiredProperties = [
         'method',
@@ -204,19 +209,22 @@ export class UtilsService {
       for (const p of requiredProperties) {
         //We want to skip over checking for requestData when using http GET.
         let methodRegEx = /^get$|^delete$/gi;
-        if (methodRegEx.test(obj.method) && p == 'requestData') continue;
-        if (!obj.hasOwnProperty(p)) {
+        if (methodRegEx.test(requestObject.method) && p == 'requestData')
+          continue;
+        if (!requestObject.hasOwnProperty(p)) {
           throw `Missing required property to generate auth string: ${p}`;
         }
       }
-      let requestData = obj.requestData ? JSON.stringify(obj.requestData) : '';
-      let requestVars = `${obj.method}${obj.epoch}${requestData}${obj.resourcePath}`;
+      let requestData = requestObject.requestData
+        ? JSON.stringify(requestObject.requestData)
+        : '';
+      let requestVars = `${requestObject.method}${requestObject.epoch}${requestData}${requestObject.resourcePath}`;
       let hex = crypto
-        .createHmac('sha256', obj.accessKey)
+        .createHmac('sha256', requestObject.accessKey)
         .update(requestVars)
         .digest('hex');
       let signature = new Buffer.from(hex, 'utf-8').toString('base64');
-      return `LMv1 ${obj.accessId}:${signature}:${obj.epoch}`;
+      return `LMv1 ${requestObject.accessId}:${signature}:${requestObject.epoch}`;
     } catch (err) {
       return err;
     }
