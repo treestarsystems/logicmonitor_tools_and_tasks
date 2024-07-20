@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsDate, IsObject, IsString } from 'class-validator';
+import { IsArray, IsDate, IsNumber, IsObject, IsString } from 'class-validator';
 
 export class DefaultResponseObject {
   @IsString()
@@ -32,11 +32,17 @@ export class LMRequestObject {
   @IsString()
   resourcePath: string;
 
+  @IsString()
+  queryParams: string;
+
   @IsObject()
   requestData: Object;
 
   @IsObject()
   url: Function;
+
+  @IsNumber()
+  apiVersion: number;
 }
 
 @Injectable()

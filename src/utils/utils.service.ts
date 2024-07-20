@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 // import { catchError, firstValueFrom } from 'rxjs';
 import { DefaultResponseObject, LMRequestObject } from './models.service';
 import e from 'express';
-// import { Axios } from 'axios';
 // import { scrypt } from 'crypto';
 import * as crypto from 'crypto';
+import { Axios, AxiosRequestConfig, AxiosResponse } from 'axios';
 @Injectable()
 export class UtilsService {
   /**
@@ -183,7 +183,7 @@ export class UtilsService {
 
   /**
    * Generate an authentication string for LogicMonitor API calls
-   * @param requestObject An object containing method, epoch, requestData, resourcePath, accessId, and accessKey
+   * @param requestObject An object containing the method, epoch, requestData, resourcePath, accessId, and accessKey
    * @returns An authentication string
    * @example
    * generateAuthString({
@@ -196,10 +196,10 @@ export class UtilsService {
    * })
    * // returns 'LMv1 accessId:signature:epoch'
    */
-  generateAuthString(requestObject: LMRequestObject): string {
+  generateAuthString(requestObjectLMApi: LMRequestObject): string {
     try {
       const { method, epoch, resourcePath, accessId, accessKey, requestData } =
-        requestObject;
+        requestObjectLMApi;
       const requestVars: string = `${method}${epoch}${JSON.stringify(requestData)}${resourcePath}`;
       const hex: string = crypto
         .createHmac('sha256', accessKey)
@@ -212,6 +212,20 @@ export class UtilsService {
     }
   }
   // //Takes an object that containts http method, http data, resource path, accessId, signature
+  /**
+   * Make a generic API call to LogicMonitor
+   * @param requestObjectLMApi An object containing the method, requestData, queryParams, apiVersion, and url
+   * @returns An object with status, message, and payload properties
+   * @example
+   * genericAPICall({
+   * method: 'get',
+   * requestData: { name: 'John', age: 30, city: 'New York' },
+   * queryParams: 'size=1000',
+   * apiVersion: 1, v3 is the default
+   * url: 'https://companynme.logicmonitor.com/santaba/rest/report/reports'
+   * })
+   * // returns { status: 'success', message: 'success', payload: [{ name: 'John', age: 30, city: 'New York' }] }
+   */
   async genericAPICall(
     requestObjectLMApi: LMRequestObject,
   ): Promise<DefaultResponseObject> {
@@ -220,63 +234,64 @@ export class UtilsService {
       message: '',
       payload: [],
     };
-    const { method, accessId, accessKey, epoch, resourcePath, requestData } =
-      requestObjectLMApi;
+    const { method, requestData, queryParams, apiVersion } = requestObjectLMApi;
     let { url } = requestObjectLMApi;
-    /*
-    const url: string = obj.reportURL
-      ? `${obj.reportURL}`
-      : `${obj.url()}?size=1000&`;
-    if (obj.queryParams) {
-      url += `?${obj.queryParams}`;
+    let urlString: string = `${url()}?size=1000&`;
+    if (queryParams) {
+      urlString += `?${queryParams}`;
     }
     let methodRegEx = /^get$|^delete$/gi;
-    if (methodRegEx.test(obj.method)) {
-      delete obj.requestData;
+    if (methodRegEx.test(method)) {
+      delete requestObjectLMApi.requestData;
     }
+
     try {
-      let authString = this.generateAuthString(obj);
-      if (authString.status == 'failure') {
-        throw authString.message;
+      let authString: string = this.generateAuthString(requestObjectLMApi);
+      if (authString.toLowerCase().includes('lmv1')) {
+        throw 'Error: Invalid authString';
       }
-      let axiosParametersObj = {
-        method: obj.method,
-        url: url,
-        data: obj.requestData ? obj.requestData : '',
+      let axiosParametersObj: AxiosRequestConfig = {
+        method: method,
+        url: urlString,
+        data: requestData ? requestData : '',
         headers: {
           ContentType: 'application/json',
-          Authorization: authString.payload,
+          Authorization: authString,
         },
       };
-      if (obj.apiVersion) {
-        axiosParametersObj.headers['X-Version'] = obj.apiVersion;
+      if (apiVersion) {
+        axiosParametersObj.headers['X-Version'] = apiVersion;
       }
-      let result = await Axios(axiosParametersObj);
-      let rateLimitRemaining = result.headers['x-rate-limit-remaining'];
-      let rateLimitWindow = result.headers['x-rate-limit-window'] * 1000 + 1;
+      const apiRequest = new Axios(axiosParametersObj);
+      const apiResponse: AxiosResponse =
+        await apiRequest.request(axiosParametersObj);
+      const { data, headers } = apiResponse;
+      let rateLimitRemaining = headers['x-rate-limit-remaining'];
+      let rateLimitWindow = headers['x-rate-limit-window'] * 1000 + 1;
       let whileVar = false;
       if (rateLimitRemaining == 0) {
         whileVar = true;
         while (whileVar) {
           setTimeout(async () => {
             //If rate limit reached we need to wait.
-            let r = await axios(axiosParametersObj);
-            RETURNOBJ.status = 'success';
-            RETURNOBJ.message = 'success';
-            RETURNOBJ.payload = r.data;
+            const apiResponse: AxiosResponse =
+              await apiRequest.request(axiosParametersObj);
+            const { data } = apiResponse;
+            returnObj.status = 'success';
+            returnObj.message = 'success';
+            returnObj.payload = [data];
           }, rateLimitWindow);
-          return RETURNOBJ;
+          return returnObj;
         }
       } else {
-        RETURNOBJ.status = 'success';
-        RETURNOBJ.message = 'success';
-        RETURNOBJ.payload = [result.data];
-        return RETURNOBJ;
-        }
-        */
-    return returnObj;
-  }
-  catch(err) {
-    return this.defaultErrorHandler(err);
+        returnObj.status = 'success';
+        returnObj.message = 'success';
+        returnObj.payload = [data];
+        return returnObj;
+      }
+      return returnObj;
+    } catch (err) {
+      return this.defaultErrorHandler(err);
+    }
   }
 }
