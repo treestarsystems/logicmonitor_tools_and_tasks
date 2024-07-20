@@ -1,26 +1,25 @@
 import { NestFactory } from '@nestjs/core';
-import { SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import {
-  SwaggerDocumentV1,
-  SwaggerDocumentOptionsV1,
-  ApiDocumentOptionsV1,
-} from './swagger';
+import { SwaggerDocumentVersioned } from './swagger';
 import { VersioningType } from '@nestjs/common';
 
 async function bootstrap() {
+  const apiRoutePrefix = 'api';
   const app = await NestFactory.create(AppModule);
-  app.enableVersioning({
-    type: VersioningType.URI,
-    prefix: 'api/v',
-    defaultVersion: ['1'],
-  });
-  const apiDocumentV1 = SwaggerModule.createDocument(
+  app
+    .enableVersioning({
+      type: VersioningType.URI,
+      defaultVersion: '1',
+    })
+    .setGlobalPrefix(apiRoutePrefix);
+  const apiDocumentV1 = new SwaggerDocumentVersioned(
     app,
-    SwaggerDocumentV1,
-    SwaggerDocumentOptionsV1,
+    apiRoutePrefix,
+    'v1',
+    'LogicMonitor Tools and Tasks',
+    'API for LogicMonitor Tools and Tasks V1sssss',
   );
-  SwaggerModule.setup('api/v1/docs', app, apiDocumentV1, ApiDocumentOptionsV1);
+  apiDocumentV1.SwaggerModuleSetup();
   await app.listen(3000);
 }
 bootstrap();

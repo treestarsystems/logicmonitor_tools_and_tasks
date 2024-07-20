@@ -1,15 +1,16 @@
 import { Controller, Version } from '@nestjs/common';
 import { Get } from '@nestjs/common';
 import { ApiService } from './api.service';
-import { Verify } from 'crypto';
+import { ApiTags } from '@nestjs/swagger';
 
-// @Controller('api')
-@Controller('/')
+@Controller()
+@ApiTags()
 export class ApiController {
   constructor(private readonly appService: ApiService) {}
 
-  @Version('2')
   @Get()
+  @Version('2')
+  @ApiTags('schedules')
   getHello(): string {
     return this.appService.getHello();
   }

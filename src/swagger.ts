@@ -1,19 +1,53 @@
-import { DocumentBuilder, SwaggerDocumentOptions } from '@nestjs/swagger';
+import { INestApplication } from '@nestjs/common';
+import {
+  SwaggerModule,
+  DocumentBuilder,
+  SwaggerDocumentOptions,
+} from '@nestjs/swagger';
 
-export const SwaggerDocumentV1 = new DocumentBuilder()
-  .setTitle('LogicMonitor Tools and Tasks')
-  .setDescription('API for LogicMonitor Tools and Tasks V1')
-  .setVersion('v1')
-  .addTag('tools')
-  .addTag('tasks')
-  .addTag('schedules')
-  .build();
+export class SwaggerDocumentVersioned {
+  constructor(
+    private readonly appObject: INestApplication<any>,
+    private readonly apiPrefix: string,
+    private readonly version: string,
+    private readonly title: string,
+    private readonly description: string,
+  ) {}
 
-export const SwaggerDocumentOptionsV1: SwaggerDocumentOptions = {
-  operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
-};
+  private readonly companyName = process.env.COMPANY_NAME;
+  private readonly companySite = process.env.COMPANY_SITE;
+  private readonly companyEmail = process.env.COMPANY_EMAIL;
 
-export const ApiDocumentOptionsV1 = {
-  jsonDocumentUrl: 'api/v1/docs/json',
-  yamlDocumentUrl: 'api/v1/docs/yaml',
-};
+  private SwaggerDocumentOptions: SwaggerDocumentOptions = {
+    operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
+  };
+
+  private apiDocumentOptions = {
+    jsonDocumentUrl: `${this.apiPrefix}/${this.version}/docs/json`,
+    yamlDocumentUrl: `${this.apiPrefix}/${this.version}/docs/yaml`,
+  };
+
+  private createDocument() {
+    return new DocumentBuilder()
+      .setTitle(this.title)
+      .setDescription(this.description)
+      .setVersion(this.version)
+      .setContact(this.companyName, this.companySite, this.companyEmail)
+      .build();
+  }
+
+  private apiDocument = SwaggerModule.createDocument(
+    this.appObject,
+    this.createDocument(),
+    this.SwaggerDocumentOptions,
+  );
+
+  public SwaggerModuleSetup() {
+    return SwaggerModule.setup(
+      `${this.apiPrefix}/${this.version}/docs`,
+      this.appObject,
+      this.apiDocument,
+      this.apiDocumentOptions,
+    );
+  }
+}
