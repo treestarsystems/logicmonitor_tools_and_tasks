@@ -225,7 +225,7 @@ export class UtilsService {
       message: '',
       payload: [],
     };
-    const { method, requestData, queryParams, apiVersion, resourcePath, url } =
+    const { method, queryParams, apiVersion, resourcePath, url } =
       requestObjectLMApi;
     let urlString: string = `${url(resourcePath)}?size=1000&`;
     if (queryParams) {
@@ -242,9 +242,11 @@ export class UtilsService {
         throw 'Error: Invalid authString';
       }
       let axiosParametersObj: AxiosRequestConfig = {
-        method: method,
+        method: requestObjectLMApi.method,
         url: urlString,
-        data: requestData ? requestData : '',
+        data: requestObjectLMApi?.requestData
+          ? requestObjectLMApi.requestData
+          : '',
         headers: {
           ContentType: 'application/json',
           Authorization: authString,
@@ -256,7 +258,10 @@ export class UtilsService {
       const apiRequest = new Axios(axiosParametersObj);
       const apiResponse: AxiosResponse =
         await apiRequest.request(axiosParametersObj);
-      const { data, headers } = apiResponse;
+      const { data, status, headers } = apiResponse;
+      if (status > 299) {
+        throw `Error (${status}) - ${JSON.parse(data).errorMessage}`;
+      }
       let rateLimitRemaining = headers['x-rate-limit-remaining'];
       let rateLimitWindow = headers['x-rate-limit-window'] * 1000 + 1;
       let whileVar = false;
@@ -280,7 +285,6 @@ export class UtilsService {
         returnObj.payload = [data];
         return returnObj;
       }
-      // return returnObj;
     } catch (err) {
       return this.defaultErrorHandler(err);
     }
