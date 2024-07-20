@@ -7,67 +7,148 @@ import e from 'express';
 
 @Injectable()
 export class UtilsService {
-  //Generate a random alphanumeric string
+  /**
+   * Generate a random alphanumeric string
+   * @param stringLength The length of the string to generate
+   * @returns A random alphanumeric string
+   * @example
+   * genRandomString(10)
+   * // returns 'aBcDeFgHiJ'
+   */
   genRegular(stringLength: number): string {
-    const regularchar: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let text: string = "";
+    const regularchar: string =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let text: string = '';
     for (let i = 0; i < stringLength; i++) {
-      text += regularchar.charAt(Math.floor(Math.random() * regularchar.length));
+      text += regularchar.charAt(
+        Math.floor(Math.random() * regularchar.length),
+      );
     }
     return text;
   }
 
-  //Generate a random alphanumeric string with special characters
+  /**
+   * Generate a random alphanumeric string with special characters
+   * @param stringLength The length of the string to generate
+   * @returns A random alphanumeric string with special characters
+   * @example
+   * genSpecial(10)
+   * // returns 'aBcDeFgHiJ!@#$%'
+   */
   genSpecial(stringLength: number): string {
-    const specialchar: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%_-(),;:.*"
-    let text: string = "";
+    const specialchar: string =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%_-(),;:.*';
+    let text: string = '';
     for (let i = 0; i < stringLength; i++) {
-      text += specialchar.charAt(Math.floor(Math.random() * specialchar.length));
+      text += specialchar.charAt(
+        Math.floor(Math.random() * specialchar.length),
+      );
     }
     return text;
   }
 
-  //Generate a random alphanumeric string with only special characters
+  /**
+   * Generate a random alphanumeric string with only special characters
+   * @param stringLength The length of the string to generate
+   * @returns A random alphanumeric string with only special characters
+   * @example
+   * genSpecialOnly(10)
+   * // returns '!@#$%_-(),'
+   */
   genSpecialOnly(stringLength: number): string {
-    const specialchar: string = "!@#$%_-(),;:.*"
-    let text: string = "";
+    const specialchar: string = '!@#$%_-(),;:.*';
+    let text: string = '';
     for (let i = 0; i < stringLength; i++) {
-      text += specialchar.charAt(Math.floor(Math.random() * specialchar.length));
+      text += specialchar.charAt(
+        Math.floor(Math.random() * specialchar.length),
+      );
     }
     return text;
   }
 
-  //Generate a random number within defined range
+  /**
+   * Generate a random number within defined range
+   * @param min The minimum number
+   * @param max The maximum number
+   * @returns A random number within the defined range
+   * @example
+   * getRandomInt(1, 10)
+   * // returns 5
+   */
   getRandomInt(min: number, max: number): number {
     return Math.round(Math.random() * (max - min) + min);
   }
 
+  /**
+   * Generate a random string with random capitalization
+   * @param word
+   * @returns
+   * @example
+   * randomCaps('hello')
+   * // returns 'heLlo'
+   */
   randomCaps(word: string): string {
     const position = this.getRandomInt(0, word.length);
     return `${this.replaceAt(word, position, word.charAt(position).toUpperCase())}`;
   }
 
+  /**
+   * Generate a random string with special characters
+   * @param word
+   * @returns
+   * @example
+   * insertSpecialChars('hello')
+   * // returns 'hel!lo'
+   */
   insertSpecialChars(word: string): string {
-    const specialchar = "!@#$%_-(),;:.*"
+    const specialchar = '!@#$%_-(),;:.*';
     let index = this.getRandomInt(1, word.length);
-    let text = specialchar.charAt(Math.floor(Math.random() * specialchar.length));
+    let text = specialchar.charAt(
+      Math.floor(Math.random() * specialchar.length),
+    );
     return word.substring(0, index) + text + word.substring(index);
   }
-
-  //Source: https://gist.github.com/efenacigiray/9367920
-  replaceAt(originalString: string, replacementIndex: number, replacementString: string): string {
+  /**
+   * Replace a character at a specific index in a string
+   * Source: https://gist.github.com/efenacigiray/9367920
+   * @param originalString
+   * @param replacementIndex
+   * @param replacementString
+   * @returns
+   */
+  replaceAt(
+    originalString: string,
+    replacementIndex: number,
+    replacementString: string,
+  ): string {
     return `${originalString.substring(0, replacementIndex)}${replacementString}${originalString.substring(replacementIndex + 1)}`;
   }
 
-  //Source: https://stackoverflow.com/a/2117523
+  /**
+   * Generate a random UUID
+   * Source: https://stackoverflow.com/a/2117523
+   * @returns A random UUID
+   * @example
+   * uuidv4()
+   * // returns 'a0a0a0a0-a0a0-a0a0-a0a0-a0a0a0a0a0a0'
+   */
   uuidv4(): string {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-      let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      let r = (Math.random() * 16) | 0,
+        v = c == 'x' ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     });
   }
 
-  //Source: https://learnersbucket.com/examples/javascript/how-to-validate-json-in-javascript/
+  /**
+   * Validate a JSON object
+   * Source: https://learnersbucket.com/examples/javascript/how-to-validate-json-in-javascript/
+   * @param obj The object to validate
+   * @returns A boolean indicating if the object is valid JSON
+   * @example
+   * validateJSON({ "name": "John", "age": 30, "city": "New York" })
+   * // returns true
+   */
   validateJSON(obj: Object): boolean {
     let o = JSON.stringify(obj);
     try {
@@ -78,15 +159,23 @@ export class UtilsService {
     return true;
   }
 
-  // defaultErrorHandler(error: string |Error): ResponseObject {
-  //   let returnObj = { "status": "", "message": "", "payload": "" };
-  //   //This is done just incase you use the "throw" keyword to produce your own error.
-  //   let errorMessage = ((error?.message) ? error?.message : error);
-  //   returnObj.status = "failure";
-  //   returnObj.message = `Function: ${arguments.callee.caller.name} - Error: ${errorMessage}`;
-  //   returnObj.payload = errorMessage;
-  //   return returnObj;
-  // }
+  /**
+   * Error handler for API calls
+   * @param error The error object or string
+   * @returns An object with status, message, and payload
+   * @example
+   * defaultErrorHandler('Error: Something went wrong')
+   * // returns { status: 'failure', message: 'Function: defaultErrorHandler - Error: Error: Something went wrong', payload: [] }
+   */
+  defaultErrorHandler(error: Error): ResponseObject {
+    let returnObj: ResponseObject = { status: '', message: '', payload: [] };
+    //This is done just incase you use the "throw" keyword to produce your own error.
+    let errorMessage = error?.message ? error?.message : error;
+    returnObj.status = 'failure';
+    returnObj.message = `Function: ${arguments.callee.caller.name} - Error: ${errorMessage}`;
+    returnObj.payload = [];
+    return returnObj;
+  }
 
   // //Takes an object that containts http method, http data, resource path, accessId, signature
   // async genericAPICall(obj) {

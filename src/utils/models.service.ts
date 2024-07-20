@@ -10,7 +10,7 @@ export class ResponseObject {
   message: string;
 
   @IsArray()
-  payload: string;
+  payload: any[];
 }
 
 @Injectable()
