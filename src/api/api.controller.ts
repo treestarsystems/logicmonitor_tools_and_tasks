@@ -1,7 +1,8 @@
 import { Controller } from '@nestjs/common';
 import { Get } from '@nestjs/common';
 import { ApiService } from './api.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { DefaultResponseObject } from 'src/utils/models.service';
 
 @Controller()
 @ApiTags('schedules')
@@ -9,7 +10,8 @@ export class ApiController {
   constructor(private readonly appService: ApiService) {}
 
   @Get()
-  getHello(): string {
+  @ApiOkResponse({ type: DefaultResponseObject })
+  getHello(): DefaultResponseObject {
     return this.appService.getHello();
   }
 }
