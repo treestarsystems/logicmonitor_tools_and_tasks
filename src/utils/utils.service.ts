@@ -4,7 +4,7 @@ import { ResponseObject } from './models.service';
 import e from 'express';
 // import { Axios } from 'axios';
 // import { scrypt } from 'crypto';
-
+import * as crypto from 'crypto';
 @Injectable()
 export class UtilsService {
   /**
@@ -176,7 +176,51 @@ export class UtilsService {
     returnObj.payload = [];
     return returnObj;
   }
-
+  /**
+   * Generate an authentication string for LogicMonitor API calls
+   * @param obj
+   * @returns
+   * @example
+   * generateAuthString({
+   *  method: 'get',
+   * epoch: '1234567890',
+   * requestData: { name: 'John', age: 30, city: 'New York' },
+   * resourcePath: '/api/v1/endpoint',
+   * accessId: '
+   * accessKey:
+   * })
+   * // returns 'LMv1 accessId:signature:epoch'
+   */
+  generateAuthString(obj): string {
+    try {
+      let requiredProperties = [
+        'method',
+        'accessId',
+        'accessKey',
+        'epoch',
+        'resourcePath',
+        'requestData',
+      ];
+      for (const p of requiredProperties) {
+        //We want to skip over checking for requestData when using http GET.
+        let methodRegEx = /^get$|^delete$/gi;
+        if (methodRegEx.test(obj.method) && p == 'requestData') continue;
+        if (!obj.hasOwnProperty(p)) {
+          throw `Missing required property to generate auth string: ${p}`;
+        }
+      }
+      let requestData = obj.requestData ? JSON.stringify(obj.requestData) : '';
+      let requestVars = `${obj.method}${obj.epoch}${requestData}${obj.resourcePath}`;
+      let hex = crypto
+        .createHmac('sha256', obj.accessKey)
+        .update(requestVars)
+        .digest('hex');
+      let signature = new Buffer.from(hex, 'utf-8').toString('base64');
+      return `LMv1 ${obj.accessId}:${signature}:${obj.epoch}`;
+    } catch (err) {
+      return err;
+    }
+  }
   // //Takes an object that containts http method, http data, resource path, accessId, signature
   // async genericAPICall(obj) {
   //   const RETURNOBJ = { 'status': '', 'message': '', 'payload': '' };
@@ -227,32 +271,6 @@ export class UtilsService {
   //       RETURNOBJ.payload = result.data;
   //       return RETURNOBJ;
   //     }
-  //   } catch (e) {
-  //     return this.defaultErrorHandler(e);
-  //   } finally { }
-  // }
-
-  // generateAuthString(obj) {
-  //   const RETURNOBJ = { 'status': '', 'message': '', 'payload': '' };
-  //   try {
-  //     let requiredProperties = ['method', 'epoch', 'requestData', 'resourcePath', 'accessId', 'accessKey'];
-  //     for (const p of requiredProperties) {
-  //       //We want to skip over checking for requestData when using http GET.
-  //       let methodRegEx = /^get$|^delete$/gi;
-  //       if (methodRegEx.test(obj.method) && p == 'requestData') continue
-  //       if (!obj.hasOwnProperty(p)) {
-  //         throw `Missing required property to generate auth string: ${p}`;
-  //       }
-  //     }
-  //     let requestData = ((obj.requestData) ? JSON.stringify(obj.requestData) : '');
-  //     let requestVars = `${obj.method}${obj.epoch}${requestData}${obj.resourcePath}`;
-  //     let hex = crypto.createHmac('sha256', obj.accessKey).update(requestVars).digest('hex');
-  //     let signature = new Buffer.from(hex, 'utf-8').toString('base64');
-  //     let auth = `LMv1 ${obj.accessId}:${signature}:${obj.epoch}`;
-  //     RETURNOBJ.status = 'success';
-  //     RETURNOBJ.message = 'success';
-  //     RETURNOBJ.payload = auth;
-  //     return RETURNOBJ;
   //   } catch (e) {
   //     return this.defaultErrorHandler(e);
   //   } finally { }

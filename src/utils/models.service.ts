@@ -13,5 +13,8 @@ export class ResponseObject {
   payload: any[];
 }
 
+// export class RequestObject {
+// }
+
 @Injectable()
 export class ModelsService {}
