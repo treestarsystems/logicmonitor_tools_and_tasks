@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { DefaultResponseObject } from 'src/utils/models.service';
+import { ResponseObjectDefault } from 'src/utils/models.service';
 
 @Injectable()
 export class ApiService {
-  getHello(): DefaultResponseObject {
+  getHello(): ResponseObjectDefault {
     return {
       status: 'success',
       message: 'Hello, World!',

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsDate, IsNumber, IsObject, IsString } from 'class-validator';
 
-export class DefaultResponseObject {
+export class ResponseObjectDefault {
   @IsString()
   @ApiProperty()
   status: string;
@@ -16,7 +16,7 @@ export class DefaultResponseObject {
   payload: any[];
 }
 
-export class LMRequestObject {
+export class RequestObjectLMApi {
   @IsString()
   method: string;
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DefaultResponseObject, LMRequestObject } from './models.service';
+import { ResponseObjectDefault, RequestObjectLMApi } from './models.service';
 import * as crypto from 'crypto';
 import { Axios, AxiosRequestConfig, AxiosResponse } from 'axios';
 @Injectable()
@@ -164,8 +164,8 @@ export class UtilsService {
    * defaultErrorHandler('Error: Something went wrong')
    * // returns { status: 'failure', message: 'Function: defaultErrorHandler - Error: Error: Something went wrong', payload: [] }
    */
-  defaultErrorHandler(error: Error): DefaultResponseObject {
-    let returnObj: DefaultResponseObject = {
+  defaultErrorHandler(error: Error): ResponseObjectDefault {
+    let returnObj: ResponseObjectDefault = {
       status: '',
       message: '',
       payload: [],
@@ -193,7 +193,7 @@ export class UtilsService {
    * })
    * // returns 'LMv1 accessId:signature:epoch'
    */
-  generateAuthString(requestObjectLMApi: LMRequestObject): string {
+  generateAuthString(requestObjectLMApi: RequestObjectLMApi): string {
     try {
       const { method, epoch, resourcePath, accessId, accessKey, requestData } =
         requestObjectLMApi;
@@ -224,9 +224,9 @@ export class UtilsService {
    * // returns { status: 'success', message: 'success', payload: [{ name: 'John', age: 30, city: 'New York' }] }
    */
   async genericAPICall(
-    requestObjectLMApi: LMRequestObject,
-  ): Promise<DefaultResponseObject> {
-    let returnObj: DefaultResponseObject = {
+    requestObjectLMApi: RequestObjectLMApi,
+  ): Promise<ResponseObjectDefault> {
+    let returnObj: ResponseObjectDefault = {
       status: '',
       message: '',
       payload: [],
