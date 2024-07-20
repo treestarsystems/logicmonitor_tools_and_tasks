@@ -184,7 +184,7 @@ export class UtilsService {
   /**
    * Generate an authentication string for LogicMonitor API calls
    * @param requestObject An object containing method, epoch, requestData, resourcePath, accessId, and accessKey
-   * @returns
+   * @returns An authentication string
    * @example
    * generateAuthString({
    *  method: 'get',
@@ -198,89 +198,85 @@ export class UtilsService {
    */
   generateAuthString(requestObject: LMRequestObject): string {
     try {
-      let requiredProperties = [
-        'method',
-        'accessId',
-        'accessKey',
-        'epoch',
-        'resourcePath',
-        'requestData',
-      ];
-      for (const p of requiredProperties) {
-        //We want to skip over checking for requestData when using http GET.
-        let methodRegEx = /^get$|^delete$/gi;
-        if (methodRegEx.test(requestObject.method) && p == 'requestData')
-          continue;
-        if (!requestObject.hasOwnProperty(p)) {
-          throw `Missing required property to generate auth string: ${p}`;
-        }
-      }
-      let requestData = requestObject.requestData
-        ? JSON.stringify(requestObject.requestData)
-        : '';
-      let requestVars = `${requestObject.method}${requestObject.epoch}${requestData}${requestObject.resourcePath}`;
-      let hex = crypto
-        .createHmac('sha256', requestObject.accessKey)
+      const { method, epoch, resourcePath, accessId, accessKey, requestData } =
+        requestObject;
+      const requestVars: string = `${method}${epoch}${JSON.stringify(requestData)}${resourcePath}`;
+      const hex: string = crypto
+        .createHmac('sha256', accessKey)
         .update(requestVars)
         .digest('hex');
-      let signature = new Buffer.from(hex, 'utf-8').toString('base64');
-      return `LMv1 ${requestObject.accessId}:${signature}:${requestObject.epoch}`;
+      const signature: string = Buffer.from(hex, 'utf-8').toString('base64');
+      return `LMv1 ${accessId}:${signature}:${epoch}`;
     } catch (err) {
       return err;
     }
   }
   // //Takes an object that containts http method, http data, resource path, accessId, signature
-  // async genericAPICall(obj) {
-  //   const RETURNOBJ = { 'status': '', 'message': '', 'payload': '' };
-  //   let url = ((obj.reportURL) ? `${obj.reportURL}` : `${obj.url()}?size=1000&`);
-  //   if (obj.queryParams) {
-  //     url += `?${obj.queryParams}`;
-  //   }
-  //   let methodRegEx = /^get$|^delete$/gi;
-  //   if (methodRegEx.test(obj.method)) {
-  //     delete obj.requestData;
-  //   }
-  //   try {
-  //     let authString = this.generateAuthString(obj)
-  //     if (authString.status == 'failure') {
-  //       throw authString.message;
-  //     }
-  //     let axiosParametersObj = {
-  //       method: obj.method,
-  //       url: url,
-  //       data: ((obj.requestData) ? obj.requestData : ''),
-  //       headers: {
-  //         'ContentType': 'application/json',
-  //         'Authorization': authString.payload
-  //       }
-  //     };
-  //     if (obj.apiVersion) {
-  //       axiosParametersObj.headers['X-Version'] = obj.apiVersion;
-  //     }
-  //     let result = await Axios(axiosParametersObj);
-  //     let rateLimitRemaining = result.headers['x-rate-limit-remaining'];
-  //     let rateLimitWindow = (result.headers['x-rate-limit-window'] * 1000) + 1;
-  //     let whileVar = false;
-  //     if (rateLimitRemaining == 0) {
-  //       whileVar = true;
-  //       while (whileVar) {
-  //         setTimeout(async () => {
-  //           //If rate limit reached we need to wait.
-  //           let r = await axios(axiosParametersObj);
-  //           RETURNOBJ.status = 'success';
-  //           RETURNOBJ.message = 'success';
-  //           RETURNOBJ.payload = r.data;
-  //         }, rateLimitWindow);
-  //         return RETURNOBJ;
-  //       }
-  //     } else {
-  //       RETURNOBJ.status = 'success';
-  //       RETURNOBJ.message = 'success';
-  //       RETURNOBJ.payload = result.data;
-  //       return RETURNOBJ;
-  //     }
-  //   } catch (e) {
-  //     return this.defaultErrorHandler(e);
-  //   } finally { }
-  // }
+  async genericAPICall(
+    requestObjectLMApi: LMRequestObject,
+  ): Promise<DefaultResponseObject> {
+    let returnObj: DefaultResponseObject = {
+      status: '',
+      message: '',
+      payload: [],
+    };
+    const { method, accessId, accessKey, epoch, resourcePath, requestData } =
+      requestObjectLMApi;
+    let { url } = requestObjectLMApi;
+    /*
+    const url: string = obj.reportURL
+      ? `${obj.reportURL}`
+      : `${obj.url()}?size=1000&`;
+    if (obj.queryParams) {
+      url += `?${obj.queryParams}`;
+    }
+    let methodRegEx = /^get$|^delete$/gi;
+    if (methodRegEx.test(obj.method)) {
+      delete obj.requestData;
+    }
+    try {
+      let authString = this.generateAuthString(obj);
+      if (authString.status == 'failure') {
+        throw authString.message;
+      }
+      let axiosParametersObj = {
+        method: obj.method,
+        url: url,
+        data: obj.requestData ? obj.requestData : '',
+        headers: {
+          ContentType: 'application/json',
+          Authorization: authString.payload,
+        },
+      };
+      if (obj.apiVersion) {
+        axiosParametersObj.headers['X-Version'] = obj.apiVersion;
+      }
+      let result = await Axios(axiosParametersObj);
+      let rateLimitRemaining = result.headers['x-rate-limit-remaining'];
+      let rateLimitWindow = result.headers['x-rate-limit-window'] * 1000 + 1;
+      let whileVar = false;
+      if (rateLimitRemaining == 0) {
+        whileVar = true;
+        while (whileVar) {
+          setTimeout(async () => {
+            //If rate limit reached we need to wait.
+            let r = await axios(axiosParametersObj);
+            RETURNOBJ.status = 'success';
+            RETURNOBJ.message = 'success';
+            RETURNOBJ.payload = r.data;
+          }, rateLimitWindow);
+          return RETURNOBJ;
+        }
+      } else {
+        RETURNOBJ.status = 'success';
+        RETURNOBJ.message = 'success';
+        RETURNOBJ.payload = [result.data];
+        return RETURNOBJ;
+        }
+        */
+    return returnObj;
+  }
+  catch(err) {
+    return this.defaultErrorHandler(err);
+  }
 }

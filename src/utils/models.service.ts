@@ -1,15 +1,18 @@
 import { Injectable } from '@nestjs/common';
-// import { Type } from 'class-transformer';
-import { IsArray, IsDate, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsArray, IsDate, IsObject, IsString } from 'class-validator';
 
 export class DefaultResponseObject {
   @IsString()
+  @ApiProperty()
   status: string;
 
   @IsString()
+  @ApiProperty()
   message: string;
 
   @IsArray()
+  @ApiProperty()
   payload: any[];
 }
 
@@ -29,7 +32,11 @@ export class LMRequestObject {
   @IsString()
   resourcePath: string;
 
-  requestData: any;
+  @IsObject()
+  requestData: Object;
+
+  @IsObject()
+  url: Function;
 }
 
 @Injectable()
