@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerDocumentVersioned } from './swagger';
-import { VersioningType } from '@nestjs/common';
+import { VersioningType, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const apiRoutePrefix = 'api';
@@ -17,9 +17,10 @@ async function bootstrap() {
     apiRoutePrefix,
     'v1',
     'LogicMonitor Tools and Tasks',
-    'API for LogicMonitor Tools and Tasks V1sssss',
+    'API for LogicMonitor Tools and Tasks v1',
   );
   apiDocumentV1.SwaggerModuleSetup();
+  app.useGlobalPipes(new ValidationPipe());
   await app.listen(3000);
 }
 bootstrap();

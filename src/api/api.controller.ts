@@ -4,13 +4,11 @@ import { ApiService } from './api.service';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller()
-@ApiTags()
+@ApiTags('schedules')
 export class ApiController {
   constructor(private readonly appService: ApiService) {}
 
   @Get()
-  @Version('2')
-  @ApiTags('schedules')
   getHello(): string {
     return this.appService.getHello();
   }
