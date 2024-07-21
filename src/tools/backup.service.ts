@@ -25,6 +25,7 @@ export class BackupService {
     };
 
     try {
+      // Create an object to store the progress of the backup jobs.
       const progressTracking = {
         success: [],
         failure: [],
@@ -51,8 +52,6 @@ export class BackupService {
       for (const dle of payloadItems) {
         let datasourceName = `datasource_${dle.name.replace(/\W/g, '_')}.xml`;
         try {
-          // Convert datasource name to a valid file name.
-          // Define a new get obj so we can query the API for an XML version of the datasource.
           const datasourcesGetXMLObj = {
             method: 'GET',
             accessId: accessId,
@@ -74,10 +73,11 @@ export class BackupService {
           if (typeof datasourceXMLExport.payload[0] === 'string') {
             let xmlString = datasourceXMLExport.payload[0];
             // Store the XML string to a file or in a database.
+            progressTracking.success.push(`Success: ${datasourceName}`);
+            continue;
           } else {
             throw new Error('Payload is not a string');
           }
-          progressTracking.success.push(`Success: ${datasourceName}`);
         } catch (err) {
           progressTracking.failure.push(`Failure: ${datasourceName} - ${err}`);
         }
