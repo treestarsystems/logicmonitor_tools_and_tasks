@@ -80,6 +80,7 @@ export class BackupService {
               dataXML: dataXML,
               dataJSON: dataJSON,
             };
+            // MongoDB storage call.
             progressTracking.success.push(`Success: ${datasourceName}`);
             continue;
           } else {

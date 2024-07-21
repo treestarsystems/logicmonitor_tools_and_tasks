@@ -6,6 +6,7 @@ import { ToolsModule } from './tools/tools.module';
 import { TasksModule } from './tasks/tasks.module';
 import { ApiModule } from './api/api.module';
 import { SchedulesModule } from './schedules/schedules.module';
+import { StorageModule } from './storage/storage.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,6 +23,7 @@ import { SchedulesModule } from './schedules/schedules.module';
     TasksModule,
     ApiModule,
     SchedulesModule,
+    StorageModule,
   ],
   controllers: [],
   providers: [],
