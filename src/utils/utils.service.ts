@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ResponseObjectDefault, RequestObjectLMApi } from './models.service';
 import * as crypto from 'crypto';
 import { Axios, AxiosRequestConfig, AxiosResponse } from 'axios';
@@ -164,9 +164,10 @@ export class UtilsService {
    * defaultErrorHandler('Error: Something went wrong')
    * // returns { status: 'failure', message: 'Function: defaultErrorHandler - Error: Error: Something went wrong', payload: [] }
    */
-  defaultErrorHandler(err): ResponseObjectDefault {
+  defaultErrorHandler(err, httpStatusCode: number): ResponseObjectDefault {
     return {
       status: 'failure',
+      httpStatus: httpStatusCode,
       message: err,
       payload: [],
     };
@@ -210,9 +211,9 @@ export class UtilsService {
    * @example
    * genericAPICall({
    * method: 'get',
-   * requestData: { name: 'John', age: 30, city: 'New York' },
+   * requestData: { ... },
    * queryParams: 'size=1000',
-   * apiVersion: 1, v3 is the default
+   * apiVersion: 1, 3 is the default
    * url: 'https://companynme.logicmonitor.com/santaba/rest/report/reports'
    * })
    * // returns { status: 'success', message: 'success', payload: [{ name: 'John', age: 30, city: 'New York' }] }
@@ -222,6 +223,7 @@ export class UtilsService {
   ): Promise<ResponseObjectDefault> {
     let returnObj: ResponseObjectDefault = {
       status: 'success',
+      httpStatus: 200,
       message: '',
       payload: [],
     };
@@ -259,6 +261,8 @@ export class UtilsService {
       const apiResponse: AxiosResponse =
         await apiRequest.request(axiosParametersObj);
       const { data, status, headers } = apiResponse;
+      // Set HTTP status code for use in error handling
+      returnObj.httpStatus = status;
       if (status > 299) {
         throw `Error (${status}) - ${JSON.parse(data).errorMessage}`;
       }
@@ -274,6 +278,7 @@ export class UtilsService {
               await apiRequest.request(axiosParametersObj);
             const { data } = apiResponse;
             returnObj.status = 'success';
+            returnObj.httpStatus = status;
             returnObj.message = 'success';
             returnObj.payload = [data];
           }, rateLimitWindow);
@@ -281,12 +286,14 @@ export class UtilsService {
         }
       } else {
         returnObj.status = 'success';
+        returnObj.httpStatus = status;
         returnObj.message = 'success';
         returnObj.payload = [data];
         return returnObj;
       }
+      return returnObj;
     } catch (err) {
-      return this.defaultErrorHandler(err);
+      return this.defaultErrorHandler(err, returnObj.httpStatus);
     }
   }
 }

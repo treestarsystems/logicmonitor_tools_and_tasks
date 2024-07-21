@@ -7,6 +7,10 @@ export class ResponseObjectDefault {
   @ApiProperty()
   status: string;
 
+  @IsNumber()
+  @ApiProperty()
+  httpStatus: number;
+
   @IsString()
   @ApiProperty()
   message: string;

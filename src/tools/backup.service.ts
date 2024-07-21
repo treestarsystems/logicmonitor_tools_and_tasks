@@ -15,9 +15,12 @@ export class BackupService {
     accessId: string,
     accessKey: string,
     searchString: string,
-  ): Promise<ResponseObjectDefault> {
+    response: any,
+    //   ): Promise<ResponseObjectDefault> {
+  ): Promise<void> {
     let returnObj = {
       status: 'success',
+      httpStatus: 0,
       message: '',
       payload: [],
     };
@@ -39,6 +42,7 @@ export class BackupService {
       //Get list of datasources
       const datasourcesList: ResponseObjectDefault =
         await this.utilsService.genericAPICall(datasourcesGetObj);
+      returnObj.httpStatus = datasourcesList.httpStatus;
       if (datasourcesList.status == 'failure') throw datasourcesList.message;
       //   Lets loop through the response and extract the items that match our filter into a new array.
       /*
@@ -75,9 +79,12 @@ export class BackupService {
           }
         }
         */
-      return returnObj;
+      //   return returnObj;
+      response.status(datasourcesList.httpStatus).send(datasourcesList);
     } catch (err) {
-      return this.utilsService.defaultErrorHandler(err);
+      response
+        .status(returnObj.httpStatus)
+        .send(this.utilsService.defaultErrorHandler(err, returnObj.httpStatus));
     }
   }
 }
