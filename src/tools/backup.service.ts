@@ -25,6 +25,10 @@ export class BackupService {
     };
 
     try {
+      const progressTracking = {
+        success: [],
+        failure: [],
+      };
       const datasourcesGetObj: RequestObjectLMApi = {
         method: 'GET',
         accessId: accessId,
@@ -42,43 +46,49 @@ export class BackupService {
         await this.utilsService.genericAPICall(datasourcesGetObj);
       returnObj.httpStatus = datasourcesList.httpStatus;
       if (datasourcesList.status == 'failure') throw datasourcesList.message;
-      //   Lets loop through the response and extract the items that match our filter into a new array.
+      // Lets loop through the response and extract the items that match our filter into a new array.
       const payloadItems = JSON.parse(datasourcesList.payload).items;
       for (const dle of payloadItems) {
-        if (dle.group == searchString) Logger.log(dle.group);
-        /*
-          //Convert datasource name to a valid file name.
-          let fileName = `datasource_${dle.name.replace(/\W/g, '_')}.xml`;
-          //Full file path. I really dont need this but...
-          let fullStoragePath = `${backupsDir}/${fileName}`;
-          //Define a new get obj so we can query the API for an XML version of the datasource.
-          let datasourcesGetXMLObj = {
+        let datasourceName = `datasource_${dle.name.replace(/\W/g, '_')}.xml`;
+        try {
+          // Convert datasource name to a valid file name.
+          // Define a new get obj so we can query the API for an XML version of the datasource.
+          const datasourcesGetXMLObj = {
             method: 'GET',
             accessId: accessId,
             accessKey: accessKey,
             epoch: new Date().getTime(),
             resourcePath: `/setting/datasources/${dle.id}`,
-            queryParams: '?format=xml',
-            url: function () {
-              return `https://${company}.logicmonitor.com/santaba/rest${this.resourcePath}`;
+            queryParams: 'format=xml',
+            url: function (resourcePath: string) {
+              return `https://${company}.logicmonitor.com/santaba/rest${resourcePath}`;
             },
+            requestData: {},
+            apiVersion: 3,
           };
-          let datasourceXMLExport =
-            await core.genericAPICall(datasourcesGetXMLObj);
-          if (typeof datasourceXMLExport.payload === 'string') {
-            let xmlString = datasourceXMLExport.payload;
-            fs.writeFile(fullStoragePath, xmlString, async (err) => {
-              if (err) console.log(`FAILED: ${fileName} : ${err}`);
-              console.log(`SAVED: ${fileName}`);
-            });
+          const datasourceXMLExport =
+            await this.utilsService.genericAPICall(datasourcesGetXMLObj);
+          returnObj.httpStatus = datasourceXMLExport.httpStatus;
+          if (datasourceXMLExport.status == 'failure')
+            throw new Error(datasourceXMLExport.message);
+          if (typeof datasourceXMLExport.payload[0] === 'string') {
+            let xmlString = datasourceXMLExport.payload[0];
+            // Store the XML string to a file or in a database.
           } else {
-            console.log(
-              `FAILED: ${fileName} - ${datasourceXMLExport.payload.errmsg}`,
-            );
+            throw new Error('Payload is not a string');
           }
-          */
+          progressTracking.success.push(`Success: ${datasourceName}`);
+        } catch (err) {
+          progressTracking.failure.push(`Failure: ${datasourceName} - ${err}`);
+        }
       }
-      response.status(datasourcesList.httpStatus).send(datasourcesList);
+      returnObj.payload.push(progressTracking);
+      if (progressTracking.failure.length > 0) {
+        returnObj.status = 'failure';
+        returnObj.httpStatus = 500;
+      }
+      returnObj.message = `Datasources backup completed: ${progressTracking.success.length} successful, ${progressTracking.failure.length} failed.`;
+      response.status(returnObj.httpStatus).send(returnObj);
     } catch (err) {
       response
         .status(returnObj.httpStatus)

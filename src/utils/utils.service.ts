@@ -248,8 +248,8 @@ export class UtilsService {
    * genericAPICall({
    * method: 'get',
    * requestData: { ... },
-   * queryParams: 'size=1000',
-   * apiVersion: 1, 3 is the default
+   * queryParams: 'company=<subdomain>,accessId=<from LM>,accessKey=<from LM>,searchString=<part of search string>',
+   * apiVersion: 3 is the default
    * url: 'https://companynme.logicmonitor.com/santaba/rest/report/reports'
    * })
    * // returns { status: 'success', message: 'success', payload: [{ name: 'John', age: 30, city: 'New York' }] }
