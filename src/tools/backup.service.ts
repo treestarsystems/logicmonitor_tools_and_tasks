@@ -31,24 +31,22 @@ export class BackupService {
         accessKey: accessKey,
         epoch: new Date().getTime(),
         resourcePath: '/setting/datasources',
-        queryParams: `?filter=group:${searchString}`,
+        queryParams: `filter=group:"${searchString}"`,
         url: function (resourcePath: string) {
           return `https://${company}.logicmonitor.com/santaba/rest${resourcePath}`;
         },
         requestData: {},
         apiVersion: 3,
       };
-      //   Logger.log(datasourcesGetObj);
-      //Get list of datasources
       const datasourcesList: ResponseObjectDefault =
         await this.utilsService.genericAPICall(datasourcesGetObj);
-      //   Logger.log(datasourcesList);
       returnObj.httpStatus = datasourcesList.httpStatus;
       if (datasourcesList.status == 'failure') throw datasourcesList.message;
       //   Lets loop through the response and extract the items that match our filter into a new array.
-      /*
-      for (const dle of datasourcesList.payload) {
-          Logger.log(dle);
+      const payloadItems = JSON.parse(datasourcesList.payload).items;
+      for (const dle of payloadItems) {
+        if (dle.group == searchString) Logger.log(dle.group);
+        /*
           //Convert datasource name to a valid file name.
           let fileName = `datasource_${dle.name.replace(/\W/g, '_')}.xml`;
           //Full file path. I really dont need this but...
@@ -78,9 +76,8 @@ export class BackupService {
               `FAILED: ${fileName} - ${datasourceXMLExport.payload.errmsg}`,
             );
           }
-        }
-        */
-      //   return returnObj;
+          */
+      }
       response.status(datasourcesList.httpStatus).send(datasourcesList);
     } catch (err) {
       response

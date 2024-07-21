@@ -155,6 +155,42 @@ export class UtilsService {
     }
     return true;
   }
+  /**
+   * Encodes the query parameters of a given URL.
+   *
+   * This function takes a URL with query parameters and returns a new URL
+   * where the query parameters have been percent-encoded. This is particularly
+   * useful for ensuring that special characters in query parameters are properly
+   * encoded to conform to URL standards.
+   *
+   * @param {string} url - The original URL with query parameters to encode.
+   * @returns {string} The URL with encoded query parameters.
+   */
+  encodeQueryParameters(url: string): string {
+    // Split the URL into the base URL and query parameters
+    const [baseUrl, queryParamsString] = url.split('?');
+
+    // Check if there are query parameters to encode
+    if (!queryParamsString) {
+      return url; // Return the original URL if there are no query parameters
+    }
+
+    // Split the query parameters string into individual parameters
+    const queryParams = queryParamsString.split('&');
+
+    // Encode each query parameter
+    const encodedQueryParams = queryParams
+      .map((param) => {
+        // Split each parameter into key and value
+        const [key, value] = param.split('=');
+        // Return the encoded key-value pair, joined by '='
+        return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+      })
+      .join('&'); // Join all encoded parameters back into a single string
+
+    // Reconstruct and return the URL with encoded query parameters
+    return `${baseUrl}?${encodedQueryParams}`;
+  }
 
   /**
    * Error handler for API calls
@@ -231,8 +267,10 @@ export class UtilsService {
       requestObjectLMApi;
     let urlString: string = `${url(resourcePath)}?size=1000&`;
     if (queryParams) {
-      urlString += `?${queryParams}`;
+      urlString += `${queryParams}`;
     }
+    // Encode the query parameters in the URL
+    const urlStringEncoded: string = this.encodeQueryParameters(urlString);
     let methodRegEx = /^get$|^delete$/gi;
     if (methodRegEx.test(method)) {
       delete requestObjectLMApi.requestData;
@@ -245,7 +283,7 @@ export class UtilsService {
       }
       let axiosParametersObj: AxiosRequestConfig = {
         method: requestObjectLMApi.method,
-        url: urlString,
+        url: urlStringEncoded,
         data: requestObjectLMApi?.requestData
           ? requestObjectLMApi.requestData
           : '',
