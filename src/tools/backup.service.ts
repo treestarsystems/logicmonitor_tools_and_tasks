@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   ResponseObjectDefault,
   RequestObjectLMApi,
+  StoreObjectLMData,
 } from '../utils/models.service';
 import { UtilsService } from '../utils/utils.service';
 
@@ -71,8 +72,14 @@ export class BackupService {
           if (datasourceXMLExport.status == 'failure')
             throw new Error(datasourceXMLExport.message);
           if (typeof datasourceXMLExport.payload[0] === 'string') {
-            let xmlString = datasourceXMLExport.payload[0];
-            // Store the XML string to a file or in a database.
+            // Store the XML string and JSON object to a file or in a database.
+            const dataXML: string = datasourceXMLExport.payload[0];
+            const dataJSON: object = dle;
+            const storageObj: StoreObjectLMData = {
+              type: 'dataSource',
+              dataXML: dataXML,
+              dataJSON: dataJSON,
+            };
             progressTracking.success.push(`Success: ${datasourceName}`);
             continue;
           } else {
