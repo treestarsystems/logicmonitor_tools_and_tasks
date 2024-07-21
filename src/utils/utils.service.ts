@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, Version } from '@nestjs/common';
 import { ResponseObjectDefault, RequestObjectLMApi } from './models.service';
 import * as crypto from 'crypto';
 import { Axios, AxiosRequestConfig, AxiosResponse } from 'axios';
@@ -192,7 +192,7 @@ export class UtilsService {
     try {
       const { method, epoch, resourcePath, accessId, accessKey, requestData } =
         requestObjectLMApi;
-      const requestVars: string = `${method}${epoch}${JSON.stringify(requestData)}${resourcePath}`;
+      const requestVars: string = `${method}${epoch}${requestData ? JSON.stringify(requestData) : ''}${resourcePath}`;
       const hex: string = crypto
         .createHmac('sha256', accessKey)
         .update(requestVars)

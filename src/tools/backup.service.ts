@@ -16,7 +16,6 @@ export class BackupService {
     accessKey: string,
     searchString: string,
     response: any,
-    //   ): Promise<ResponseObjectDefault> {
   ): Promise<void> {
     let returnObj = {
       status: 'success',
@@ -39,14 +38,16 @@ export class BackupService {
         requestData: {},
         apiVersion: 3,
       };
+      //   Logger.log(datasourcesGetObj);
       //Get list of datasources
       const datasourcesList: ResponseObjectDefault =
         await this.utilsService.genericAPICall(datasourcesGetObj);
+      //   Logger.log(datasourcesList);
       returnObj.httpStatus = datasourcesList.httpStatus;
       if (datasourcesList.status == 'failure') throw datasourcesList.message;
       //   Lets loop through the response and extract the items that match our filter into a new array.
       /*
-        for (const dle of datasourcesList.payload) {
+      for (const dle of datasourcesList.payload) {
           Logger.log(dle);
           //Convert datasource name to a valid file name.
           let fileName = `datasource_${dle.name.replace(/\W/g, '_')}.xml`;
