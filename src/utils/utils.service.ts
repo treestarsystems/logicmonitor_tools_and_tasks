@@ -239,7 +239,7 @@ export class UtilsService {
       return err;
     }
   }
-  // //Takes an object that containts http method, http data, resource path, accessId, signature
+
   /**
    * Make a generic API call to LogicMonitor
    * @param requestObjectLMApi An object containing the method, requestData, queryParams, apiVersion, and url
@@ -271,6 +271,7 @@ export class UtilsService {
     }
     // Encode the query parameters in the URL
     const urlStringEncoded: string = this.encodeQueryParameters(urlString);
+    // Remove requestData from the request object if the method is 'get' or 'delete'
     let methodRegEx = /^get$|^delete$/gi;
     if (methodRegEx.test(method)) {
       delete requestObjectLMApi.requestData;
