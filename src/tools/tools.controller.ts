@@ -1,4 +1,4 @@
-import { Controller, HttpException, Res } from '@nestjs/common';
+import { Controller, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
 import { BackupService } from './backup.service';
@@ -18,7 +18,6 @@ export class ToolsController {
   @ApiResponse({ type: ResponseObjectDefault })
   async backupDatasources(
     @Query() query: ToolsBackupDatasourcesRequestDto,
-    // @Req() request: Request,
     @Res() response: Response,
   ): Promise<void> {
     await this.backupService.backupDatasources(
@@ -26,7 +25,6 @@ export class ToolsController {
       query.accessId,
       query.accessKey,
       query.searchString,
-      // request,
       response,
     );
   }

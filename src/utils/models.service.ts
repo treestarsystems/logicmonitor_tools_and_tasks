@@ -125,7 +125,13 @@ export class StoreObjectLMData {
   @IsObject()
   dataJSON: object;
 }
-
+/**
+ * This class is used to store the data from LogicMonitor API calls.
+ * @company - The company name for the LogicMonitor account.
+ * @accessId - The access ID for the LogicMonitor account.
+ * @accessKey - The access key for the LogicMonitor account.
+ * @searchString - The search string to filter the datasources by group name.
+ */
 export class ToolsBackupDatasourcesRequestDto {
   @IsString()
   @IsNotEmpty()
