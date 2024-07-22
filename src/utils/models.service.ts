@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsNumber, IsObject, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsNumber,
+  IsObject,
+  IsString,
+  IsNotEmpty,
+} from 'class-validator';
 
 /**
  * This class is used to store the data from API calls.
@@ -12,19 +18,34 @@ import { IsArray, IsNumber, IsObject, IsString } from 'class-validator';
  */
 export class ResponseObjectDefault {
   @IsString()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'The custom status of the API call',
+    enum: ['success|failure'],
+  })
   status: string;
 
   @IsNumber()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'HTTP status code provided by the API call',
+    enum: [200, 400, 401, 403, 404, 500],
+  })
   httpStatus: number;
 
   @IsString()
-  @ApiProperty()
+  @ApiProperty({
+    description:
+      'The message from the API call. This can be a success or error message',
+    type: 'string',
+  })
   message: string;
 
   @IsArray()
-  @ApiProperty()
+  @ApiProperty({
+    description:
+      'The payload from the API call. This can be an array of any type',
+    type: [],
+    enum: ['any (string|number|object|array|boolean|error object)'],
+  })
   payload: any[any];
 }
 
@@ -44,30 +65,47 @@ export class ResponseObjectDefault {
  */
 export class RequestObjectLMApi {
   @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
   method: string;
 
   @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
   accessId: string;
 
   @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
   accessKey: string;
 
   @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty()
   epoch: number;
 
   @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
   resourcePath: string;
 
   @IsString()
+  @ApiProperty()
   queryParams: string;
 
   @IsObject()
+  @IsNotEmpty()
+  @ApiProperty()
   requestData: Object;
 
   @IsObject()
+  @IsNotEmpty()
+  @ApiProperty()
   url: Function;
 
   @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty()
   apiVersion: number;
 }
 /**
@@ -86,6 +124,23 @@ export class StoreObjectLMData {
 
   @IsObject()
   dataJSON: object;
+}
+
+export class ToolsBackupDatasourcesRequest {
+  @IsString()
+  @IsNotEmpty()
+  company: string;
+
+  @IsString()
+  @IsNotEmpty()
+  accessId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  accessKey: string;
+
+  @IsArray()
+  searchString: any[];
 }
 @Injectable()
 export class ModelsService {}

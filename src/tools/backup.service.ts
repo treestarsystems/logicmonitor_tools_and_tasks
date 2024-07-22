@@ -16,6 +16,7 @@ export class BackupService {
     accessId: string,
     accessKey: string,
     searchString: string,
+    // request: any,
     response: any,
   ): Promise<void> {
     let returnObj = {
