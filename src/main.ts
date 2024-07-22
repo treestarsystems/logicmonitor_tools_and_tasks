@@ -17,12 +17,12 @@ async function bootstrap() {
       exceptionFactory: (errors) => {
         let responseMessage = 'Validation failed: ';
         for (const error of errors) {
-          responseMessage += `${error.property} - ${error.constraints[Object.keys(error.constraints)[0]]}`;
+          responseMessage += `${error.constraints[Object.keys(error.constraints)[0]]}, `;
         }
         const result: ResponseObjectDefault = {
           status: 'failure',
           httpStatus: 400,
-          message: responseMessage,
+          message: responseMessage.trim().slice(0, -1),
           payload: [],
         };
         return new BadRequestException(result);
