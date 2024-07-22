@@ -4,7 +4,7 @@
   "description": "Custom application for tools and tasks that use the logicmonitor platform",
   "author": "Michael B.",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

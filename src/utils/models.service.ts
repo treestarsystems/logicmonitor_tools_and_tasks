@@ -9,7 +9,24 @@ import {
 } from 'class-validator';
 
 /**
- * This class is used to store the data from API calls.
+ * This is a base class used to store request data for LogicMonitor API calls.
+ * @accessId - The access ID for the LogicMonitor account.
+ * @accessKey - The access key for the LogicMonitor account.
+ */
+export class BaseRequestObjectLM {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  accessId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  accessKey: string;
+}
+
+/**
+ * This class is used to repsond with data from the underlying API calls in a default format.
  * The data is stored in the following format:
  * @status - The status of the API call (success|failure).
  * @httpStatus - The HTTP status code of the API call.
@@ -50,7 +67,7 @@ export class ResponseObjectDefault {
 }
 
 /**
- * This class is used to store the data that is needed to make a call to the LogicMonitor API.
+ * This class is used to store the data that is needed to make a call to the LogicMonitor API. This is only accessible via the backend.
  * The data is stored in the following format:
  * @method - The method to use for the API call.
  * @accessId - The access ID for the LogicMonitor account.
@@ -63,21 +80,11 @@ export class ResponseObjectDefault {
  * @apiVersion - The version of the API to use.
  *
  */
-export class RequestObjectLMApi {
+export class RequestObjectLMApi extends BaseRequestObjectLM {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
   method: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty()
-  accessId: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty()
-  accessKey: string;
 
   @IsNumber()
   @IsNotEmpty()
@@ -109,8 +116,8 @@ export class RequestObjectLMApi {
   apiVersion: number;
 }
 /**
- * This class is used to store the data from LogicMonitor API calls.
- * The data is stored in 3 different formats:
+ * This class is used to store the data from LogicMonitor API calls to a backend storage point like MongoDB.
+ * The data is stored in 2 different formats, XMLl and JSON.:
  * @type - type of data being backed up (dataSource|report|alertRule).
  * @dataXML - The XML data from the API call.
  * @dataJSON - The JSON data from the API call.
@@ -125,28 +132,19 @@ export class StoreObjectLMData {
   @IsObject()
   dataJSON: object;
 }
+
 /**
- * This class is used to store the data from LogicMonitor API calls.
+ * This class is used to store request data for LogicMonitor API calls.
  * @company - The company name for the LogicMonitor account.
  * @accessId - The access ID for the LogicMonitor account.
  * @accessKey - The access key for the LogicMonitor account.
  * @searchString - The search string to filter the datasources by group name.
  */
-export class ToolsBackupDatasourcesRequestDto {
+export class ToolsBackupDatasourcesRequestDto extends BaseRequestObjectLM {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
   company: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty()
-  accessId: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty()
-  accessKey: string;
 
   @IsString()
   @IsNotEmpty()
