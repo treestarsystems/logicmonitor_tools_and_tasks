@@ -126,7 +126,7 @@ export class StoreObjectLMData {
   dataJSON: object;
 }
 
-export class ToolsBackupDatasourcesRequest {
+export class ToolsBackupDatasourcesRequestDto {
   @IsString()
   @IsNotEmpty()
   company: string;
@@ -139,8 +139,10 @@ export class ToolsBackupDatasourcesRequest {
   @IsNotEmpty()
   accessKey: string;
 
-  @IsArray()
-  searchString: any[];
+  @IsString()
+  @IsNotEmpty()
+  searchString: string;
 }
+
 @Injectable()
 export class ModelsService {}
