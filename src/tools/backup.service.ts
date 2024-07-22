@@ -10,13 +10,20 @@ import { UtilsService } from '../utils/utils.service';
 export class BackupService {
   constructor(private readonly utilsService: UtilsService) {}
 
-  //Documentation: https://www.logicmonitor.com/support/rest-api-developers-guide/v1/datasources/get-datasources
+  /**
+   * Backup datasources with a group name that matches the search string to MongoDB.
+   * Documentation: https://www.logicmonitor.com/support/rest-api-developers-guide/v1/datasources/get-datasources
+   * @param company  The company name for the LogicMonitor account.
+   * @param accessId  The access ID for the LogicMonitor account.
+   * @param accessKey  The access key for the LogicMonitor account.
+   * @param searchString  The search string to filter the datasources.
+   * @param response  The response object to send the response back to the client.
+   */
   async backupDatasources(
     company: string,
     accessId: string,
     accessKey: string,
     searchString: string,
-    // request: any,
     response: any,
   ): Promise<void> {
     let returnObj = {
