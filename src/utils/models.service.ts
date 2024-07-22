@@ -129,18 +129,22 @@ export class StoreObjectLMData {
 export class ToolsBackupDatasourcesRequestDto {
   @IsString()
   @IsNotEmpty()
+  @ApiProperty()
   company: string;
 
   @IsString()
   @IsNotEmpty()
+  @ApiProperty()
   accessId: string;
 
   @IsString()
   @IsNotEmpty()
+  @ApiProperty()
   accessKey: string;
 
   @IsString()
   @IsNotEmpty()
+  @ApiProperty()
   searchString: string;
 }
 
