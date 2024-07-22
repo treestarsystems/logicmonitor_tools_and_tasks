@@ -60,7 +60,7 @@ $ npm run test:cov
 
 ## System Dependecies
 
-[MongoDB] (https://docs.mongodb.com/manual/installation/)
+[MongoDB](https://docs.mongodb.com/manual/installation/)
 
 ## Support
 
