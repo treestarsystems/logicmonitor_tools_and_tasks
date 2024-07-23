@@ -90,6 +90,7 @@ export class BackupService {
             const storageObj: BackupLMData = {
               type: 'dataSource',
               name: dle.name,
+              company: company,
               group: dle.group,
               dataXML: dataXML,
               dataJSON: dataJSON,

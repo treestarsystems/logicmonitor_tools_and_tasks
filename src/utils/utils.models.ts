@@ -133,6 +133,10 @@ export class BackupLMData {
 
   @IsString()
   @IsNotEmpty()
+  company: string;
+
+  @IsString()
+  @IsNotEmpty()
   group: string;
 
   @IsString()

@@ -23,6 +23,9 @@ export class Backup {
   name: string;
 
   @Prop({ required: true })
+  company: string;
+
+  @Prop({ required: true })
   group: string;
 
   @Prop({ required: true })
