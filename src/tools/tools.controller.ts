@@ -5,7 +5,7 @@ import { BackupService } from './backup.service';
 import {
   ResponseObjectDefault,
   ToolsBackupDatasourcesRequestDto,
-} from '../utils/models.service';
+} from '../utils/utils.models';
 import { Get, Query } from '@nestjs/common';
 
 @Controller('tools')

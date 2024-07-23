@@ -1,5 +1,5 @@
 import { Injectable, Logger, Version } from '@nestjs/common';
-import { ResponseObjectDefault, RequestObjectLMApi } from './models.service';
+import { ResponseObjectDefault, RequestObjectLMApi } from './utils.models';
 import * as crypto from 'crypto';
 import { Axios, AxiosRequestConfig, AxiosResponse } from 'axios';
 @Injectable()

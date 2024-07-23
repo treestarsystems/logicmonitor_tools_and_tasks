@@ -6,7 +6,7 @@ import {
   ValidationPipe,
   BadRequestException,
 } from '@nestjs/common';
-import { ResponseObjectDefault } from './utils/models.service';
+import { ResponseObjectDefault } from './utils/utils.models';
 
 async function bootstrap() {
   const apiRoutePrefix = 'api';

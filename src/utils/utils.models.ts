@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsArray,
@@ -115,6 +114,7 @@ export class RequestObjectLMApi extends BaseRequestObjectLM {
   @ApiProperty()
   apiVersion: number;
 }
+
 /**
  * This class is used to store the data from LogicMonitor API calls to a backend storage point like MongoDB.
  * The data is stored in 2 different formats, XMLl and JSON.:
@@ -122,7 +122,7 @@ export class RequestObjectLMApi extends BaseRequestObjectLM {
  * @dataXML - The XML data from the API call.
  * @dataJSON - The JSON data from the API call.
  */
-export class StoreObjectLMData {
+export class BackupLMData {
   @IsString()
   type: string;
 
@@ -151,6 +151,3 @@ export class ToolsBackupDatasourcesRequestDto extends BaseRequestObjectLM {
   @ApiProperty()
   searchString: string;
 }
-
-@Injectable()
-export class ModelsService {}

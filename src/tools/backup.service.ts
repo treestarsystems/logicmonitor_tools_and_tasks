@@ -2,8 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   ResponseObjectDefault,
   RequestObjectLMApi,
-  StoreObjectLMData,
-} from '../utils/models.service';
+  BackupLMData,
+} from '../utils/utils.models';
 import { UtilsService } from '../utils/utils.service';
 
 @Injectable()
@@ -83,7 +83,7 @@ export class BackupService {
             // Store the XML string and JSON object to a file or in a database.
             const dataXML: string = datasourceXMLExport.payload[0];
             const dataJSON: object = dle;
-            const storageObj: StoreObjectLMData = {
+            const storageObj: BackupLMData = {
               type: 'dataSource',
               dataXML: dataXML,
               dataJSON: dataJSON,
