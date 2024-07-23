@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { Document } from 'mongoose';
 
-export type BackupDocument = HydratedDocument<BackupLMData>;
+// export type BackupDocument = HydratedDocument<BackupLMDataMongo>;
+export type BackupDocument = Backup & Document;
 
 /**
  * This class is used to store the data from LogicMonitor API calls to a backend storage point like MongoDB.
@@ -13,16 +14,22 @@ export type BackupDocument = HydratedDocument<BackupLMData>;
 @Schema({
   collection: 'backups',
 })
-export class BackupLMData {
-  @Prop()
+// @Schema()
+export class Backup {
+  @Prop({ required: true })
   type: string;
 
-  @Prop()
+  @Prop({ required: true })
+  name: string;
+
+  @Prop({ required: true })
+  group: string;
+
+  @Prop({ required: true })
   dataXML: string;
 
-  @Prop()
-  // I have no idea what this is supposed to be, but it's not a string
+  @Prop({ required: true })
   dataJSON: Map<string, any>;
 }
 
-export const BackupSchema = SchemaFactory.createForClass(BackupLMData);
+export const BackupSchema = SchemaFactory.createForClass(Backup);

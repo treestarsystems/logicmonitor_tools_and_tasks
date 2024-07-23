@@ -124,14 +124,23 @@ export class RequestObjectLMApi extends BaseRequestObjectLM {
  */
 export class BackupLMData {
   @IsString()
+  @IsNotEmpty()
   type: string;
 
   @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  group: string;
+
+  @IsString()
+  @IsNotEmpty()
   dataXML: string;
 
-  // @IsString()
-  // dataJSON: string;
   @IsObject()
+  @IsNotEmpty()
   dataJSON: object;
 }
 

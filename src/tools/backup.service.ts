@@ -5,10 +5,14 @@ import {
   BackupLMData,
 } from '../utils/utils.models';
 import { UtilsService } from '../utils/utils.service';
+import { StorageService } from '../storage/storage.service';
 
 @Injectable()
 export class BackupService {
-  constructor(private readonly utilsService: UtilsService) {}
+  constructor(
+    private readonly utilsService: UtilsService,
+    private readonly storageService: StorageService,
+  ) {}
 
   /**
    * Backup datasources with a group name that matches the search string to MongoDB.
@@ -85,11 +89,13 @@ export class BackupService {
             const dataJSON: object = dle;
             const storageObj: BackupLMData = {
               type: 'dataSource',
+              name: dle.name,
+              group: dle.group,
               dataXML: dataXML,
-              // dataJSON: JSON.stringify(dataJSON),
               dataJSON: dataJSON,
             };
             // MongoDB storage call.
+            await this.storageService.create(storageObj);
             progressTracking.success.push(`Success: ${datasourceName}`);
             continue;
           } else {

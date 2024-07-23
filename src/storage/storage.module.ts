@@ -1,14 +1,12 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { MongodbStorageService } from './mongodb-storage.service';
-import { BackupSchema, BackupLMData } from './storage.schema';
+import { StorageService } from './storage.service';
+import { Backup, BackupSchema } from 'src/storage/schemas/storage.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: BackupLMData.name, schema: BackupSchema },
-    ]),
+    MongooseModule.forFeature([{ name: Backup.name, schema: BackupSchema }]),
   ],
-  providers: [MongodbStorageService],
+  providers: [StorageService],
 })
 export class StorageModule {}
