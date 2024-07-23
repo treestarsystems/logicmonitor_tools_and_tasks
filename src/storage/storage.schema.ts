@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Mixed } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 
 export type BackupDocument = HydratedDocument<BackupLMData>;
 
@@ -11,7 +11,7 @@ export type BackupDocument = HydratedDocument<BackupLMData>;
  * @dataJSON - The JSON data from the API call.
  */
 @Schema({
-  collection: 'backup',
+  collection: 'backups',
 })
 export class BackupLMData {
   @Prop()
@@ -22,7 +22,7 @@ export class BackupLMData {
 
   @Prop()
   // I have no idea what this is supposed to be, but it's not a string
-  dataJSON: string;
+  dataJSON: Map<string, any>;
 }
 
 export const BackupSchema = SchemaFactory.createForClass(BackupLMData);

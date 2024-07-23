@@ -86,6 +86,7 @@ export class BackupService {
             const storageObj: BackupLMData = {
               type: 'dataSource',
               dataXML: dataXML,
+              // dataJSON: JSON.stringify(dataJSON),
               dataJSON: dataJSON,
             };
             // MongoDB storage call.

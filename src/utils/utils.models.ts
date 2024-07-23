@@ -129,6 +129,8 @@ export class BackupLMData {
   @IsString()
   dataXML: string;
 
+  // @IsString()
+  // dataJSON: string;
   @IsObject()
   dataJSON: object;
 }
