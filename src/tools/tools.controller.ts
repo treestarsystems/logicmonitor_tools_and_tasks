@@ -14,8 +14,11 @@ export class ToolsController {
   constructor(private readonly backupService: BackupService) {}
 
   // Source for query DTO: https://tkssharma.com/nestjs-playing-with-query-param-dto/
-  @Get('backup/datasources')
-  @ApiOperation({ summary: 'Backup datasources that contain the searchString' })
+  @Get('backup/datasources/bygroupname')
+  @ApiOperation({
+    summary:
+      'Backup datasources where the group name contains the searchString',
+  })
   @ApiResponse({ type: ResponseObjectDefault })
   async backupDatasources(
     @Query() query: ToolsBackupDatasourcesRequestDto,
