@@ -61,7 +61,7 @@ export class BackupService {
       for (const dle of payloadItems) {
         let datasourceName = `datasource_${dle.name.replace(/\W/g, '_')}.xml`;
         try {
-          const datasourcesGetXMLObj = {
+          const datasourcesGetXMLObj: RequestObjectLMApi = {
             method: 'GET',
             accessId: accessId,
             accessKey: accessKey,

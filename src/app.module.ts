@@ -5,7 +5,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UtilsModule } from './utils/utils.module';
 import { ToolsModule } from './tools/tools.module';
 import { TasksModule } from './tasks/tasks.module';
-import { ApiModule } from './api/api.module';
 import { SchedulesModule } from './schedules/schedules.module';
 import { StorageModule } from './storage/storage.module';
 
@@ -26,7 +25,6 @@ import { StorageModule } from './storage/storage.module';
     UtilsModule,
     ToolsModule,
     TasksModule,
-    ApiModule,
     SchedulesModule,
     StorageModule,
   ],

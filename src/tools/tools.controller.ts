@@ -1,6 +1,6 @@
 import { Controller, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { ApiTags, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { BackupService } from './backup.service';
 import {
   ResponseObjectDefault,
@@ -15,6 +15,7 @@ export class ToolsController {
 
   // Source for query DTO: https://tkssharma.com/nestjs-playing-with-query-param-dto/
   @Get('backup/datasources')
+  @ApiOperation({ summary: 'Backup datasources that contain the searchString' })
   @ApiResponse({ type: ResponseObjectDefault })
   async backupDatasources(
     @Query() query: ToolsBackupDatasourcesRequestDto,
