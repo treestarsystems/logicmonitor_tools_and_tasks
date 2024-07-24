@@ -1,8 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, HydratedDocument } from 'mongoose';
 
-// export type BackupDocument = HydratedDocument<BackupLMDataMongo>;
-export type BackupDocument = Backup & Document;
+export type BackupDocument = HydratedDocument<Backup>;
 
 /**
  * This class is used to store the data from LogicMonitor API calls to a backend storage point like MongoDB.

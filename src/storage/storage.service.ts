@@ -15,20 +15,23 @@ export class StorageService {
   async create(
     createBackupLMDataMongoDto: BackupLMDataMongoDto,
   ): Promise<Backup> {
-    const createdBackup = new this.backupModel(createBackupLMDataMongoDto);
-    return createdBackup.save();
+    const createBackup = new this.backupModel(createBackupLMDataMongoDto);
+    return createBackup.save();
   }
 
   async upsert(
+    filter: any,
     upsertBackupLMDataMongoDto: BackupLMDataMongoDto,
   ): Promise<Backup> {
-    const upsertBackup = new this.backupModel(upsertBackupLMDataMongoDto);
-    return upsertBackup.updateOne(
-      {
-        filter: { name: upsertBackupLMDataMongoDto.name },
-        update: upsertBackupLMDataMongoDto,
-      },
+    const upsertBackup = await this.backupModel.updateOne(
+      filter,
+      { $set: upsertBackupLMDataMongoDto },
       { upsert: true },
     );
+    if (upsertBackup.upsertedId) {
+      return this.backupModel.findById(upsertBackup.upsertedId).exec();
+    } else {
+      return this.backupModel.findOne(filter).exec();
+    }
   }
 }
