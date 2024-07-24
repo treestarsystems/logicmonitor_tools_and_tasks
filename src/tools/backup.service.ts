@@ -6,6 +6,7 @@ import {
 } from '../utils/utils.models';
 import { UtilsService } from '../utils/utils.service';
 import { StorageService } from '../storage/storage.service';
+import { group } from 'console';
 
 @Injectable()
 export class BackupService {
@@ -49,7 +50,7 @@ export class BackupService {
         accessKey: accessKey,
         epoch: new Date().getTime(),
         resourcePath: '/setting/datasources',
-        queryParams: `filter=group:"${searchString}"`,
+        queryParams: `filter=group~"${searchString}"`,
         url: function (resourcePath: string) {
           return `https://${company}.logicmonitor.com/santaba/rest${resourcePath}`;
         },
@@ -111,7 +112,49 @@ export class BackupService {
         returnObj.status = 'failure';
         returnObj.httpStatus = 500;
       }
-      returnObj.message = `Datasources backup completed: ${progressTracking.success.length} successful, ${progressTracking.failure.length} failed.`;
+      if (progressTracking.success.length == 0) {
+        returnObj.status = 'failure';
+        returnObj.httpStatus = 404;
+        returnObj.message =
+          'No datasources found with the specified group name.';
+      } else {
+        returnObj.message = `Datasources backup completed: ${progressTracking.success.length} successful, ${progressTracking.failure.length} failed.`;
+      }
+      response.status(returnObj.httpStatus).send(returnObj);
+    } catch (err) {
+      response
+        .status(returnObj.httpStatus)
+        .send(this.utilsService.defaultErrorHandler(err, returnObj.httpStatus));
+    }
+  }
+
+  /**
+   * Retrieve datasources with a group name that matches the search string from MongoDB.
+   * @param groupName  The group name to filter the datasources.
+   * @param response  The response object to send the response back to the client.
+   */
+
+  async retrieveDatasources(groupName: string, response: any): Promise<void> {
+    let returnObj = {
+      status: 'success',
+      httpStatus: 200,
+      message: '',
+      payload: [],
+    };
+
+    try {
+      const datasourcesList = await this.storageService.find({
+        group: { $regex: groupName, $options: 'i' },
+      });
+      if (datasourcesList.length == 0) {
+        returnObj.status = 'failure';
+        returnObj.httpStatus = 404;
+        returnObj.message = `No datasources found containing the specified group name: ${groupName}.`;
+      } else {
+        Logger.log(`Datasources found: ${datasourcesList.length}`);
+        returnObj.message = `Datasources found: ${datasourcesList.length}`;
+        // returnObj.payload = datasourcesList;
+      }
       response.status(returnObj.httpStatus).send(returnObj);
     } catch (err) {
       response

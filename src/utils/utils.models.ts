@@ -15,12 +15,20 @@ import {
 export class BaseRequestObjectLM {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({
+    description:
+      'The access ID for the LogicMonitor account. This is used to authenticate the API call',
+    type: 'string',
+  })
   accessId: string;
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({
+    description:
+      'The access key for the LogicMonitor account. This is used to authenticate the API call',
+    type: 'string',
+  })
   accessKey: string;
 }
 
@@ -82,36 +90,63 @@ export class ResponseObjectDefault {
 export class RequestObjectLMApi extends BaseRequestObjectLM {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({
+    description:
+      'The method to use for the API call. This can be GET, POST, PUT, DELETE',
+    type: 'string',
+  })
   method: string;
 
   @IsNumber()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({
+    description:
+      'The current epoch time. This is used to authenticate the API call',
+    type: 'string',
+  })
   epoch: number;
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({
+    description:
+      'The path to the resource that the underlying API call is being made to.',
+    type: 'string',
+  })
   resourcePath: string;
 
   @IsString()
-  @ApiProperty()
+  @ApiProperty({
+    description:
+      'The query parameters for the API call. This is used to filter the data being returned in some cases.',
+    type: 'string',
+  })
   queryParams: string;
 
   @IsObject()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({
+    description:
+      'The data to send in the API call. This is used to create or update data in LogicMonitor.',
+    type: 'string',
+  })
   requestData: Object;
 
   @IsObject()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'The URL for the API call.',
+    type: 'string',
+  })
   url: Function;
 
   @IsNumber()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({
+    description:
+      'The version of the API to use. This should be 3, which is the current version of the LogicMonitor API.',
+    type: 'string',
+  })
   apiVersion: number;
 }
 
@@ -158,11 +193,17 @@ export class BackupLMData {
 export class ToolsBackupDatasourcesRequestDto extends BaseRequestObjectLM {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'The company name for the LogicMonitor account.',
+    type: 'string',
+  })
   company: string;
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'The search string to filter the datasources by group name.',
+    type: 'string',
+  })
   searchString: string;
 }

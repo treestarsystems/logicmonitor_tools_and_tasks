@@ -1,5 +1,5 @@
 import { Model } from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { BackupLMDataMongoDto } from './dto/storage.dto';
 import { Backup } from 'src/storage/schemas/storage.schema';
@@ -11,13 +11,6 @@ export class StorageService {
     @InjectModel(Backup.name)
     private readonly backupModel: Model<BackupDocument>,
   ) {}
-
-  async create(
-    createBackupLMDataMongoDto: BackupLMDataMongoDto,
-  ): Promise<Backup> {
-    const createBackup = new this.backupModel(createBackupLMDataMongoDto);
-    return createBackup.save();
-  }
 
   async upsert(
     filter: any,
@@ -33,5 +26,9 @@ export class StorageService {
     } else {
       return this.backupModel.findOne(filter).exec();
     }
+  }
+
+  async find(filter: any): Promise<any> {
+    return this.backupModel.find(filter).exec();
   }
 }

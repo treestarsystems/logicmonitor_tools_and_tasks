@@ -1,4 +1,4 @@
-import { Controller, Res } from '@nestjs/common';
+import { Body, Controller, Logger, Post, Res, Param } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { BackupService } from './backup.service';
@@ -13,22 +13,35 @@ import { Get, Query } from '@nestjs/common';
 export class ToolsController {
   constructor(private readonly backupService: BackupService) {}
 
+  @Get('backup/datasources')
+  @ApiOperation({
+    summary:
+      'Retrieve all datasources where the group name contains the searchString in the DB as a zip file that includes the XML and JSON format.',
+  })
+  @ApiResponse({ type: ResponseObjectDefault })
+  async retrieveDatasources(
+    @Query('groupName') groupName: string,
+    @Res() response: Response,
+  ): Promise<void> {
+    await this.backupService.retrieveDatasources(groupName, response);
+  }
+
   // Source for query DTO: https://tkssharma.com/nestjs-playing-with-query-param-dto/
-  @Get('backup/datasources/bygroupname')
+  @Post('backup/datasources/bygroupname')
   @ApiOperation({
     summary:
       'Backup datasources where the group name contains the searchString',
   })
   @ApiResponse({ type: ResponseObjectDefault })
-  async backupDatasources(
-    @Query() query: ToolsBackupDatasourcesRequestDto,
+  async backupDatasourcesPost(
+    @Body() body: ToolsBackupDatasourcesRequestDto,
     @Res() response: Response,
   ): Promise<void> {
     await this.backupService.backupDatasources(
-      query.company,
-      query.accessId,
-      query.accessKey,
-      query.searchString,
+      body.company,
+      body.accessId,
+      body.accessKey,
+      body.searchString,
       response,
     );
   }
