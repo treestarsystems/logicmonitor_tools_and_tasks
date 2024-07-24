@@ -6,7 +6,6 @@ import {
 } from '../utils/utils.models';
 import { UtilsService } from '../utils/utils.service';
 import { StorageService } from '../storage/storage.service';
-import { group } from 'console';
 
 @Injectable()
 export class BackupService {
@@ -151,9 +150,9 @@ export class BackupService {
         returnObj.httpStatus = 404;
         returnObj.message = `No datasources found containing the specified group name: ${groupName}.`;
       } else {
-        Logger.log(`Datasources found: ${datasourcesList.length}`);
         returnObj.message = `Datasources found: ${datasourcesList.length}`;
-        // returnObj.payload = datasourcesList;
+        for (const dbi of datasourcesList) {
+        }
       }
       response.status(returnObj.httpStatus).send(returnObj);
     } catch (err) {

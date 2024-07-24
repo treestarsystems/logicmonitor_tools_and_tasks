@@ -28,6 +28,7 @@ export class StorageService {
     }
   }
 
+  // Define types and return types for the find method
   async find(filter: any): Promise<any> {
     return this.backupModel.find(filter).exec();
   }
