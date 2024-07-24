@@ -1,4 +1,4 @@
-import { Body, Controller, Logger, Post, Res, Param } from '@nestjs/common';
+import { Body, Controller, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { BackupService } from './backup.service';
