@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiResponse, ApiOperation, ApiBody } from '@nestjs/swagger';
 import { BackupService } from './backup.service';
 import {
   ResponseObjectDefault,
@@ -26,7 +26,6 @@ export class ToolsController {
     await this.backupService.retrieveDatasources(groupName, response);
   }
 
-  // Source for query DTO: https://tkssharma.com/nestjs-playing-with-query-param-dto/
   @Post('backup/datasources/bygroupname')
   @ApiOperation({
     summary:
