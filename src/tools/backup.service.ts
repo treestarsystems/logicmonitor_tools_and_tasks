@@ -5,13 +5,13 @@ import {
 } from '../utils/utils.models';
 import { BackupLMData } from '../storage/schemas/storage.schema';
 import { UtilsService } from '../utils/utils.service';
-import { StorageService } from '../storage/storage.service';
+import { StorageServiceMongoDB } from '../storage/storage-mongodb.service';
 
 @Injectable()
 export class BackupService {
   constructor(
     private readonly utilsService: UtilsService,
-    private readonly storageService: StorageService,
+    private readonly storageService: StorageServiceMongoDB,
   ) {}
 
   /**

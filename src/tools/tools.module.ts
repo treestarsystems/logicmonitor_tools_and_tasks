@@ -3,7 +3,7 @@ import { ToolsController } from './tools.controller';
 import { ToolsService } from './tools.service';
 import { BackupService } from './backup.service';
 import { UtilsService } from '../utils/utils.service';
-import { StorageService } from '../storage/storage.service';
+import { StorageServiceMongoDB } from '../storage/storage-mongodb.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BackupLMData, BackupSchema } from '../storage/schemas/storage.schema';
 @Module({
@@ -13,6 +13,6 @@ import { BackupLMData, BackupSchema } from '../storage/schemas/storage.schema';
     ]),
   ],
   controllers: [ToolsController],
-  providers: [ToolsService, BackupService, UtilsService, StorageService],
+  providers: [ToolsService, BackupService, UtilsService, StorageServiceMongoDB],
 })
 export class ToolsModule {}
