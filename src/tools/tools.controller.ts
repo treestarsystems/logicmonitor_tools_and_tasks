@@ -4,7 +4,7 @@ import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { BackupService } from './backup.service';
 import {
   ResponseObjectDefault,
-  ToolsBackupDatasourcesRequestDto,
+  ToolsBackupDatasourcesRequest,
 } from '../utils/utils.models';
 import { Get, Query } from '@nestjs/common';
 
@@ -34,7 +34,7 @@ export class ToolsController {
   })
   @ApiResponse({ type: ResponseObjectDefault })
   async backupDatasourcesPost(
-    @Body() body: ToolsBackupDatasourcesRequestDto,
+    @Body() body: ToolsBackupDatasourcesRequest,
     @Res() response: Response,
   ): Promise<void> {
     await this.backupService.backupDatasources(

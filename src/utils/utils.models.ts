@@ -151,50 +151,13 @@ export class RequestObjectLMApi extends BaseRequestObjectLM {
 }
 
 /**
- * This class is used to store the data from LogicMonitor API calls to a backend storage point like MongoDB.
- * The data is stored in 2 different formats, XMLl and JSON.:
- * @type - type of data being backed up (dataSource|report|alertRule).
- * @dataXML - The XML data from the API call.
- * @dataJSON - The JSON data from the API call.
- */
-// export class BackupLMData {
-//   @IsString()
-//   @IsNotEmpty()
-//   readonly type: string;
-
-//   @IsString()
-//   @IsNotEmpty()
-//   readonly name: string;
-
-//   @IsString()
-//   @IsNotEmpty()
-//   readonly formattedName: string;
-
-//   @IsString()
-//   @IsNotEmpty()
-//   readonly company: string;
-
-//   @IsString()
-//   @IsNotEmpty()
-//   readonly group: string;
-
-//   @IsString()
-//   @IsNotEmpty()
-//   readonly dataXML: string;
-
-//   @IsObject()
-//   @IsNotEmpty()
-//   readonly dataJSON: object;
-// }
-
-/**
  * This class is used to store request data for LogicMonitor API calls.
  * @company - The company name for the LogicMonitor account.
  * @accessId - The access ID for the LogicMonitor account.
  * @accessKey - The access key for the LogicMonitor account.
  * @searchString - The search string to filter the datasources by group name.
  */
-export class ToolsBackupDatasourcesRequestDto extends BaseRequestObjectLM {
+export class ToolsBackupDatasourcesRequest extends BaseRequestObjectLM {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
