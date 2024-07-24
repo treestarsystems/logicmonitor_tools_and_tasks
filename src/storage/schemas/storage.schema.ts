@@ -1,37 +1,59 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, HydratedDocument } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
+import { IsString, IsNotEmpty } from 'class-validator';
 
-export type BackupDocument = HydratedDocument<Backup>;
+export type BackupDocument = HydratedDocument<BackupLMData>;
 
 /**
  * This class is used to store the data from LogicMonitor API calls to a backend storage point like MongoDB.
  * The data is stored in 2 different formats, XMLl and JSON.:
- * @type - type of data being backed up (dataSource|report|alertRule).
- * @dataXML - The XML data from the API call.
- * @dataJSON - The JSON data from the API call.
+ * @type - Type of data being backed up (dataSource|report|alertRule).
+ * @name - The original datasource name.
+ * @formattedName - The formatted datasource name.
+ * @company - The company/subdomain name.
+ * @group - The group name of the data being backed up.
+ * @dataXML - The XML format of the datasource.
+ * @dataJSON - The JSON format of the datasource.
  */
+
 @Schema({
   collection: 'backups',
 })
 // @Schema()
-export class Backup {
+export class BackupLMData {
+  @IsString()
+  @IsNotEmpty()
   @Prop({ required: true })
-  type: string;
+  readonly type: string;
 
+  @IsString()
+  @IsNotEmpty()
   @Prop({ required: true })
-  name: string;
+  readonly name: string;
 
+  @IsString()
+  @IsNotEmpty()
   @Prop({ required: true })
-  company: string;
+  readonly nameFormatted: string;
 
+  @IsString()
+  @IsNotEmpty()
   @Prop({ required: true })
-  group: string;
+  readonly company: string;
 
+  @IsString()
+  @IsNotEmpty()
   @Prop({ required: true })
-  dataXML: string;
+  readonly group: string;
 
+  @IsString()
+  @IsNotEmpty()
   @Prop({ required: true })
-  dataJSON: Map<string, any>;
+  readonly dataXML: string;
+
+  @IsNotEmpty()
+  @Prop({ required: true, type: Map })
+  readonly dataJSON: Map<string, any> | object;
 }
 
-export const BackupSchema = SchemaFactory.createForClass(Backup);
+export const BackupSchema = SchemaFactory.createForClass(BackupLMData);

@@ -1,24 +1,23 @@
 import { Model } from 'mongoose';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { BackupLMDataMongoDto } from './dto/storage.dto';
-import { Backup } from 'src/storage/schemas/storage.schema';
+import { BackupLMData } from 'src/storage/schemas/storage.schema';
 import { BackupDocument } from 'src/storage/schemas/storage.schema';
 
 @Injectable()
 export class StorageService {
   constructor(
-    @InjectModel(Backup.name)
+    @InjectModel(BackupLMData.name)
     private readonly backupModel: Model<BackupDocument>,
   ) {}
 
   async upsert(
     filter: any,
-    upsertBackupLMDataMongoDto: BackupLMDataMongoDto,
-  ): Promise<Backup> {
+    upsertBackupLMData: BackupLMData,
+  ): Promise<BackupLMData> {
     const upsertBackup = await this.backupModel.updateOne(
       filter,
-      { $set: upsertBackupLMDataMongoDto },
+      { $set: upsertBackupLMData },
       { upsert: true },
     );
     if (upsertBackup.upsertedId) {

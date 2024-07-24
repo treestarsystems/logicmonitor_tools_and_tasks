@@ -2,8 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   ResponseObjectDefault,
   RequestObjectLMApi,
-  BackupLMData,
 } from '../utils/utils.models';
+import { BackupLMData } from '../storage/schemas/storage.schema';
 import { UtilsService } from '../utils/utils.service';
 import { StorageService } from '../storage/storage.service';
 
@@ -63,7 +63,7 @@ export class BackupService {
       // Lets loop through the response and extract the items that match our filter into a new array.
       const payloadItems = JSON.parse(datasourcesList.payload).items;
       for (const dle of payloadItems) {
-        let datasourceName = `datasource_${dle.name.replace(/\W/g, '_')}.xml`;
+        let datasourceNameParsed = `datasource_${dle.name.replace(/\W/g, '_')}`;
         try {
           const datasourcesGetXMLObj: RequestObjectLMApi = {
             method: 'GET',
@@ -90,20 +90,26 @@ export class BackupService {
             const storageObj: BackupLMData = {
               type: 'dataSource',
               name: dle.name,
+              nameFormatted: datasourceNameParsed,
               company: company,
               group: dle.group,
               dataXML: dataXML,
               dataJSON: dataJSON,
             };
             // MongoDB storage call.
-            await this.storageService.upsert({ name: dle.name }, storageObj);
-            progressTracking.success.push(`Success: ${datasourceName}`);
+            await this.storageService.upsert(
+              { nameFormatted: datasourceNameParsed },
+              storageObj,
+            );
+            progressTracking.success.push(`Success: ${datasourceNameParsed}`);
             continue;
           } else {
             throw new Error('Payload is not a string');
           }
         } catch (err) {
-          progressTracking.failure.push(`Failure: ${datasourceName} - ${err}`);
+          progressTracking.failure.push(
+            `Failure: ${datasourceNameParsed} - ${err}`,
+          );
         }
       }
       returnObj.payload.push(progressTracking);

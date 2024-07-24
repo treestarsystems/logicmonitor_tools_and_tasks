@@ -157,31 +157,35 @@ export class RequestObjectLMApi extends BaseRequestObjectLM {
  * @dataXML - The XML data from the API call.
  * @dataJSON - The JSON data from the API call.
  */
-export class BackupLMData {
-  @IsString()
-  @IsNotEmpty()
-  type: string;
+// export class BackupLMData {
+//   @IsString()
+//   @IsNotEmpty()
+//   readonly type: string;
 
-  @IsString()
-  @IsNotEmpty()
-  name: string;
+//   @IsString()
+//   @IsNotEmpty()
+//   readonly name: string;
 
-  @IsString()
-  @IsNotEmpty()
-  company: string;
+//   @IsString()
+//   @IsNotEmpty()
+//   readonly formattedName: string;
 
-  @IsString()
-  @IsNotEmpty()
-  group: string;
+//   @IsString()
+//   @IsNotEmpty()
+//   readonly company: string;
 
-  @IsString()
-  @IsNotEmpty()
-  dataXML: string;
+//   @IsString()
+//   @IsNotEmpty()
+//   readonly group: string;
 
-  @IsObject()
-  @IsNotEmpty()
-  dataJSON: object;
-}
+//   @IsString()
+//   @IsNotEmpty()
+//   readonly dataXML: string;
+
+//   @IsObject()
+//   @IsNotEmpty()
+//   readonly dataJSON: object;
+// }
 
 /**
  * This class is used to store request data for LogicMonitor API calls.

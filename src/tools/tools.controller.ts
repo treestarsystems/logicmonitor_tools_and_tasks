@@ -16,7 +16,7 @@ export class ToolsController {
   @Get('backup/datasources')
   @ApiOperation({
     summary:
-      'Retrieve all datasources where the group name contains the searchString as a zip file in XML and JSON format.',
+      'Retrieve all datasources where the group name contains the searchString as a .zip containing XML and JSON files.',
   })
   @ApiResponse({ type: ResponseObjectDefault })
   async retrieveDatasources(
