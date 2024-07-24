@@ -96,7 +96,8 @@ export class BackupService {
               dataJSON: dataJSON,
             };
             // MongoDB storage call.
-            await this.storageService.create(storageObj);
+            const dbRes = await this.storageService.upsert(storageObj);
+            Logger.log(`dbRes: ${dbRes}`);
             progressTracking.success.push(`Success: ${datasourceName}`);
             continue;
           } else {

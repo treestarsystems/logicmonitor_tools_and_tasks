@@ -15,7 +15,20 @@ export class StorageService {
   async create(
     createBackupLMDataMongoDto: BackupLMDataMongoDto,
   ): Promise<Backup> {
-    const createdCat = new this.backupModel(createBackupLMDataMongoDto);
-    return createdCat.save();
+    const createdBackup = new this.backupModel(createBackupLMDataMongoDto);
+    return createdBackup.save();
+  }
+
+  async upsert(
+    upsertBackupLMDataMongoDto: BackupLMDataMongoDto,
+  ): Promise<Backup> {
+    const upsertBackup = new this.backupModel(upsertBackupLMDataMongoDto);
+    return upsertBackup.updateOne(
+      {
+        filter: { name: upsertBackupLMDataMongoDto.name },
+        update: upsertBackupLMDataMongoDto,
+      },
+      { upsert: true },
+    );
   }
 }
