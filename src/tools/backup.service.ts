@@ -149,6 +149,7 @@ export class BackupService {
 
     try {
       const datasourcesList = await this.storageService.find({
+        // Case insensitive search.
         group: { $regex: groupName, $options: 'i' },
       });
       if (datasourcesList.length == 0) {
