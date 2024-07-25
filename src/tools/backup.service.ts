@@ -3,10 +3,10 @@ import {
   ResponseObjectDefault,
   RequestObjectLMApi,
 } from '../utils/utils.models';
-import { BackupLMData } from '../storage/schemas/storage.schema';
 import { UtilsService } from '../utils/utils.service';
 import { StorageServiceMongoDB } from '../storage/storage-mongodb.service';
 import { StorageServiceZip } from '../storage/storage-zip.service';
+import { BackupLMData } from '../storage/schemas/storage-mongodb.schema';
 
 @Injectable()
 export class BackupService {

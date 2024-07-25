@@ -6,7 +6,10 @@ import { BackupService } from './backup.service';
 import { UtilsService } from '../utils/utils.service';
 import { StorageServiceMongoDB } from '../storage/storage-mongodb.service';
 import { StorageServiceZip } from '../storage/storage-zip.service';
-import { BackupLMData, BackupSchema } from '../storage/schemas/storage.schema';
+import {
+  BackupLMData,
+  BackupSchema,
+} from '../storage/schemas/storage-mongodb.schema';
 @Module({
   imports: [
     MongooseModule.forFeature([
