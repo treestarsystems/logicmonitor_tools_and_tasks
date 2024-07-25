@@ -1,10 +1,7 @@
 import { Model } from 'mongoose';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import {
-  BackupLMData,
-  BackupDocument,
-} from 'src/storage/schemas/storage-mongodb.schema';
+import { BackupLMData, BackupDocument } from './schemas/storage-mongodb.schema';
 
 @Injectable()
 export class StorageServiceMongoDB {
