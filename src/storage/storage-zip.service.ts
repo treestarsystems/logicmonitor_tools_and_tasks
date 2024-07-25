@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as archiver from 'archiver';
 import { createWriteStream } from 'fs';
-import { join } from 'path';
 
 @Injectable()
 export class StorageServiceZip {
