@@ -6,12 +6,14 @@ import {
 import { BackupLMData } from '../storage/schemas/storage.schema';
 import { UtilsService } from '../utils/utils.service';
 import { StorageServiceMongoDB } from '../storage/storage-mongodb.service';
+import { StorageServiceZip } from '../storage/storage-zip.service';
 
 @Injectable()
 export class BackupService {
   constructor(
     private readonly utilsService: UtilsService,
-    private readonly storageService: StorageServiceMongoDB,
+    private readonly storageServiceMongoDb: StorageServiceMongoDB,
+    private readonly storageServiceZip: StorageServiceZip,
   ) {}
 
   /**
@@ -97,7 +99,7 @@ export class BackupService {
               dataJSON: dataJSON,
             };
             // MongoDB storage call.
-            await this.storageService.upsert(
+            await this.storageServiceMongoDb.upsert(
               { nameFormatted: datasourceNameParsed },
               storageObj,
             );
@@ -148,7 +150,7 @@ export class BackupService {
     };
 
     try {
-      const datasourcesList = await this.storageService.find({
+      const datasourcesList = await this.storageServiceMongoDb.find({
         // Case insensitive search.
         group: { $regex: groupName, $options: 'i' },
       });
