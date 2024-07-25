@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { StorageServiceMongoDB } from './storage-mongodb.service';
+import { StorageServiceZip } from './storage-zip.service';
 import { BackupLMData, BackupSchema } from 'src/storage/schemas/storage.schema';
 
 @Module({
@@ -9,6 +10,6 @@ import { BackupLMData, BackupSchema } from 'src/storage/schemas/storage.schema';
       { name: BackupLMData.name, schema: BackupSchema },
     ]),
   ],
-  providers: [StorageServiceMongoDB],
+  providers: [StorageServiceMongoDB, StorageServiceZip],
 })
 export class StorageModule {}
