@@ -143,13 +143,14 @@ export class BackupService {
    */
 
   async retrieveDatasources(groupName: string, response: any): Promise<void> {
+    // This method will only return JSON object when there is a server side error.
     let returnObj = {
       status: 'success',
       httpStatus: 200,
       message: '',
       payload: [],
     };
-    const outputFileBasePath = `./tmp/`;
+    const outputFileBasePath = `./tmp`;
     try {
       const datasourcesList = await this.storageServiceMongoDb.find({
         // Case insensitive search.
@@ -159,6 +160,7 @@ export class BackupService {
         returnObj.status = 'failure';
         returnObj.httpStatus = 404;
         returnObj.message = `No datasources found containing the specified group name: ${groupName}.`;
+        throw `No datasources found containing the specified group name: ${groupName}.`;
       } else {
         returnObj.message = `Datasources found: ${datasourcesList.length}`;
         let fileContents = {};
@@ -175,7 +177,7 @@ export class BackupService {
           }
         }
         const outputFileName = `datasources_${groupName}.zip`;
-        const outputFilePath = `${outputFileBasePath}${outputFileName}`;
+        const outputFilePath = `${outputFileBasePath}/${outputFileName}`;
         // Create the output directory if it doesn't exist.
         fs.mkdir(outputFileBasePath, { recursive: true }, (err) => {
           if (err) throw err;
@@ -203,9 +205,17 @@ export class BackupService {
         .send(this.utilsService.defaultErrorHandler(err, returnObj.httpStatus));
     } finally {
       // Clean up the temporary files.
-      fs.rm(outputFileBasePath, { recursive: true }, (err) => {
-        if (err) throw err;
-      });
+      fs.promises
+        .access(outputFileBasePath)
+        .then(() =>
+          fs.promises.rm(outputFileBasePath, { recursive: true, force: true }),
+        )
+        .then(() =>
+          Logger.log(
+            `Temporary files at ${outputFileBasePath} have been removed.`,
+          ),
+        )
+        .catch((err) => Logger.warn(`Error removing temporary files: ${err}`));
     }
   }
 }
