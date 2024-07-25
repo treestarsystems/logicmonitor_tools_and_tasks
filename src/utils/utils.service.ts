@@ -204,7 +204,7 @@ export class UtilsService {
     return {
       status: 'failure',
       httpStatus: httpStatusCode,
-      message: err,
+      message: err?.message ? err.message : err,
       payload: [],
     };
   }

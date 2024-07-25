@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import { Injectable, Logger } from '@nestjs/common';
 import {
   ResponseObjectDefault,
@@ -148,7 +149,7 @@ export class BackupService {
       message: '',
       payload: [],
     };
-
+    const outputFileBasePath = `./tmp/`;
     try {
       const datasourcesList = await this.storageServiceMongoDb.find({
         // Case insensitive search.
@@ -160,14 +161,51 @@ export class BackupService {
         returnObj.message = `No datasources found containing the specified group name: ${groupName}.`;
       } else {
         returnObj.message = `Datasources found: ${datasourcesList.length}`;
+        let fileContents = {};
         for (const dbi of datasourcesList) {
+          if (dbi.dataXML) {
+            fileContents[`${dbi.nameFormatted}.xml`] = dbi.dataXML;
+            returnObj.payload.push(`File added: ${dbi.nameFormatted}.xml`);
+          }
+          if (dbi.dataJSON) {
+            fileContents[`${dbi.nameFormatted}.json`] = JSON.stringify(
+              dbi.dataJSON,
+            );
+            returnObj.payload.push(`File added: ${dbi.nameFormatted}.json`);
+          }
         }
+        const outputFileName = `datasources_${groupName}.zip`;
+        const outputFilePath = `${outputFileBasePath}${outputFileName}`;
+        // Create the output directory if it doesn't exist.
+        fs.mkdir(outputFileBasePath, { recursive: true }, (err) => {
+          if (err) throw err;
+        });
+        await this.storageServiceZip.createZipWithTextFiles(
+          fileContents,
+          outputFilePath,
+        );
+        returnObj.message = `Datasources found: ${datasourcesList.length}. ZIP file created successfully with ${returnObj.payload.length} files.`;
+        response.download(outputFilePath, outputFileName, (err) => {
+          if (err) {
+            console.error('Error downloading the file:', err);
+            returnObj.status = 'failure';
+            returnObj.httpStatus = 500;
+            returnObj.message = `Error downloading the file: ${err}`;
+            response.status(returnObj.httpStatus).send(returnObj);
+          }
+        });
       }
-      response.status(returnObj.httpStatus).send(returnObj);
     } catch (err) {
+      returnObj.status = 'failure';
+      returnObj.httpStatus = 500;
       response
         .status(returnObj.httpStatus)
         .send(this.utilsService.defaultErrorHandler(err, returnObj.httpStatus));
+    } finally {
+      // Clean up the temporary files.
+      fs.rm(outputFileBasePath, { recursive: true }, (err) => {
+        if (err) throw err;
+      });
     }
   }
 }

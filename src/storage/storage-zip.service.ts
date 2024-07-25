@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as archiver from 'archiver';
 import { createWriteStream } from 'fs';
 import { join } from 'path';
@@ -12,11 +12,11 @@ export class StorageServiceZip {
     return new Promise((resolve, reject) => {
       const output = createWriteStream(outputFilePath);
       const archive = archiver('zip', {
-        zlib: { level: 9 }, // Sets the compression level.
+        zlib: { level: 9 },
       });
 
       output.on('close', () => {
-        console.log(
+        Logger.log(
           `ZIP file created successfully. Total bytes: ${archive.pointer()}`,
         );
         resolve();
