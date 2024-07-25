@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { ApiTags, ApiResponse, ApiOperation, ApiBody } from '@nestjs/swagger';
-import { BackupService } from './backup.service';
+import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { BackupServiceDatasources } from './tools-backup-datasources.service';
 import {
   ResponseObjectDefault,
   ToolsBackupDatasourcesRequest,
@@ -11,7 +11,7 @@ import { Get, Query } from '@nestjs/common';
 @Controller('tools')
 @ApiTags('Tools')
 export class ToolsController {
-  constructor(private readonly backupService: BackupService) {}
+  constructor(private readonly backupService: BackupServiceDatasources) {}
 
   @Get('backup/datasources')
   @ApiOperation({
