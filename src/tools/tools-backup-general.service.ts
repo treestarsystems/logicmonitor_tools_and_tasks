@@ -44,6 +44,10 @@ export class BackupServiceGeneral {
     // Get the backup type from the request URL.
     let backupType =
       request.originalUrl.split('/')[request.originalUrl.split('/').length - 1];
+    // Remove the letter 's' if it is at the end of the string.
+    if (backupType.endsWith('s')) {
+      backupType = backupType.slice(0, -1);
+    }
     let fileExtension: string;
     try {
       // Create an object to store the progress of the backup jobs.
@@ -80,6 +84,8 @@ export class BackupServiceGeneral {
       for (const pli of payloadItems) {
         if (backupType != 'datasource') {
           fileExtension = 'json';
+        } else {
+          fileExtension = 'xml';
         }
         let backupNameParsed = `${backupType}_${pli.name.replace(/\W/g, '_')}.${fileExtension}`;
         const dataJSON: object = pli;

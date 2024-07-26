@@ -71,7 +71,27 @@ export class ToolsController {
     summary: 'Backup alert rules',
   })
   @ApiResponse({ type: ResponseObjectDefault })
-  async backupGeneralGet(
+  async backupGeneralGetAlertRules(
+    @Body() body: ToolsBackupGeneralRequest,
+    @Req() request: Request,
+    @Res() response: Response,
+  ): Promise<void> {
+    await this.backupServiceGeneral.backupGeneralGet(
+      body.company,
+      body.accessId,
+      body.accessKey,
+      body.extraRequestProperties,
+      request,
+      response,
+    );
+  }
+
+  @Post('backup/reports')
+  @ApiOperation({
+    summary: 'Backup reports',
+  })
+  @ApiResponse({ type: ResponseObjectDefault })
+  async backupGeneralGetReports(
     @Body() body: ToolsBackupGeneralRequest,
     @Req() request: Request,
     @Res() response: Response,
