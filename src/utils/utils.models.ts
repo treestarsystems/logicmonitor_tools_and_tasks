@@ -1,3 +1,4 @@
+import { Optional } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsArray,
@@ -173,4 +174,66 @@ export class ToolsBackupDatasourcesRequest extends BaseRequestObjectLM {
     type: 'string',
   })
   searchString: string;
+}
+
+/**
+ * Extra request properties to send in the API call (resourcePath, queryParams, requestData).
+ * @resourcePath - The path to the resource that the underlying API call is being made to.
+ * @queryParams - The query parameters for the API call. This is used to filter the data being returned in some cases.
+ * @requestData - The data to send in the API call. This is used to create or update data in LogicMonitor.
+ */
+export class RequestObjectLMApiExtraRequestProperties {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description:
+      'The path to the resource that the underlying API call is being made to.',
+    type: 'string',
+  })
+  resourcePath: string;
+
+  @Optional()
+  @IsString()
+  @ApiProperty({
+    description:
+      'The query parameters for the API call. This is used to filter the data being returned in some cases.',
+    type: 'string',
+    required: false,
+  })
+  queryParams: string;
+
+  @Optional()
+  @IsObject()
+  @ApiProperty({
+    description:
+      'The data to send in the API call. This is used to create or update data in LogicMonitor.',
+    type: 'string',
+    required: false,
+  })
+  requestData: Object;
+}
+
+/**
+ * This class is used to store request data for LogicMonitor API calls.
+ * @company - The company name for the LogicMonitor account.
+ * @accessId - The access ID for the LogicMonitor account.
+ * @accessKey - The access key for the LogicMonitor account.
+ * @extraRequestProperties - The extra request properties to send in the API call (resourcePath, queryParams, requestData).
+ */
+export class ToolsBackupGeneralRequest extends BaseRequestObjectLM {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The company name for the LogicMonitor account.',
+    type: 'string',
+  })
+  company: string;
+
+  @IsObject()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The extra request properties to send in the API call',
+    type: RequestObjectLMApiExtraRequestProperties,
+  })
+  extraRequestProperties: RequestObjectLMApiExtraRequestProperties;
 }

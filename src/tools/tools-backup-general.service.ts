@@ -3,11 +3,12 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   ResponseObjectDefault,
   RequestObjectLMApi,
+  RequestObjectLMApiExtraRequestProperties,
 } from '../utils/utils.models';
 import { UtilsService } from '../utils/utils.service';
 import { StorageServiceMongoDB } from '../storage/storage-mongodb.service';
 import { StorageServiceZip } from '../storage/storage-zip.service';
-import { BackupLMData } from '../storage/schemas/storage-mongodb.schema';
+import { BackupLMDataGeneral } from '../storage/schemas/storage-mongodb.schema';
 
 @Injectable()
 export class BackupServiceGeneral {
@@ -23,97 +24,79 @@ export class BackupServiceGeneral {
    * @param company  The company name for the LogicMonitor account.
    * @param accessId  The access ID for the LogicMonitor account.
    * @param accessKey  The access key for the LogicMonitor account.
-   * @param searchString  The search string to filter the datasources.
+   * @param extraRequestProperties  The extra request properties to send in the API call (resourcePath, queryParams, requestData).
    * @param response  The response object to send the response back to the client.
    */
-  async backupDatasources(
+  async backupGeneralGet(
     company: string,
     accessId: string,
     accessKey: string,
-    searchString: string,
+    extraRequestProperties: RequestObjectLMApiExtraRequestProperties,
+    request: any,
     response: any,
   ): Promise<void> {
     let returnObj = {
       status: 'success',
-      httpStatus: 0,
+      httpStatus: 200,
       message: '',
       payload: [],
     };
-
+    // Get the backup type from the request URL.
+    let backupType =
+      request.originalUrl.split('/')[request.originalUrl.split('/').length - 1];
+    let fileExtension: string;
     try {
       // Create an object to store the progress of the backup jobs.
       const progressTracking = {
         success: [],
         failure: [],
       };
-      const datasourcesGetObj: RequestObjectLMApi = {
+      const generalGetObj: RequestObjectLMApi = {
         method: 'GET',
         accessId: accessId,
         accessKey: accessKey,
         epoch: new Date().getTime(),
-        resourcePath: '/setting/alert/rules',
-        queryParams: '',
+        resourcePath: extraRequestProperties?.resourcePath
+          ? extraRequestProperties.resourcePath
+          : '/',
+        queryParams: extraRequestProperties?.queryParams
+          ? extraRequestProperties.queryParams
+          : '',
         url: function (resourcePath: string) {
           return `https://${company}.logicmonitor.com/santaba/rest${resourcePath}`;
         },
-        requestData: {},
+        requestData: extraRequestProperties?.requestData
+          ? extraRequestProperties.requestData
+          : {},
         apiVersion: 3,
       };
-      const datasourcesList: ResponseObjectDefault =
-        await this.utilsService.genericAPICall(datasourcesGetObj);
-      returnObj.httpStatus = datasourcesList.httpStatus;
-      if (datasourcesList.status == 'failure') throw datasourcesList.message;
+      const resultList: ResponseObjectDefault =
+        await this.utilsService.genericAPICall(generalGetObj);
+      returnObj.httpStatus = resultList.httpStatus;
+      if (resultList.status == 'failure') throw resultList.message;
       // Lets loop through the response and extract the items that match our filter into a new array.
-      const payloadItems = JSON.parse(datasourcesList.payload).items;
-      for (const dle of payloadItems) {
-        let datasourceNameParsed = `datasource_${dle.name.replace(/\W/g, '_')}`;
-        try {
-          const datasourcesGetXMLObj: RequestObjectLMApi = {
-            method: 'GET',
-            accessId: accessId,
-            accessKey: accessKey,
-            epoch: new Date().getTime(),
-            resourcePath: `/setting/datasources/${dle.id}`,
-            queryParams: 'format=xml',
-            url: function (resourcePath: string) {
-              return `https://${company}.logicmonitor.com/santaba/rest${resourcePath}`;
-            },
-            requestData: {},
-            apiVersion: 3,
-          };
-          const datasourceXMLExport =
-            await this.utilsService.genericAPICall(datasourcesGetXMLObj);
-          returnObj.httpStatus = datasourceXMLExport.httpStatus;
-          if (datasourceXMLExport.status == 'failure')
-            throw new Error(datasourceXMLExport.message);
-          if (typeof datasourceXMLExport.payload[0] === 'string') {
-            // Store the XML string and JSON object to a file or in a database.
-            const dataXML: string = datasourceXMLExport.payload[0];
-            const dataJSON: object = dle;
-            const storageObj: BackupLMData = {
-              type: 'dataSource',
-              name: dle.name,
-              nameFormatted: datasourceNameParsed,
-              company: company,
-              group: dle.group,
-              dataXML: dataXML,
-              dataJSON: dataJSON,
-            };
-            // MongoDB storage call.
-            await this.storageServiceMongoDb.upsert(
-              { nameFormatted: datasourceNameParsed },
-              storageObj,
-            );
-            progressTracking.success.push(`Success: ${datasourceNameParsed}`);
-            continue;
-          } else {
-            throw new Error('Payload is not a string');
-          }
-        } catch (err) {
-          progressTracking.failure.push(
-            `Failure: ${datasourceNameParsed} - ${err}`,
-          );
+      const payloadItems = JSON.parse(resultList.payload).items;
+
+      for (const pli of payloadItems) {
+        if (backupType != 'datasource') {
+          fileExtension = 'json';
         }
+        let backupNameParsed = `${backupType}_${pli.name.replace(/\W/g, '_')}.${fileExtension}`;
+        const dataJSON: object = pli;
+        const storageObj: BackupLMDataGeneral = {
+          type: backupType,
+          name: pli.name,
+          nameFormatted: backupNameParsed,
+          company: company,
+          dataJSON: dataJSON,
+        };
+        // MongoDB storage call.
+        await this.storageServiceMongoDb.upsert(
+          { nameFormatted: backupNameParsed },
+          storageObj,
+        );
+        progressTracking.success.push(`Success: ${backupNameParsed}`);
+        continue;
       }
       returnObj.payload.push(progressTracking);
       if (progressTracking.failure.length > 0) {
@@ -123,10 +106,9 @@ export class BackupServiceGeneral {
       if (progressTracking.success.length == 0) {
         returnObj.status = 'failure';
         returnObj.httpStatus = 404;
-        returnObj.message =
-          'No datasources found with the specified group name.';
+        returnObj.message = `No ${backupType} found matching the request.`;
       } else {
-        returnObj.message = `Datasources backup completed: ${progressTracking.success.length} successful, ${progressTracking.failure.length} failed.`;
+        returnObj.message = `$${backupType} backup completed: ${progressTracking.success.length} successful, ${progressTracking.failure.length} failed.`;
       }
       response.status(returnObj.httpStatus).send(returnObj);
     } catch (err) {

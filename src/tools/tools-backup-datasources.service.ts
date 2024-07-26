@@ -7,7 +7,7 @@ import {
 import { UtilsService } from '../utils/utils.service';
 import { StorageServiceMongoDB } from '../storage/storage-mongodb.service';
 import { StorageServiceZip } from '../storage/storage-zip.service';
-import { BackupLMData } from '../storage/schemas/storage-mongodb.schema';
+import { BackupLMDataDatasource } from '../storage/schemas/storage-mongodb.schema';
 
 @Injectable()
 export class BackupServiceDatasources {
@@ -90,7 +90,7 @@ export class BackupServiceDatasources {
             // Store the XML string and JSON object to a file or in a database.
             const dataXML: string = datasourceXMLExport.payload[0];
             const dataJSON: object = dle;
-            const storageObj: BackupLMData = {
+            const storageObj: BackupLMDataDatasource = {
               type: 'dataSource',
               name: dle.name,
               nameFormatted: datasourceNameParsed,
