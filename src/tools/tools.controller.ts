@@ -11,7 +11,6 @@ import {
 import { Get, Query } from '@nestjs/common';
 
 @Controller('tools')
-@ApiTags('Tools')
 export class ToolsController {
   constructor(
     private readonly backupServiceDatasources: BackupServiceDatasources,
@@ -24,6 +23,7 @@ export class ToolsController {
       'Retrieve all datasources where the group name contains the searchString as a .zip containing XML and JSON files.',
   })
   @ApiResponse({ type: ResponseObjectDefault })
+  @ApiTags('Tools: Backup')
   async retrieveDatasources(
     @Query('groupName') groupName: string,
     @Res() response: Response,
@@ -40,6 +40,7 @@ export class ToolsController {
       'Backup datasources where the group name contains the searchString',
   })
   @ApiResponse({ type: ResponseObjectDefault })
+  @ApiTags('Tools: Backup')
   async backupDatasourcesPost(
     @Body() body: ToolsBackupDatasourcesRequest,
     @Res() response: Response,
@@ -58,6 +59,7 @@ export class ToolsController {
     summary: 'Backup alert rules',
   })
   @ApiResponse({ type: ResponseObjectDefault })
+  @ApiTags('Tools: Backup')
   async backupGeneralGetAlertRules(
     @Body() body: ToolsBackupGeneralRequest,
     @Req() request: Request,
@@ -78,6 +80,7 @@ export class ToolsController {
     summary: 'Backup reports',
   })
   @ApiResponse({ type: ResponseObjectDefault })
+  @ApiTags('Tools: Backup')
   async backupGeneralGetReports(
     @Body() body: ToolsBackupGeneralRequest,
     @Req() request: Request,
