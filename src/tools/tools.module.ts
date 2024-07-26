@@ -19,9 +19,6 @@ import {
       { name: BackupLMDataDatasource.name, schema: BackupSchemaDatasource },
       { name: BackupLMDataGeneral.name, schema: BackupSchemaGeneral },
     ]),
-    // MongooseModule.forFeature([
-    //   { name: BackupLMDataGeneral.name, schema: BackupSchemaGeneral },
-    // ]),
   ],
   controllers: [ToolsController],
   providers: [
