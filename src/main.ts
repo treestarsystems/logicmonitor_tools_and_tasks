@@ -12,13 +12,14 @@ import { ResponseObjectDefault } from './utils/utils.models';
 /**
  * Bootstrap the application.
  * @returns {Promise<void>} Promise object.
- * @async
  * @function bootstrap
  * @memberof module:main
  * @access private
+ * @private
+ * @async
  */
 async function bootstrap() {
-  const apiRoutePrefix = 'api';
+  const apiRoutePrefix: string = 'api';
   const app = await NestFactory.create(AppModule);
   // Custom exception filter to return a custom error response object.
   app.useGlobalFilters(new HttpExceptionFilter());
@@ -48,7 +49,7 @@ async function bootstrap() {
       defaultVersion: '1',
     })
     .setGlobalPrefix(apiRoutePrefix);
-  const apiDocumentV1 = new SwaggerDocumentVersioned(
+  const apiDocumentV1: SwaggerDocumentVersioned = new SwaggerDocumentVersioned(
     app,
     apiRoutePrefix,
     'v1',

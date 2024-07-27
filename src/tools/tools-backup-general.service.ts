@@ -31,11 +31,14 @@ export class BackupServiceGeneral {
   /**
    * Backup datasources with a group name that matches the search string to MongoDB.
    * Documentation: https://www.logicmonitor.com/support/rest-api-developers-guide/v1/datasources/get-datasources
-   * @param company  The company name for the LogicMonitor account.
-   * @param accessId  The access ID for the LogicMonitor account.
-   * @param accessKey  The access key for the LogicMonitor account.
-   * @param extraRequestProperties  The extra request properties to send in the API call (resourcePath, queryParams, requestData).
-   * @param response  The response object to send the response back to the client.
+   * @param {string} company  The company name for the LogicMonitor account.
+   * @param {string} accessId  The access ID for the LogicMonitor account.
+   * @param {string} accessKey  The access key for the LogicMonitor account.
+   * @param {RequestObjectLMApiExtraRequestProperties} extraRequestProperties  The extra request properties to send in the API call (resourcePath, queryParams, requestData).
+   * @param {Response} response  The response object to send the response back to the client.
+   * @returns {Promise<void>} Promise object.
+   * @function backupDatasourcesGet
+   * @memberof module:tools
    */
 
   async backupGeneralGet(
@@ -64,9 +67,9 @@ export class BackupServiceGeneral {
     if (!extraRequestProperties?.resourcePath.includes(routeMatchString)) {
       returnObj.status = 'failure';
       returnObj.httpStatus = 400;
-      returnObj.message = `Backup type (${backupType}) does not match the resource path (${extraRequestProperties?.resourcePath})`;
-      response.status(returnObj.httpStatus).send(returnObj);
-      return;
+      throw new Error(
+        `Backup type (${backupType}) does not match the resource path (${extraRequestProperties?.resourcePath})`,
+      );
     }
     try {
       // Create an object to store the progress of the backup jobs.
@@ -99,7 +102,6 @@ export class BackupServiceGeneral {
       if (resultList.status == 'failure') throw resultList.message;
       // Lets loop through the response and extract the items that match our filter into a new array.
       const payloadItems = JSON.parse(resultList.payload).items;
-
       for (const pli of payloadItems) {
         let backupNameParsed = `${backupType}_${pli.name.replace(/\W/g, '_')}`;
         const dataJSON: object = pli;
@@ -111,51 +113,63 @@ export class BackupServiceGeneral {
           dataJSON: dataJSON,
         };
         // MongoDB storage call.
-        await this.storageServiceMongoDb.upsert(
-          this.backupGeneralModel,
-          { nameFormatted: backupNameParsed },
-          storageObj,
-        );
-        progressTracking.success.push(`Success: ${backupNameParsed}`);
+        this.storageServiceMongoDb
+          .upsert(
+            this.backupGeneralModel,
+            { nameFormatted: backupNameParsed },
+            storageObj,
+          )
+          .then(() => {
+            progressTracking.success.push(`Success: ${backupNameParsed}`);
+          })
+          .catch((err) => {
+            // I am not sure if this is the correct way to handle the error.
+            const errMsg = this.utilsService.defaultErrorHandlerString(err);
+            progressTracking.failure.push(
+              `Failure: ${backupNameParsed} - ${errMsg}`,
+            );
+          });
         continue;
       }
       returnObj.payload.push(progressTracking);
       if (progressTracking.failure.length > 0) {
         returnObj.status = 'failure';
         returnObj.httpStatus = 500;
+        throw new Error(
+          `Backup failure: ${progressTracking.failure.length} failed.`,
+        );
       }
       if (progressTracking.success.length == 0) {
         returnObj.status = 'failure';
         returnObj.httpStatus = 404;
-        returnObj.message = `No ${backupType} found matching the request.`;
-      } else {
-        returnObj.message = `${this.utilsService.capitalizeFirstLetter(backupType)} backup completed: ${progressTracking.success.length} successful, ${progressTracking.failure.length} failed.`;
+        throw new Error(`No ${backupType} found matching the request.`);
       }
+      returnObj.message = `${this.utilsService.capitalizeFirstLetter(backupType)} backup completed: ${progressTracking.success.length} successful, ${progressTracking.failure.length} failed.`;
       response.status(returnObj.httpStatus).send(returnObj);
     } catch (err) {
       response
         .status(returnObj.httpStatus)
-        .send(this.utilsService.defaultErrorHandler(err, returnObj.httpStatus));
+        .send(
+          this.utilsService.defaultErrorHandlerHttp(err, returnObj.httpStatus),
+        );
     }
   }
 
   /**
    * Retrieve datasources with a group name that matches the search string from MongoDB.
-   * @param company  The company name for the LogicMonitor account.
-   * @param response  The response object to send the response back to the client.
+   * @param {string} company  The company name for the LogicMonitor account.
+   * @param {Response} response  The response object to send the response back to the client.
    * @returns {Promise<void>} Promise object.
    * @function retrieveBackupsAll
    * @memberof module:tools
-   * @access public
-   * @api
-   * @endpoint tools/backup
    * @method GET
+   * @api
    * @example
    * curl -X GET "http://localhost:3000/tools/backup?company=companyName"
    */
 
   async retrieveBackupsAll(company: string, response: any): Promise<void> {
-    // This method will only return JSON object when there is a server side error.
+    // This method will only return JSON object when there is an error.
     let returnObj = {
       status: 'success',
       httpStatus: 200,
@@ -179,7 +193,9 @@ export class BackupServiceGeneral {
       if (backupsListAll.length == 0) {
         returnObj.status = 'failure';
         returnObj.httpStatus = 404;
-        throw 'No datasource, alert rule, or report backups found matching the comopany name. Please run a backup first.';
+        throw new Error(
+          'No datasource, alert rule, or report backups found matching the comopany name. Please run a backup first.',
+        );
       } else {
         returnObj.message = `Backups found: ${backupsListAll.length}`;
         let fileContents = {};
@@ -209,18 +225,20 @@ export class BackupServiceGeneral {
         returnObj.message = `Backups found: ${backupsListAll.length}. ZIP file created successfully with ${returnObj.payload.length} files.`;
         response.download(outputFilePath, outputFileName, (err) => {
           if (err) {
-            console.error('Error downloading the file:', err);
+            const errMsg = this.utilsService.defaultErrorHandlerString(err);
+            console.error(`Error downloading the file - ${errMsg}`);
             returnObj.status = 'failure';
             returnObj.httpStatus = 500;
-            throw `Error downloading the file: ${err}`;
+            throw new Error(`Creating download file - ${errMsg}`);
           }
         });
       }
     } catch (err) {
-      returnObj.status = 'failure';
       response
         .status(returnObj.httpStatus)
-        .send(this.utilsService.defaultErrorHandler(err, returnObj.httpStatus));
+        .send(
+          this.utilsService.defaultErrorHandlerHttp(err, returnObj.httpStatus),
+        );
     } finally {
       // Clean up the temporary files.
       fs.promises
@@ -233,7 +251,10 @@ export class BackupServiceGeneral {
             `Temporary files at ${outputFileBasePath} have been removed.`,
           ),
         )
-        .catch((err) => Logger.warn(`Error removing temporary files: ${err}`));
+        .catch((err) => {
+          const errMsg = this.utilsService.defaultErrorHandlerString(err);
+          Logger.error(`Error removing temporary files: ${errMsg}`);
+        });
     }
   }
 }

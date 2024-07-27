@@ -8,16 +8,16 @@ import { Axios, AxiosRequestConfig, AxiosResponse } from 'axios';
  * @class UtilsService
  * @memberof module:utils
  * @access public
+ * @public
  */
 @Injectable()
 export class UtilsService {
   /**
    * Generate a random alphanumeric string
-   * @param stringLength The length of the string to generate
-   * @returns A random alphanumeric string
+   * @param {number} stringLength The length of the string to generate
+   * @returns {string} A random alphanumeric string
    * @example
-   * genRandomString(10)
-   * // returns 'aBcDeFgHiJ'
+   * genRandomString(10) // returns 'aBcDeFgHiJ'
    */
 
   genRegular(stringLength: number): string {
@@ -34,11 +34,10 @@ export class UtilsService {
 
   /**
    * Generate a random alphanumeric string with special characters
-   * @param stringLength The length of the string to generate
-   * @returns A random alphanumeric string with special characters
+   * @param {number} stringLength The length of the string to generate
+   * @returns {string} A random alphanumeric string with special characters
    * @example
-   * genSpecial(10)
-   * // returns 'aBcDeFgHiJ!@#$%'
+   * genSpecial(10) // returns 'aBcDeFgHiJ!@#$%'
    */
 
   genSpecial(stringLength: number): string {
@@ -54,12 +53,11 @@ export class UtilsService {
   }
 
   /**
-   * Generate a random alphanumeric string with only special characters
-   * @param stringLength The length of the string to generate
-   * @returns A random alphanumeric string with only special characters
+   * Generate a random string with only special characters
+   * @param {number} stringLength The length of the string to generate
+   * @returns {string} A random string with only special characters
    * @example
-   * genSpecialOnly(10)
-   * // returns '!@#$%_-(),'
+   * genSpecialOnly(10) // returns '!@#$%_-(),'
    */
 
   genSpecialOnly(stringLength: number): string {
@@ -74,13 +72,12 @@ export class UtilsService {
   }
 
   /**
-   * Generate a random number within defined range
-   * @param min The minimum number
-   * @param max The maximum number
-   * @returns A random number within the defined range
+   * Generate a random number within the defined range
+   * @param {number} min The minimum number
+   * @param {number} max The maximum number
+   * @returns {number} A random number within the defined range
    * @example
-   * getRandomInt(1, 10)
-   * // returns 5
+   * getRandomInt(1, 10) // returns 5
    */
 
   getRandomInt(min: number, max: number): number {
@@ -88,9 +85,9 @@ export class UtilsService {
   }
 
   /**
-   * Capitalizes the first letter of the given string.
-   * @param str The string to capitalize.
-   * @returns The string with the first letter capitalized.
+   * Capitalizes the first letter of a given string.
+   * @param {string} str The string to capitalize.
+   * @returns {string} The string with the first letter capitalized.
    */
 
   capitalizeFirstLetter(str: string): string {
@@ -100,31 +97,29 @@ export class UtilsService {
 
   /**
    * Generate a random string with random capitalization
-   * @param word
-   * @returns
+   * @param {string} word The word to randomly capitalize
+   * @returns {string} A random string with random capitalization
    * @example
-   * randomCaps('hello')
-   * // returns 'heLlo'
+   * randomCaps('hello') // returns 'heLlo'
    */
 
   randomCaps(word: string): string {
-    const position = this.getRandomInt(0, word.length);
+    const position: number = this.getRandomInt(0, word.length);
     return `${this.replaceAt(word, position, word.charAt(position).toUpperCase())}`;
   }
 
   /**
-   * Generate a random string with special characters
-   * @param word
-   * @returns
+   * Generate a string with special characters inserted at random positions
+   * @param {string} word The word to insert special characters into
+   * @returns {string} A random string with special characters inserted
    * @example
-   * insertSpecialChars('hello')
-   * // returns 'hel!lo'
+   * insertSpecialChars('hello') // returns 'hel!lo'
    */
 
   insertSpecialChars(word: string): string {
-    const specialchar = '!@#$%_-(),;:.*';
-    let index = this.getRandomInt(1, word.length);
-    let text = specialchar.charAt(
+    const specialchar: string = '!@#$%_-(),;:.*';
+    let index: number = this.getRandomInt(1, word.length);
+    let text: string = specialchar.charAt(
       Math.floor(Math.random() * specialchar.length),
     );
     return word.substring(0, index) + text + word.substring(index);
@@ -133,10 +128,10 @@ export class UtilsService {
   /**
    * Replace a character at a specific index in a string
    * Source: https://gist.github.com/efenacigiray/9367920
-   * @param originalString
-   * @param replacementIndex
-   * @param replacementString
-   * @returns
+   * @param {string} originalString
+   * @param {number} replacementIndex
+   * @param {string} replacementString
+   * @returns {string} The string with the character replaced
    */
 
   replaceAt(
@@ -148,12 +143,11 @@ export class UtilsService {
   }
 
   /**
-   * Generate a random UUID
+   * Generate a random UUIDv4 string
    * Source: https://stackoverflow.com/a/2117523
-   * @returns A random UUID
+   * @returns {string} A random UUIDv4 string
    * @example
-   * uuidv4()
-   * // returns 'a0a0a0a0-a0a0-a0a0-a0a0-a0a0a0a0a0a0'
+   * uuidv4() // returns 'bee5063a-4711-45eb-8a44-d84cc4925b8b'
    */
 
   uuidv4(): string {
@@ -167,11 +161,10 @@ export class UtilsService {
   /**
    * Validate a JSON object
    * Source: https://learnersbucket.com/examples/javascript/how-to-validate-json-in-javascript/
-   * @param obj The object to validate
-   * @returns A boolean indicating if the object is valid JSON
+   * @param {Object} obj The object to validate
+   * @returns {boolean} A boolean indicating if the object is valid JSON
    * @example
-   * validateJSON({ "name": "John", "age": 30, "city": "New York" })
-   * // returns true
+   * validateJSON({ "name": "John", "age": 30, "city": "New York" }) // returns true
    */
 
   validateJSON(obj: Object): boolean {
@@ -194,6 +187,8 @@ export class UtilsService {
    *
    * @param {string} url - The original URL with query parameters to encode.
    * @returns {string} The URL with encoded query parameters.
+   * @example
+   * encodeQueryParameters('www.foobar.com/?first=1&second=12&third=5') // returns 'www.foobar.com/?first=1&amp;second=12&amp;third=5'
    */
 
   encodeQueryParameters(url: string): string {
@@ -224,14 +219,29 @@ export class UtilsService {
 
   /**
    * Error handler for API calls
-   * @param error The error string
-   * @returns An object with status, message, and payload properties
+   * @param {any} error The error string or object
+   * @returns {string} An object with status, message, and payload properties
    * @example
-   * defaultErrorHandler('Error: Something went wrong')
-   * // returns { status: 'failure', message: 'Function: defaultErrorHandler - Error: Error: Something went wrong', payload: [] }
+   * defaultErrorHandlerString('Error: Something went wrong') // returns 'Error: Error: Something went wrong'
    */
 
-  defaultErrorHandler(err, httpStatusCode: number): ResponseObjectDefault {
+  defaultErrorHandlerString(err): string {
+    return err?.message ? err.message : err;
+  }
+
+  /**
+   * Error handler for API calls
+   * @param {any} error The error string or object
+   * @param {number} httpStatusCode The HTTP status code
+   * @returns {ResponseObjectDefault} An object with status, message, and payload properties
+   * @example
+   * defaultErrorHandler('Error: Something went wrong') // returns { status: 'failure', httpStatusCode: 400, message: 'Error: Error: Something went wrong', payload: [] }
+   */
+
+  defaultErrorHandlerHttp(
+    err,
+    httpStatusCode: number = 400,
+  ): ResponseObjectDefault {
     return {
       status: 'failure',
       httpStatus: httpStatusCode,
@@ -242,8 +252,8 @@ export class UtilsService {
 
   /**
    * Generate an authentication string for LogicMonitor API calls
-   * @param requestObject An object containing the method, epoch, requestData, resourcePath, accessId, and accessKey
-   * @returns An authentication string
+   * @param {RequestObjectLMApi} requestObject An object containing the method, epoch, requestData, resourcePath, accessId, and accessKey
+   * @returns {string} An authentication string
    * @example
    * generateAuthString({
    *  method: 'get',
@@ -252,8 +262,7 @@ export class UtilsService {
    * resourcePath: '/api/v1/endpoint',
    * accessId: '
    * accessKey:
-   * })
-   * // returns 'LMv1 accessId:signature:epoch'
+   * }) // returns 'LMv1 accessId:signature:epoch'
    */
 
   generateAuthString(requestObjectLMApi: RequestObjectLMApi): string {
@@ -274,17 +283,16 @@ export class UtilsService {
 
   /**
    * Make a generic API call to LogicMonitor
-   * @param requestObjectLMApi An object containing the method, requestData, queryParams, apiVersion, and url
-   * @returns An object with status, message, and payload properties
+   * @param {RequestObjectLMApi} requestObjectLMApi An object containing the method, requestData, queryParams, apiVersion, and url
+   * @returns {Promise<ResponseObjectDefault>} An object with status, message, and payload properties
    * @example
    * genericAPICall({
    * method: 'get',
    * requestData: { ... },
    * queryParams: 'company=<subdomain>,accessId=<from LM>,accessKey=<from LM>,searchString=<part of search string>',
-   * apiVersion: 3 is the default
+   * apiVersion: 3 // is the default
    * url: 'https://companynme.logicmonitor.com/santaba/rest/report/reports'
-   * })
-   * // returns { status: 'success', message: 'success', payload: [{ name: 'John', age: 30, city: 'New York' }] }
+   * }) // returns { status: 'success', httpStatus: 200, message: 'success', payload: [{ name: 'John', age: 30, city: 'New York' }] }
    */
 
   async genericAPICall(
@@ -313,7 +321,7 @@ export class UtilsService {
       const { generateAuthString } = this;
       let authString: string = generateAuthString(requestObjectLMApi);
       if (!authString.toLowerCase().includes('lmv1')) {
-        throw 'Error: Invalid authString';
+        throw new Error('Invalid authString');
       }
       let axiosParametersObj: AxiosRequestConfig = {
         method: requestObjectLMApi.method,
@@ -336,11 +344,11 @@ export class UtilsService {
       // Set HTTP status code for use in error handling
       returnObj.httpStatus = status;
       if (status > 299) {
-        throw `Error (${status}) - ${JSON.parse(data).errorMessage}`;
+        throw new Error(`(${status}) - ${JSON.parse(data).errorMessage}`);
       }
-      let rateLimitRemaining = headers['x-rate-limit-remaining'];
-      let rateLimitWindow = headers['x-rate-limit-window'] * 1000 + 1;
-      let whileVar = false;
+      let rateLimitRemaining: number = headers['x-rate-limit-remaining'];
+      let rateLimitWindow: number = headers['x-rate-limit-window'] * 1000 + 1;
+      let whileVar: boolean = false;
       if (rateLimitRemaining == 0) {
         whileVar = true;
         while (whileVar) {
@@ -365,7 +373,7 @@ export class UtilsService {
       }
       return returnObj;
     } catch (err) {
-      return this.defaultErrorHandler(err, returnObj.httpStatus);
+      return this.defaultErrorHandlerHttp(err, returnObj.httpStatus);
     }
   }
 }

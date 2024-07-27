@@ -148,7 +148,9 @@ export class BackupServiceDatasources {
     } catch (err) {
       response
         .status(returnObj.httpStatus)
-        .send(this.utilsService.defaultErrorHandler(err, returnObj.httpStatus));
+        .send(
+          this.utilsService.defaultErrorHandlerHttp(err, returnObj.httpStatus),
+        );
     }
   }
 }

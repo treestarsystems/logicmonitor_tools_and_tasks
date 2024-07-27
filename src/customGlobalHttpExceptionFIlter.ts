@@ -11,6 +11,7 @@ import {
  * @implements {ExceptionFilter}
  * @memberof module:customGlobalHttpExceptionFilter
  * @access public
+ * @public
  */
 
 @Catch(HttpException)

@@ -10,8 +10,8 @@ import {
 
 /**
  * This is a base class used to store request data for LogicMonitor API calls.
- * @accessId - The access ID for the LogicMonitor account.
- * @accessKey - The access key for the LogicMonitor account.
+ * @accessId The access ID for the LogicMonitor account.
+ * @accessKey The access key for the LogicMonitor account.
  */
 
 export class BaseRequestObjectLM {
@@ -37,10 +37,10 @@ export class BaseRequestObjectLM {
 /**
  * This class is used to repsond with data from the underlying API calls in a default format.
  * The data is stored in the following format:
- * @status - The status of the API call (success|failure).
- * @httpStatus - The HTTP status code of the API call.
- * @message - The message from the API call.
- * @payload - The payload from the API call.
+ * @status The status of the API call (success|failure).
+ * @httpStatus The HTTP status code of the API call.
+ * @message The message from the API call.
+ * @payload The payload from the API call.
  */
 
 export class ResponseObjectDefault {
@@ -79,16 +79,15 @@ export class ResponseObjectDefault {
 /**
  * This class is used to store the data that is needed to make a call to the LogicMonitor API. This is only accessible via the backend.
  * The data is stored in the following format:
- * @method - The method to use for the API call.
- * @accessId - The access ID for the LogicMonitor account.
- * @accessKey - The access key for the LogicMonitor account.
- * @epoch - The current epoch time.
- * @resourcePath - The path to the resource that the API call is being made to.
- * @queryParams - The query parameters for the API call.
- * @requestData - The data to send in the API call.
- * @url - The URL for the API call.
- * @apiVersion - The version of the API to use.
- *
+ * @method The method to use for the API call.
+ * @accessId The access ID for the LogicMonitor account.
+ * @accessKey The access key for the LogicMonitor account.
+ * @epoch The current epoch time.
+ * @resourcePath The path to the resource that the API call is being made to.
+ * @queryParams The query parameters for the API call.
+ * @requestData The data to send in the API call.
+ * @url The URL for the API call.
+ * @apiVersion The version of the API to use.
  */
 
 export class RequestObjectLMApi extends BaseRequestObjectLM {
@@ -156,10 +155,10 @@ export class RequestObjectLMApi extends BaseRequestObjectLM {
 
 /**
  * This class is used to store request data for LogicMonitor API calls.
- * @company - The company name for the LogicMonitor account.
- * @accessId - The access ID for the LogicMonitor account.
- * @accessKey - The access key for the LogicMonitor account.
- * @searchString - The search string to filter the datasources by group name.
+ * @company The company name for the LogicMonitor account.
+ * @accessId The access ID for the LogicMonitor account.
+ * @accessKey The access key for the LogicMonitor account.
+ * @searchString The search string to filter the datasources by group name.
  */
 
 export class ToolsBackupDatasourcesRequest extends BaseRequestObjectLM {
@@ -182,9 +181,9 @@ export class ToolsBackupDatasourcesRequest extends BaseRequestObjectLM {
 
 /**
  * Extra request properties to send in the API call (resourcePath, queryParams, requestData).
- * @resourcePath - The path to the resource that the underlying API call is being made to.
- * @queryParams - The query parameters for the API call. This is used to filter the data being returned in some cases.
- * @requestData - The data to send in the API call. This is used to create or update data in LogicMonitor.
+ * @resourcePath The path to the resource that the underlying API call is being made to.
+ * @queryParams The query parameters for the API call. This is used to filter the data being returned in some cases.
+ * @requestData The data to send in the API call. This is used to create or update data in LogicMonitor.
  */
 
 export class RequestObjectLMApiExtraRequestProperties {
@@ -220,10 +219,10 @@ export class RequestObjectLMApiExtraRequestProperties {
 
 /**
  * This class is used to store request data for LogicMonitor API calls.
- * @company - The company name for the LogicMonitor account.
- * @accessId - The access ID for the LogicMonitor account.
- * @accessKey - The access key for the LogicMonitor account.
- * @extraRequestProperties - The extra request properties to send in the API call (resourcePath, queryParams, requestData).
+ * @company The company name for the LogicMonitor account.
+ * @accessId The access ID for the LogicMonitor account.
+ * @accessKey The access key for the LogicMonitor account.
+ * @extraRequestProperties The extra request properties to send in the API call (resourcePath, queryParams, requestData).
  */
 
 export class ToolsBackupGeneralRequest extends BaseRequestObjectLM {
