@@ -33,6 +33,7 @@ async function bootstrap() {
       stopAtFirstError: true,
     }),
   );
+  // Enable versioning with URI type and default version 1.
   app
     .enableVersioning({
       type: VersioningType.URI,
@@ -47,6 +48,7 @@ async function bootstrap() {
     'API for LogicMonitor Tools and Tasks v1',
   );
   apiDocumentV1.SwaggerModuleSetup();
-  await app.listen(3000);
+  // Start app on port defined in .env file or 3000.
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
