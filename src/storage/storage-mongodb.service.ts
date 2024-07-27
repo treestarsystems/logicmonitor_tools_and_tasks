@@ -1,56 +1,39 @@
-import { Model } from 'mongoose';
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  BackupLMDataDatasource,
-  BackupLMDataGeneral,
-  BackupDocumentDatasource,
-  BackupDocumentGeneral,
-} from './schemas/storage-mongodb.schema';
 
 @Injectable()
 export class StorageServiceMongoDB {
-  constructor(
-    @InjectModel(BackupLMDataDatasource.name)
-    private readonly backupDatasourceModel: Model<BackupDocumentDatasource>,
-    @InjectModel(BackupLMDataGeneral.name)
-    private readonly backupGeneralModel: Model<BackupDocumentGeneral>,
-  ) {}
-
-  async upsert(
-    filter: any,
-    upsertBackupLMData: BackupLMDataDatasource | BackupLMDataGeneral,
-  ): Promise<BackupLMDataDatasource | BackupLMDataGeneral> {
-    if (upsertBackupLMData.type !== 'datasource') {
-      const upsertBackup = await this.backupGeneralModel.updateOne(
-        filter,
-        { $set: upsertBackupLMData },
-        { upsert: true },
-      );
-      if (upsertBackup.upsertedId) {
-        return this.backupGeneralModel.findById(upsertBackup.upsertedId).exec();
-      } else {
-        return this.backupGeneralModel.findOne(filter).exec();
-      }
-    }
-    if (upsertBackupLMData.type === 'datasource') {
-      const upsertBackup = await this.backupDatasourceModel.updateOne(
-        filter,
-        { $set: upsertBackupLMData },
-        { upsert: true },
-      );
-      if (upsertBackup.upsertedId) {
-        return this.backupDatasourceModel
-          .findById(upsertBackup.upsertedId)
-          .exec();
-      } else {
-        return this.backupDatasourceModel.findOne(filter).exec();
-      }
+  constructor() {}
+  // The types should be defined when the method is called.
+  /**
+   * Upsert the backup data to MongoDB.
+   * The types should be defined when the method is called.
+   * @param mongooseModel  The Mongoose model object to use for the upsert.
+   * @param filter  The filter object to use for the upsert.
+   * @param upsertBackupLMData  The backup data to upsert.
+   * @returns
+   */
+  async upsert(mongooseModel, filter, upsertBackupLMData): Promise<any> {
+    const upsertBackup = await mongooseModel.updateOne(
+      filter,
+      { $set: upsertBackupLMData },
+      { upsert: true },
+    );
+    if (upsertBackup.upsertedId) {
+      return mongooseModel.findById(upsertBackup.upsertedId).exec();
+    } else {
+      return mongooseModel.findOne(filter).exec();
     }
   }
 
   // Define types and return types for the find method
-  async find(filter: any): Promise<any> {
-    return this.backupDatasourceModel.find(filter).exec();
+  /**
+   * Find the backup data from MongoDB.
+   * Define types and return types for the find method.
+   * @param mongooseModel  The Mongoose model object to use for the find.
+   * @param filter  The filter object to use for the find.
+   * @returns
+   */
+  async find(mongooseModel, filter): Promise<any> {
+    return mongooseModel.find(filter).exec();
   }
 }

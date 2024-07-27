@@ -77,6 +77,16 @@ export class UtilsService {
   }
 
   /**
+   * Capitalizes the first letter of the given string.
+   * @param str The string to capitalize.
+   * @returns The string with the first letter capitalized.
+   */
+  capitalizeFirstLetter(str: string): string {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  /**
    * Generate a random string with random capitalization
    * @param word
    * @returns

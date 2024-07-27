@@ -1,5 +1,7 @@
 import * as fs from 'fs';
+import { Model } from 'mongoose';
 import { Injectable, Logger } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import {
   ResponseObjectDefault,
   RequestObjectLMApi,
@@ -8,14 +10,22 @@ import {
 import { UtilsService } from '../utils/utils.service';
 import { StorageServiceMongoDB } from '../storage/storage-mongodb.service';
 import { StorageServiceZip } from '../storage/storage-zip.service';
-import { BackupLMDataGeneral } from '../storage/schemas/storage-mongodb.schema';
-
+import {
+  BackupLMDataDatasource,
+  BackupLMDataGeneral,
+  BackupDocumentDatasource,
+  BackupDocumentGeneral,
+} from '../storage/schemas/storage-mongodb.schema';
 @Injectable()
 export class BackupServiceGeneral {
   constructor(
     private readonly utilsService: UtilsService,
     private readonly storageServiceMongoDb: StorageServiceMongoDB,
     private readonly storageServiceZip: StorageServiceZip,
+    // @InjectModel(BackupLMDataDatasource.name)
+    // private readonly backupDatasourceModel: Model<BackupDocumentDatasource>,
+    @InjectModel(BackupLMDataGeneral.name)
+    private readonly backupGeneralModel: Model<BackupDocumentGeneral>,
   ) {}
 
   /**
@@ -48,7 +58,15 @@ export class BackupServiceGeneral {
     if (backupType.endsWith('s')) {
       backupType = backupType.slice(0, -1);
     }
-    let fileExtension: string;
+    // Confirm the backup type matches the resource path.
+    const routeMatchString = backupType.slice(0, 4);
+    if (!extraRequestProperties?.resourcePath.includes(routeMatchString)) {
+      returnObj.status = 'failure';
+      returnObj.httpStatus = 400;
+      returnObj.message = `Backup type (${backupType}) does not match the resource path (${extraRequestProperties?.resourcePath})`;
+      response.status(returnObj.httpStatus).send(returnObj);
+      return;
+    }
     try {
       // Create an object to store the progress of the backup jobs.
       const progressTracking = {
@@ -82,12 +100,7 @@ export class BackupServiceGeneral {
       const payloadItems = JSON.parse(resultList.payload).items;
 
       for (const pli of payloadItems) {
-        if (backupType != 'datasource') {
-          fileExtension = 'json';
-        } else {
-          fileExtension = 'xml';
-        }
-        let backupNameParsed = `${backupType}_${pli.name.replace(/\W/g, '_')}.${fileExtension}`;
+        let backupNameParsed = `${backupType}_${pli.name.replace(/\W/g, '_')}`;
         const dataJSON: object = pli;
         const storageObj: BackupLMDataGeneral = {
           type: backupType,
@@ -98,6 +111,7 @@ export class BackupServiceGeneral {
         };
         // MongoDB storage call.
         await this.storageServiceMongoDb.upsert(
+          this.backupGeneralModel,
           { nameFormatted: backupNameParsed },
           storageObj,
         );
@@ -114,7 +128,7 @@ export class BackupServiceGeneral {
         returnObj.httpStatus = 404;
         returnObj.message = `No ${backupType} found matching the request.`;
       } else {
-        returnObj.message = `$${backupType} backup completed: ${progressTracking.success.length} successful, ${progressTracking.failure.length} failed.`;
+        returnObj.message = `${this.utilsService.capitalizeFirstLetter(backupType)} backup completed: ${progressTracking.success.length} successful, ${progressTracking.failure.length} failed.`;
       }
       response.status(returnObj.httpStatus).send(returnObj);
     } catch (err) {
@@ -140,10 +154,12 @@ export class BackupServiceGeneral {
     };
     const outputFileBasePath = `./tmp`;
     try {
-      const datasourcesList = await this.storageServiceMongoDb.find({
-        // Case insensitive search.
-        group: { $regex: groupName, $options: 'i' },
-      });
+      const datasourcesList = await this.storageServiceMongoDb.find(
+        this.backupGeneralModel,
+        {
+          group: { $regex: groupName, $options: 'i' },
+        },
+      );
       if (datasourcesList.length == 0) {
         returnObj.status = 'failure';
         returnObj.httpStatus = 404;

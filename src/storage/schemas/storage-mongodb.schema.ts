@@ -8,7 +8,7 @@ export type BackupDocumentGeneral = HydratedDocument<BackupLMDataGeneral>;
 /**
  * This class is used to store the data from LogicMonitor API calls to a backend storage point like MongoDB.
  * The data is stored in 2 different formats, XMLl and JSON.:
- * @type - Type of data being backed up (dataSource|report|alertRule).
+ * @type - Type of data being backed up (datasource|report|alertrule).
  * @name - The original datasource name.
  * @formattedName - The formatted datasource name.
  * @company - The company/subdomain name.
@@ -47,7 +47,7 @@ export class BackupLMDataGeneral {
 /**
  * This class is used to store the data from LogicMonitor API calls to a backend storage point like MongoDB.
  * The data is stored in 2 different formats, XMLl and JSON.:
- * @type - Type of data being backed up (dataSource|report|alertRule).
+ * @type - Type of data being backed up (datasource|report|alertrule).
  * @name - The original datasource name.
  * @formattedName - The formatted datasource name.
  * @company - The company/subdomain name.

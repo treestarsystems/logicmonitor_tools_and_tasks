@@ -1,5 +1,7 @@
 import * as fs from 'fs';
+import { Model } from 'mongoose';
 import { Injectable, Logger } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import {
   ResponseObjectDefault,
   RequestObjectLMApi,
@@ -7,7 +9,10 @@ import {
 import { UtilsService } from '../utils/utils.service';
 import { StorageServiceMongoDB } from '../storage/storage-mongodb.service';
 import { StorageServiceZip } from '../storage/storage-zip.service';
-import { BackupLMDataDatasource } from '../storage/schemas/storage-mongodb.schema';
+import {
+  BackupLMDataDatasource,
+  BackupDocumentDatasource,
+} from '../storage/schemas/storage-mongodb.schema';
 
 @Injectable()
 export class BackupServiceDatasources {
@@ -15,6 +20,8 @@ export class BackupServiceDatasources {
     private readonly utilsService: UtilsService,
     private readonly storageServiceMongoDb: StorageServiceMongoDB,
     private readonly storageServiceZip: StorageServiceZip,
+    @InjectModel(BackupLMDataDatasource.name)
+    private readonly backupDatasourceModel: Model<BackupDocumentDatasource>,
   ) {}
 
   /**
@@ -101,6 +108,7 @@ export class BackupServiceDatasources {
             };
             // MongoDB storage call.
             await this.storageServiceMongoDb.upsert(
+              this.backupDatasourceModel,
               { nameFormatted: datasourceNameParsed },
               storageObj,
             );
@@ -152,10 +160,14 @@ export class BackupServiceDatasources {
     };
     const outputFileBasePath = `./tmp`;
     try {
-      const datasourcesList = await this.storageServiceMongoDb.find({
-        // Case insensitive search.
-        group: { $regex: groupName, $options: 'i' },
-      });
+      // Case insensitive search.
+      const datasourcesList = await this.storageServiceMongoDb.find(
+        this.backupDatasourceModel,
+        {
+          // Case insensitive search.
+          group: { $regex: groupName, $options: 'i' },
+        },
+      );
       if (datasourcesList.length == 0) {
         returnObj.status = 'failure';
         returnObj.httpStatus = 404;
