@@ -12,6 +12,17 @@ import {
   BackupDocumentDatasource,
 } from '../storage/schemas/storage-mongodb.schema';
 
+/**
+ * BackupServiceDatasources class to handle all datasource related API calls.
+ * @class BackupServiceDatasources
+ * @memberof module:tools
+ * @injectable
+ * @api
+ * @export
+ * @implements {BackupServiceDatasources}
+ * @injectable
+ */
+
 @Injectable()
 export class BackupServiceDatasources {
   constructor(

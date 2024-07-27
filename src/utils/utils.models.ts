@@ -13,6 +13,7 @@ import {
  * @accessId - The access ID for the LogicMonitor account.
  * @accessKey - The access key for the LogicMonitor account.
  */
+
 export class BaseRequestObjectLM {
   @IsString()
   @IsNotEmpty()
@@ -41,6 +42,7 @@ export class BaseRequestObjectLM {
  * @message - The message from the API call.
  * @payload - The payload from the API call.
  */
+
 export class ResponseObjectDefault {
   @IsString()
   @ApiProperty({
@@ -88,6 +90,7 @@ export class ResponseObjectDefault {
  * @apiVersion - The version of the API to use.
  *
  */
+
 export class RequestObjectLMApi extends BaseRequestObjectLM {
   @IsString()
   @IsNotEmpty()
@@ -158,6 +161,7 @@ export class RequestObjectLMApi extends BaseRequestObjectLM {
  * @accessKey - The access key for the LogicMonitor account.
  * @searchString - The search string to filter the datasources by group name.
  */
+
 export class ToolsBackupDatasourcesRequest extends BaseRequestObjectLM {
   @IsString()
   @IsNotEmpty()
@@ -182,6 +186,7 @@ export class ToolsBackupDatasourcesRequest extends BaseRequestObjectLM {
  * @queryParams - The query parameters for the API call. This is used to filter the data being returned in some cases.
  * @requestData - The data to send in the API call. This is used to create or update data in LogicMonitor.
  */
+
 export class RequestObjectLMApiExtraRequestProperties {
   @IsString()
   @IsNotEmpty()
@@ -220,6 +225,7 @@ export class RequestObjectLMApiExtraRequestProperties {
  * @accessKey - The access key for the LogicMonitor account.
  * @extraRequestProperties - The extra request properties to send in the API call (resourcePath, queryParams, requestData).
  */
+
 export class ToolsBackupGeneralRequest extends BaseRequestObjectLM {
   @IsString()
   @IsNotEmpty()

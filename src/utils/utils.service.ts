@@ -2,6 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { ResponseObjectDefault, RequestObjectLMApi } from './utils.models';
 import * as crypto from 'crypto';
 import { Axios, AxiosRequestConfig, AxiosResponse } from 'axios';
+
+/**
+ * UtilsService class to provide utility functions.
+ * @class UtilsService
+ * @memberof module:utils
+ * @access public
+ */
 @Injectable()
 export class UtilsService {
   /**
@@ -12,6 +19,7 @@ export class UtilsService {
    * genRandomString(10)
    * // returns 'aBcDeFgHiJ'
    */
+
   genRegular(stringLength: number): string {
     const regularchar: string =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -32,6 +40,7 @@ export class UtilsService {
    * genSpecial(10)
    * // returns 'aBcDeFgHiJ!@#$%'
    */
+
   genSpecial(stringLength: number): string {
     const specialchar: string =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%_-(),;:.*';
@@ -52,6 +61,7 @@ export class UtilsService {
    * genSpecialOnly(10)
    * // returns '!@#$%_-(),'
    */
+
   genSpecialOnly(stringLength: number): string {
     const specialchar: string = '!@#$%_-(),;:.*';
     let text: string = '';
@@ -72,6 +82,7 @@ export class UtilsService {
    * getRandomInt(1, 10)
    * // returns 5
    */
+
   getRandomInt(min: number, max: number): number {
     return Math.round(Math.random() * (max - min) + min);
   }
@@ -81,6 +92,7 @@ export class UtilsService {
    * @param str The string to capitalize.
    * @returns The string with the first letter capitalized.
    */
+
   capitalizeFirstLetter(str: string): string {
     if (!str) return str;
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -94,6 +106,7 @@ export class UtilsService {
    * randomCaps('hello')
    * // returns 'heLlo'
    */
+
   randomCaps(word: string): string {
     const position = this.getRandomInt(0, word.length);
     return `${this.replaceAt(word, position, word.charAt(position).toUpperCase())}`;
@@ -107,6 +120,7 @@ export class UtilsService {
    * insertSpecialChars('hello')
    * // returns 'hel!lo'
    */
+
   insertSpecialChars(word: string): string {
     const specialchar = '!@#$%_-(),;:.*';
     let index = this.getRandomInt(1, word.length);
@@ -115,6 +129,7 @@ export class UtilsService {
     );
     return word.substring(0, index) + text + word.substring(index);
   }
+
   /**
    * Replace a character at a specific index in a string
    * Source: https://gist.github.com/efenacigiray/9367920
@@ -123,6 +138,7 @@ export class UtilsService {
    * @param replacementString
    * @returns
    */
+
   replaceAt(
     originalString: string,
     replacementIndex: number,
@@ -139,6 +155,7 @@ export class UtilsService {
    * uuidv4()
    * // returns 'a0a0a0a0-a0a0-a0a0-a0a0-a0a0a0a0a0a0'
    */
+
   uuidv4(): string {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
       let r = (Math.random() * 16) | 0,
@@ -156,6 +173,7 @@ export class UtilsService {
    * validateJSON({ "name": "John", "age": 30, "city": "New York" })
    * // returns true
    */
+
   validateJSON(obj: Object): boolean {
     let o = JSON.stringify(obj);
     try {
@@ -165,6 +183,7 @@ export class UtilsService {
     }
     return true;
   }
+
   /**
    * Encodes the query parameters of a given URL.
    *
@@ -176,6 +195,7 @@ export class UtilsService {
    * @param {string} url - The original URL with query parameters to encode.
    * @returns {string} The URL with encoded query parameters.
    */
+
   encodeQueryParameters(url: string): string {
     // Split the URL into the base URL and query parameters
     const [baseUrl, queryParamsString] = url.split('?');
@@ -210,6 +230,7 @@ export class UtilsService {
    * defaultErrorHandler('Error: Something went wrong')
    * // returns { status: 'failure', message: 'Function: defaultErrorHandler - Error: Error: Something went wrong', payload: [] }
    */
+
   defaultErrorHandler(err, httpStatusCode: number): ResponseObjectDefault {
     return {
       status: 'failure',
@@ -234,6 +255,7 @@ export class UtilsService {
    * })
    * // returns 'LMv1 accessId:signature:epoch'
    */
+
   generateAuthString(requestObjectLMApi: RequestObjectLMApi): string {
     try {
       const { method, epoch, resourcePath, accessId, accessKey, requestData } =
@@ -264,6 +286,7 @@ export class UtilsService {
    * })
    * // returns { status: 'success', message: 'success', payload: [{ name: 'John', age: 30, city: 'New York' }] }
    */
+
   async genericAPICall(
     requestObjectLMApi: RequestObjectLMApi,
   ): Promise<ResponseObjectDefault> {

@@ -2,8 +2,25 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as archiver from 'archiver';
 import { createWriteStream } from 'fs';
 
+/**
+ * StorageServiceZip class to handle all ZIP related operations.
+ * @class StorageServiceZip
+ * @memberof module:storage
+ * @injectable
+ * @api
+ * @export
+ * @implements {StorageServiceZip}
+ * @injectable
+ */
+
 @Injectable()
 export class StorageServiceZip {
+  /**
+   * Create a ZIP file with text files.
+   * @param fileContents  The file contents to write to the ZIP file.
+   * @param outputFilePath  The output file path for the ZIP file.
+   * @returns {Promise<void>} Promise object.
+   */
   async createZipWithTextFiles(
     fileContents: { [fileName: string]: string },
     outputFilePath: string,

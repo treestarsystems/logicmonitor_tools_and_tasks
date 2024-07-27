@@ -9,6 +9,14 @@ import {
 } from '@nestjs/common';
 import { ResponseObjectDefault } from './utils/utils.models';
 
+/**
+ * Bootstrap the application.
+ * @returns {Promise<void>} Promise object.
+ * @async
+ * @function bootstrap
+ * @memberof module:main
+ * @access private
+ */
 async function bootstrap() {
   const apiRoutePrefix = 'api';
   const app = await NestFactory.create(AppModule);

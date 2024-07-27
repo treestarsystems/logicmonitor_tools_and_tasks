@@ -2,12 +2,12 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { IsString, IsNotEmpty } from 'class-validator';
 
+// Define the types for the backup data
 export type BackupDocumentDatasource = HydratedDocument<BackupLMDataDatasource>;
 export type BackupDocumentGeneral = HydratedDocument<BackupLMDataGeneral>;
 
 /**
  * This class is used to store the data from LogicMonitor API calls to a backend storage point like MongoDB.
- * The data is stored in 2 different formats, XMLl and JSON.:
  * @type - Type of data being backed up (datasource|report|alertrule).
  * @name - The original datasource name.
  * @formattedName - The formatted datasource name.
@@ -46,7 +46,7 @@ export class BackupLMDataGeneral {
 
 /**
  * This class is used to store the data from LogicMonitor API calls to a backend storage point like MongoDB.
- * The data is stored in 2 different formats, XMLl and JSON.:
+ * The data is stored in 2 different formats, XML and JSON.:
  * @type - Type of data being backed up (datasource|report|alertrule).
  * @name - The original datasource name.
  * @formattedName - The formatted datasource name.
@@ -71,6 +71,7 @@ export class BackupLMDataDatasource extends BackupLMDataGeneral {
   readonly dataXML: string;
 }
 
+// Create the schemas for the backup data
 export const BackupSchemaDatasource = SchemaFactory.createForClass(
   BackupLMDataDatasource,
 );

@@ -37,6 +37,7 @@ export class BackupServiceGeneral {
    * @param extraRequestProperties  The extra request properties to send in the API call (resourcePath, queryParams, requestData).
    * @param response  The response object to send the response back to the client.
    */
+
   async backupGeneralGet(
     company: string,
     accessId: string,
@@ -140,7 +141,17 @@ export class BackupServiceGeneral {
 
   /**
    * Retrieve datasources with a group name that matches the search string from MongoDB.
+   * @param company  The company name for the LogicMonitor account.
    * @param response  The response object to send the response back to the client.
+   * @returns {Promise<void>} Promise object.
+   * @function retrieveBackupsAll
+   * @memberof module:tools
+   * @access public
+   * @api
+   * @endpoint tools/backup
+   * @method GET
+   * @example
+   * curl -X GET "http://localhost:3000/tools/backup?company=companyName"
    */
 
   async retrieveBackupsAll(company: string, response: any): Promise<void> {

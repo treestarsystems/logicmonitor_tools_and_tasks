@@ -1,9 +1,18 @@
 import { Injectable, Logger } from '@nestjs/common';
 
+/**
+ * StorageServiceMongoDB class to handle all MongoDB related operations.
+ * @class StorageServiceMongoDB
+ * @memberof module:storage
+ * @implements {StorageServiceMongoDB}
+ * @api
+ * @export
+ * @injectable
+ */
 @Injectable()
 export class StorageServiceMongoDB {
   constructor() {}
-  // The types should be defined when the method is called.
+
   /**
    * Upsert the backup data to MongoDB.
    * The types should be defined when the method is called.
@@ -12,6 +21,7 @@ export class StorageServiceMongoDB {
    * @param upsertBackupLMData  The backup data to upsert.
    * @returns
    */
+
   async upsert(mongooseModel, filter, upsertBackupLMData): Promise<any> {
     const upsertBackup = await mongooseModel.updateOne(
       filter,
@@ -25,14 +35,14 @@ export class StorageServiceMongoDB {
     }
   }
 
-  // Define types and return types for the find method
+  // TODO: Define types and return types for the find method
   /**
    * Find the backup data from MongoDB.
-   * Define types and return types for the find method.
    * @param mongooseModel  The Mongoose model object to use for the find.
    * @param filter  The filter object to use for the find.
    * @returns
    */
+
   async find(mongooseModel, filter = {}): Promise<any> {
     return mongooseModel.find(filter).exec();
   }
