@@ -33,7 +33,8 @@ export class ToolsController {
 
   @Post('backup/datasources')
   @ApiOperation({
-    summary: 'Backup datasources where the group name contains the group name.',
+    summary:
+      'Backup datasources where the group name contains the groupName provided.',
   })
   @ApiResponse({ type: ResponseObjectDefault })
   @ApiTags('Tools: Backup')

@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerDocumentVersioned } from './swagger';
+import { HttpExceptionFilter } from './customHttpExceptionFilter';
 import {
   VersioningType,
   ValidationPipe,
@@ -11,6 +12,8 @@ import { ResponseObjectDefault } from './utils/utils.models';
 async function bootstrap() {
   const apiRoutePrefix = 'api';
   const app = await NestFactory.create(AppModule);
+  // Custom exception filter to return a custom error response object.
+  app.useGlobalFilters(new HttpExceptionFilter());
   // Custom validation pipe to return a custom error response object.
   app.useGlobalPipes(
     new ValidationPipe({
