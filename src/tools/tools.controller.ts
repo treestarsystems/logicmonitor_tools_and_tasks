@@ -17,27 +17,23 @@ export class ToolsController {
     private readonly backupServiceGeneral: BackupServiceGeneral,
   ) {}
 
-  @Get('backup/datasources')
+  @Get('backup')
   @ApiOperation({
     summary:
-      'Retrieve all datasources where the group name contains the searchString as a .zip containing XML and JSON files.',
+      'Retrieve all datasource, alert rule, and report backups as a .zip file containing XML and JSON files.',
   })
   @ApiResponse({ type: ResponseObjectDefault })
   @ApiTags('Tools: Backup')
-  async retrieveDatasources(
-    @Query('groupName') groupName: string,
+  async retrieveBackupsAll(
+    @Query('company') company: string,
     @Res() response: Response,
   ): Promise<void> {
-    await this.backupServiceDatasources.retrieveDatasources(
-      groupName,
-      response,
-    );
+    await this.backupServiceGeneral.retrieveBackupsAll(company, response);
   }
 
-  @Post('backup/datasources/bygroupname')
+  @Post('backup/datasources')
   @ApiOperation({
-    summary:
-      'Backup datasources where the group name contains the searchString',
+    summary: 'Backup datasources where the group name contains the group name.',
   })
   @ApiResponse({ type: ResponseObjectDefault })
   @ApiTags('Tools: Backup')
@@ -49,7 +45,7 @@ export class ToolsController {
       body.company,
       body.accessId,
       body.accessKey,
-      body.searchString,
+      body.groupName,
       response,
     );
   }

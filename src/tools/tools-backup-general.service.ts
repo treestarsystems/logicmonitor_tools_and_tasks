@@ -22,8 +22,8 @@ export class BackupServiceGeneral {
     private readonly utilsService: UtilsService,
     private readonly storageServiceMongoDb: StorageServiceMongoDB,
     private readonly storageServiceZip: StorageServiceZip,
-    // @InjectModel(BackupLMDataDatasource.name)
-    // private readonly backupDatasourceModel: Model<BackupDocumentDatasource>,
+    @InjectModel(BackupLMDataDatasource.name)
+    private readonly backupDatasourceModel: Model<BackupDocumentDatasource>,
     @InjectModel(BackupLMDataGeneral.name)
     private readonly backupGeneralModel: Model<BackupDocumentGeneral>,
   ) {}
@@ -140,11 +140,10 @@ export class BackupServiceGeneral {
 
   /**
    * Retrieve datasources with a group name that matches the search string from MongoDB.
-   * @param groupName  The group name to filter the datasources.
    * @param response  The response object to send the response back to the client.
    */
 
-  async retrieveDatasources(groupName: string, response: any): Promise<void> {
+  async retrieveBackupsAll(company: string, response: any): Promise<void> {
     // This method will only return JSON object when there is a server side error.
     let returnObj = {
       status: 'success',
@@ -153,34 +152,40 @@ export class BackupServiceGeneral {
       payload: [],
     };
     const outputFileBasePath = `./tmp`;
+    const backupsListAll = [];
     try {
-      const datasourcesList = await this.storageServiceMongoDb.find(
+      // Find all backups in the MongoDB database.
+      const backupsListGeneral = await this.storageServiceMongoDb.find(
         this.backupGeneralModel,
-        {
-          group: { $regex: groupName, $options: 'i' },
-        },
+        { company: company, type: { $ne: 'datasource' } },
       );
-      if (datasourcesList.length == 0) {
+      const backupsListDatasources = await this.storageServiceMongoDb.find(
+        this.backupDatasourceModel,
+        { company: company, type: 'datasource' },
+      );
+      // Combine the two arrays into one.
+      backupsListAll.push(...backupsListDatasources, ...backupsListGeneral);
+      if (backupsListAll.length == 0) {
         returnObj.status = 'failure';
         returnObj.httpStatus = 404;
-        returnObj.message = `No datasources found containing the specified group name: ${groupName}.`;
-        throw `No datasources found containing the specified group name: ${groupName}.`;
+        throw 'No datasource, alert rule, or report backups found matching the comopany name. Please run a backup first.';
       } else {
-        returnObj.message = `Datasources found: ${datasourcesList.length}`;
+        returnObj.message = `Backups found: ${backupsListAll.length}`;
         let fileContents = {};
-        for (const dbi of datasourcesList) {
+        // Loop through the backups and add them to the fileContents object.
+        for (const dbi of backupsListAll) {
+          const fileName = `${company}_${dbi.nameFormatted}`;
+          Logger.log(dbi.dataXML);
           if (dbi.dataXML) {
-            fileContents[`${dbi.nameFormatted}.xml`] = dbi.dataXML;
-            returnObj.payload.push(`File added: ${dbi.nameFormatted}.xml`);
+            fileContents[`${fileName}.xml`] = dbi.dataXML;
+            returnObj.payload.push(`File added: ${fileName}.xml`);
           }
           if (dbi.dataJSON) {
-            fileContents[`${dbi.nameFormatted}.json`] = JSON.stringify(
-              dbi.dataJSON,
-            );
-            returnObj.payload.push(`File added: ${dbi.nameFormatted}.json`);
+            fileContents[`${fileName}.json`] = JSON.stringify(dbi.dataJSON);
+            returnObj.payload.push(`File added: ${fileName}.json`);
           }
         }
-        const outputFileName = `datasources_${groupName}.zip`;
+        const outputFileName = `${company}_backups.zip`;
         const outputFilePath = `${outputFileBasePath}/${outputFileName}`;
         // Create the output directory if it doesn't exist.
         fs.mkdir(outputFileBasePath, { recursive: true }, (err) => {
@@ -190,20 +195,18 @@ export class BackupServiceGeneral {
           fileContents,
           outputFilePath,
         );
-        returnObj.message = `Datasources found: ${datasourcesList.length}. ZIP file created successfully with ${returnObj.payload.length} files.`;
+        returnObj.message = `Backups found: ${backupsListAll.length}. ZIP file created successfully with ${returnObj.payload.length} files.`;
         response.download(outputFilePath, outputFileName, (err) => {
           if (err) {
             console.error('Error downloading the file:', err);
             returnObj.status = 'failure';
             returnObj.httpStatus = 500;
-            returnObj.message = `Error downloading the file: ${err}`;
-            response.status(returnObj.httpStatus).send(returnObj);
+            throw `Error downloading the file: ${err}`;
           }
         });
       }
     } catch (err) {
       returnObj.status = 'failure';
-      returnObj.httpStatus = 500;
       response
         .status(returnObj.httpStatus)
         .send(this.utilsService.defaultErrorHandler(err, returnObj.httpStatus));

@@ -173,7 +173,7 @@ export class ToolsBackupDatasourcesRequest extends BaseRequestObjectLM {
     description: 'The search string to filter the datasources by group name.',
     type: 'string',
   })
-  searchString: string;
+  groupName: string;
 }
 
 /**

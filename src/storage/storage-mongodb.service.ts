@@ -33,7 +33,7 @@ export class StorageServiceMongoDB {
    * @param filter  The filter object to use for the find.
    * @returns
    */
-  async find(mongooseModel, filter): Promise<any> {
+  async find(mongooseModel, filter = {}): Promise<any> {
     return mongooseModel.find(filter).exec();
   }
 }
