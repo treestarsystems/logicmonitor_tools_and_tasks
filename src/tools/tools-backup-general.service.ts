@@ -16,6 +16,16 @@ import {
   BackupDocumentDatasource,
   BackupDocumentGeneral,
 } from '../storage/schemas/storage-mongodb.schema';
+
+/**
+ * BackupServiceGeneral class to handle all general backup related API calls.
+ * @class BackupServiceGeneral
+ * @memberof module:tools
+ * @implements {BackupServiceGeneral}
+ * @injectable
+ * @api
+ */
+
 @Injectable()
 export class BackupServiceGeneral {
   constructor(
@@ -191,7 +201,6 @@ export class BackupServiceGeneral {
       // Combine the two arrays into one.
       backupsListAll.push(...backupsListDatasources, ...backupsListGeneral);
       if (backupsListAll.length == 0) {
-        returnObj.status = 'failure';
         returnObj.httpStatus = 404;
         throw new Error(
           'No datasource, alert rule, or report backups found matching the comopany name. Please run a backup first.',
@@ -225,10 +234,9 @@ export class BackupServiceGeneral {
         returnObj.message = `Backups found: ${backupsListAll.length}. ZIP file created successfully with ${returnObj.payload.length} files.`;
         response.download(outputFilePath, outputFileName, (err) => {
           if (err) {
+            returnObj.httpStatus = 500;
             const errMsg = this.utilsService.defaultErrorHandlerString(err);
             console.error(`Error downloading the file - ${errMsg}`);
-            returnObj.status = 'failure';
-            returnObj.httpStatus = 500;
             throw new Error(`Creating download file - ${errMsg}`);
           }
         });

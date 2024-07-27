@@ -16,11 +16,9 @@ import {
  * BackupServiceDatasources class to handle all datasource related API calls.
  * @class BackupServiceDatasources
  * @memberof module:tools
- * @injectable
- * @api
- * @export
  * @implements {BackupServiceDatasources}
  * @injectable
+ * @api
  */
 
 @Injectable()
@@ -35,11 +33,11 @@ export class BackupServiceDatasources {
   /**
    * Backup datasources with a group name that matches the search string to MongoDB.
    * Documentation: https://www.logicmonitor.com/support/rest-api-developers-guide/v1/datasources/get-datasources
-   * @param company  The company name for the LogicMonitor account.
-   * @param accessId  The access ID for the LogicMonitor account.
-   * @param accessKey  The access key for the LogicMonitor account.
-   * @param searchString  The search string to filter the datasources.
-   * @param response  The response object to send the response back to the client.
+   * @param {string} company  The company name for the LogicMonitor account.
+   * @param {string} accessId  The access ID for the LogicMonitor account.
+   * @param {string} accessKey  The access key for the LogicMonitor account.
+   * @param {string} searchString  The search string to filter the datasources.
+   * @param {Response} response  The response object to send the response back to the client.
    */
   async backupDatasources(
     company: string,
@@ -77,11 +75,14 @@ export class BackupServiceDatasources {
       const datasourcesList: ResponseObjectDefault =
         await this.utilsService.genericAPICall(datasourcesGetObj);
       returnObj.httpStatus = datasourcesList.httpStatus;
-      if (datasourcesList.status == 'failure') throw datasourcesList.message;
+      if (datasourcesList.status == 'failure')
+        throw new Error(
+          this.utilsService.defaultErrorHandlerString(datasourcesList.message),
+        );
       // Lets loop through the response and extract the items that match our filter into a new array.
       const payloadItems = JSON.parse(datasourcesList.payload).items;
       for (const dle of payloadItems) {
-        let datasourceNameParsed = `datasource_${dle.name.replace(/\W/g, '_')}`;
+        let datasourceNameParsed: string = `datasource_${dle.name.replace(/\W/g, '_')}`;
         try {
           const datasourcesGetXMLObj: RequestObjectLMApi = {
             method: 'GET',
@@ -96,11 +97,15 @@ export class BackupServiceDatasources {
             requestData: {},
             apiVersion: 3,
           };
-          const datasourceXMLExport =
+          const datasourceXMLExport: ResponseObjectDefault =
             await this.utilsService.genericAPICall(datasourcesGetXMLObj);
           returnObj.httpStatus = datasourceXMLExport.httpStatus;
           if (datasourceXMLExport.status == 'failure')
-            throw new Error(datasourceXMLExport.message);
+            throw new Error(
+              this.utilsService.defaultErrorHandlerString(
+                datasourceXMLExport.message,
+              ),
+            );
           if (typeof datasourceXMLExport.payload[0] === 'string') {
             // Store the XML string and JSON object to a file or in a database.
             const dataXML: string = datasourceXMLExport.payload[0];
@@ -115,12 +120,24 @@ export class BackupServiceDatasources {
               dataJSON: dataJSON,
             };
             // MongoDB storage call.
-            await this.storageServiceMongoDb.upsert(
-              this.backupDatasourceModel,
-              { nameFormatted: datasourceNameParsed },
-              storageObj,
-            );
-            progressTracking.success.push(`Success: ${datasourceNameParsed}`);
+            this.storageServiceMongoDb
+              .upsert(
+                this.backupDatasourceModel,
+                { nameFormatted: datasourceNameParsed },
+                storageObj,
+              )
+              .then(() => {
+                progressTracking.success.push(
+                  `Success: ${datasourceNameParsed}`,
+                );
+              })
+              .catch((err) => {
+                // I am not sure if this is the correct way to handle the error.
+                const errMsg = this.utilsService.defaultErrorHandlerString(err);
+                progressTracking.failure.push(
+                  `Failure: ${datasourceNameParsed} - ${errMsg}`,
+                );
+              });
             continue;
           } else {
             throw new Error('Payload is not a string');
@@ -135,15 +152,16 @@ export class BackupServiceDatasources {
       if (progressTracking.failure.length > 0) {
         returnObj.status = 'failure';
         returnObj.httpStatus = 500;
+        throw new Error(
+          `Backup failure: ${progressTracking.failure.length} failed.`,
+        );
       }
       if (progressTracking.success.length == 0) {
         returnObj.status = 'failure';
         returnObj.httpStatus = 404;
-        returnObj.message =
-          'No datasources found with the specified group name.';
-      } else {
-        returnObj.message = `Datasources backup completed: ${progressTracking.success.length} successful, ${progressTracking.failure.length} failed.`;
+        throw new Error('No datasources found with the specified group name.');
       }
+      returnObj.message = `Datasources backup completed: ${progressTracking.success.length} successful, ${progressTracking.failure.length} failed.`;
       response.status(returnObj.httpStatus).send(returnObj);
     } catch (err) {
       response
