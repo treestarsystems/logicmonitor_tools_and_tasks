@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerDocumentVersioned } from './swagger';
-import { HttpExceptionFilter } from './customHttpExceptionFilter';
+import { HttpExceptionFilter } from './customGlobalHttpExceptionFIlter';
 import {
   VersioningType,
   ValidationPipe,
