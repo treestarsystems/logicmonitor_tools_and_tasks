@@ -62,7 +62,7 @@ export class BackupServiceGeneral {
     request: any,
     response: any,
   ): Promise<void> {
-    let returnObj: ResponseObjectDefault = new ResponseObjectDefault();
+    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
     // Get the backup type from the request URL.
     let backupType =
       request.originalUrl.split('/')[request.originalUrl.split('/').length - 1];
@@ -85,9 +85,9 @@ export class BackupServiceGeneral {
       };
       const generalGetObj: RequestObjectLMApi = new RequestObjectLMApiGenerator(
         'GET',
-        company,
         accessId,
         accessKey,
+        company,
         extraRequestProperties?.resourcePath,
         extraRequestProperties?.queryParams,
         extraRequestProperties?.requestData,
