@@ -309,6 +309,15 @@ export class ResponseObjectDefaultGenerator {
   }
 }
 
+/**
+ * This class generates the request object for the LogicMonitor API.
+ * @method The method to use for the API call.
+ * @url The URL for the API call.
+ * @data The data to send in the API call.
+ * @authString The authorization string for the API call.
+ * @returns A properly formatted request object for the Axios call to interact with the LogicMonitor API.
+ */
+
 export class AxiosParametersGenerator {
   constructor(
     private method: string,
