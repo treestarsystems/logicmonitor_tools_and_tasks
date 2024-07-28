@@ -1,5 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { ResponseObjectDefault, RequestObjectLMApi } from './utils.models';
+import { Injectable, Logger } from '@nestjs/common';
+import {
+  ResponseObjectDefault,
+  RequestObjectLMApi,
+  ResponseObjectDefaultGenerator,
+  AxiosParametersGenerator,
+} from './utils.models';
 import * as crypto from 'crypto';
 import { Axios, AxiosRequestConfig, AxiosResponse } from 'axios';
 
@@ -244,7 +249,8 @@ export class UtilsService {
   ): ResponseObjectDefault {
     return {
       status: 'failure',
-      httpStatus: httpStatusCode,
+      // Set the HTTP status code to 400 if == 2000.
+      httpStatus: httpStatusCode == 200 ? 400 : httpStatusCode,
       message: err?.message ? err.message : err,
       payload: [],
     };
@@ -298,15 +304,9 @@ export class UtilsService {
   async genericAPICall(
     requestObjectLMApi: RequestObjectLMApi,
   ): Promise<ResponseObjectDefault> {
-    let returnObj: ResponseObjectDefault = {
-      status: 'success',
-      httpStatus: 200,
-      message: '',
-      payload: [],
-    };
-    const { method, queryParams, apiVersion, resourcePath, url } =
-      requestObjectLMApi;
-    let urlString: string = `${url(resourcePath)}?size=1000&`;
+    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
+    const { method, queryParams, apiVersion, url } = requestObjectLMApi;
+    let urlString: string = `${url}?size=1000&`;
     if (queryParams) {
       urlString += `${queryParams}`;
     }
@@ -323,17 +323,12 @@ export class UtilsService {
       if (!authString.toLowerCase().includes('lmv1')) {
         throw new Error('Invalid authString');
       }
-      let axiosParametersObj: AxiosRequestConfig = {
-        method: requestObjectLMApi.method,
-        url: urlStringEncoded,
-        data: requestObjectLMApi?.requestData
-          ? requestObjectLMApi.requestData
-          : '',
-        headers: {
-          ContentType: 'application/json',
-          Authorization: authString,
-        },
-      };
+      let axiosParametersObj: AxiosRequestConfig = new AxiosParametersGenerator(
+        method,
+        urlStringEncoded,
+        requestObjectLMApi?.requestData,
+        authString,
+      ).Create();
       if (apiVersion) {
         axiosParametersObj.headers['X-Version'] = apiVersion;
       }
@@ -341,6 +336,7 @@ export class UtilsService {
       const apiResponse: AxiosResponse =
         await apiRequest.request(axiosParametersObj);
       const { data, status, headers } = apiResponse;
+
       // Set HTTP status code for use in error handling
       returnObj.httpStatus = status;
       if (status > 299) {
@@ -357,17 +353,13 @@ export class UtilsService {
             const apiResponse: AxiosResponse =
               await apiRequest.request(axiosParametersObj);
             const { data } = apiResponse;
-            returnObj.status = 'success';
             returnObj.httpStatus = status;
-            returnObj.message = 'success';
             returnObj.payload = [data];
           }, rateLimitWindow);
           return returnObj;
         }
       } else {
-        returnObj.status = 'success';
         returnObj.httpStatus = status;
-        returnObj.message = 'success';
         returnObj.payload = [data];
         return returnObj;
       }

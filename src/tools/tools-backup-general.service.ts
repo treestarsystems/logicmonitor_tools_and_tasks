@@ -1,4 +1,5 @@
-import * as fs from 'fs';
+// import * as fs from 'fs';
+import { promises as fs } from 'fs';
 import { Model } from 'mongoose';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -6,6 +7,8 @@ import {
   ResponseObjectDefault,
   RequestObjectLMApi,
   RequestObjectLMApiExtraRequestProperties,
+  RequestObjectLMApiGenerator,
+  ResponseObjectDefaultGenerator,
 } from '../utils/utils.models';
 import { UtilsService } from '../utils/utils.service';
 import { StorageServiceMongoDB } from '../storage/storage-mongodb.service';
@@ -59,12 +62,7 @@ export class BackupServiceGeneral {
     request: any,
     response: any,
   ): Promise<void> {
-    let returnObj = {
-      status: 'success',
-      httpStatus: 200,
-      message: '',
-      payload: [],
-    };
+    let returnObj: ResponseObjectDefault = new ResponseObjectDefault();
     // Get the backup type from the request URL.
     let backupType =
       request.originalUrl.split('/')[request.originalUrl.split('/').length - 1];
@@ -75,8 +73,6 @@ export class BackupServiceGeneral {
     // Confirm the backup type matches the resource path.
     const routeMatchString = backupType.slice(0, 4);
     if (!extraRequestProperties?.resourcePath.includes(routeMatchString)) {
-      returnObj.status = 'failure';
-      returnObj.httpStatus = 400;
       throw new Error(
         `Backup type (${backupType}) does not match the resource path (${extraRequestProperties?.resourcePath})`,
       );
@@ -87,29 +83,24 @@ export class BackupServiceGeneral {
         success: [],
         failure: [],
       };
-      const generalGetObj: RequestObjectLMApi = {
-        method: 'GET',
-        accessId: accessId,
-        accessKey: accessKey,
-        epoch: new Date().getTime(),
-        resourcePath: extraRequestProperties?.resourcePath
-          ? extraRequestProperties.resourcePath
-          : '/',
-        queryParams: extraRequestProperties?.queryParams
-          ? extraRequestProperties.queryParams
-          : '',
-        url: function (resourcePath: string) {
-          return `https://${company}.logicmonitor.com/santaba/rest${resourcePath}`;
-        },
-        requestData: extraRequestProperties?.requestData
-          ? extraRequestProperties.requestData
-          : {},
-        apiVersion: 3,
-      };
+      const generalGetObj: RequestObjectLMApi = new RequestObjectLMApiGenerator(
+        'GET',
+        company,
+        accessId,
+        accessKey,
+        extraRequestProperties?.resourcePath,
+        extraRequestProperties?.queryParams,
+        extraRequestProperties?.requestData,
+      ).Create();
+
       const resultList: ResponseObjectDefault =
         await this.utilsService.genericAPICall(generalGetObj);
       returnObj.httpStatus = resultList.httpStatus;
-      if (resultList.status == 'failure') throw resultList.message;
+      if (resultList.status == 'failure') {
+        throw new Error(
+          this.utilsService.defaultErrorHandlerString(resultList.message),
+        );
+      }
       // Lets loop through the response and extract the items that match our filter into a new array.
       const payloadItems = JSON.parse(resultList.payload).items;
       for (const pli of payloadItems) {
@@ -123,34 +114,30 @@ export class BackupServiceGeneral {
           dataJSON: dataJSON,
         };
         // MongoDB storage call.
-        this.storageServiceMongoDb
-          .upsert(
+        try {
+          this.storageServiceMongoDb.upsert(
             this.backupGeneralModel,
             { nameFormatted: backupNameParsed },
             storageObj,
-          )
-          .then(() => {
-            progressTracking.success.push(`Success: ${backupNameParsed}`);
-          })
-          .catch((err) => {
-            // I am not sure if this is the correct way to handle the error.
-            const errMsg = this.utilsService.defaultErrorHandlerString(err);
-            progressTracking.failure.push(
-              `Failure: ${backupNameParsed} - ${errMsg}`,
-            );
-          });
-        continue;
+          );
+          progressTracking.success.push(`Success: ${backupNameParsed}`);
+        } catch (err) {
+          // I am not sure if this is the correct way to handle the error.
+          const errMsg = this.utilsService.defaultErrorHandlerString(err);
+          progressTracking.failure.push(
+            `Failure: ${backupNameParsed} - ${errMsg}`,
+          );
+        }
+        // continue;
       }
       returnObj.payload.push(progressTracking);
       if (progressTracking.failure.length > 0) {
-        returnObj.status = 'failure';
         returnObj.httpStatus = 500;
         throw new Error(
           `Backup failure: ${progressTracking.failure.length} failed.`,
         );
       }
       if (progressTracking.success.length == 0) {
-        returnObj.status = 'failure';
         returnObj.httpStatus = 404;
         throw new Error(`No ${backupType} found matching the request.`);
       }
@@ -180,12 +167,7 @@ export class BackupServiceGeneral {
 
   async retrieveBackupsAll(company: string, response: any): Promise<void> {
     // This method will only return JSON object when there is an error.
-    let returnObj = {
-      status: 'success',
-      httpStatus: 200,
-      message: '',
-      payload: [],
-    };
+    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
     const outputFileBasePath = `./tmp`;
     const backupsListAll = [];
     try {
@@ -224,9 +206,7 @@ export class BackupServiceGeneral {
         const outputFileName = `${company}_backups.zip`;
         const outputFilePath = `${outputFileBasePath}/${outputFileName}`;
         // Create the output directory if it doesn't exist.
-        fs.mkdir(outputFileBasePath, { recursive: true }, (err) => {
-          if (err) throw err;
-        });
+        fs.mkdir(outputFileBasePath, { recursive: true });
         await this.storageServiceZip.createZipWithTextFiles(
           fileContents,
           outputFilePath,
@@ -248,21 +228,18 @@ export class BackupServiceGeneral {
           this.utilsService.defaultErrorHandlerHttp(err, returnObj.httpStatus),
         );
     } finally {
-      // Clean up the temporary files.
-      fs.promises
+      const dirExists = await fs
         .access(outputFileBasePath)
-        .then(() =>
-          fs.promises.rm(outputFileBasePath, { recursive: true, force: true }),
-        )
-        .then(() =>
-          Logger.log(
-            `Temporary files at ${outputFileBasePath} have been removed.`,
-          ),
-        )
-        .catch((err) => {
-          const errMsg = this.utilsService.defaultErrorHandlerString(err);
-          Logger.error(`Error removing temporary files: ${errMsg}`);
-        });
+        .then(() => true)
+        .catch(() => false);
+      if (dirExists) {
+        await fs.rm(outputFileBasePath, { recursive: true, force: true });
+        Logger.log(
+          `Temporary files at ${outputFileBasePath} have been removed.`,
+        );
+      } else {
+        Logger.error(`Error ${outputFileBasePath} may not exist.`);
+      }
     }
   }
 }

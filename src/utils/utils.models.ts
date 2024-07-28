@@ -7,6 +7,7 @@ import {
   IsString,
   IsNotEmpty,
 } from 'class-validator';
+import { AxiosRequestConfig } from 'axios';
 
 /**
  * This is a base class used to store request data for LogicMonitor API calls.
@@ -135,13 +136,14 @@ export class RequestObjectLMApi extends BaseRequestObjectLM {
   })
   requestData: Object;
 
-  @IsObject()
+  // @IsObject()
   @IsNotEmpty()
   @ApiProperty({
     description: 'The URL for the API call.',
     type: 'string',
   })
-  url: Function;
+  // url: Function;
+  url: string;
 
   @IsNumber()
   @IsNotEmpty()
@@ -241,4 +243,89 @@ export class ToolsBackupGeneralRequest extends BaseRequestObjectLM {
     type: RequestObjectLMApiExtraRequestProperties,
   })
   extraRequestProperties: RequestObjectLMApiExtraRequestProperties;
+}
+
+/**
+ * This class generates the request object for the LogicMonitor API.
+ * @method The method to use for the API call.
+ * @accessId The access ID for the LogicMonitor account.
+ * @accessKey The access key for the LogicMonitor account.
+ * @company The company name for the LogicMonitor account.
+ * @resourcePath The path to the resource that the API call is being made to.
+ * @queryParams The query parameters for the API call.
+ * @requestData The data to send in the API call.
+ * @returns A properly formatted request object for the LogicMonitor API call.
+ */
+export class RequestObjectLMApiGenerator {
+  constructor(
+    private method: string,
+    private accessId: string,
+    private accessKey: string,
+    private company: string,
+    private resourcePath: string,
+    private queryParams: string,
+    private requestData: Object,
+  ) {}
+
+  public Create(): RequestObjectLMApi {
+    return {
+      method: this.method,
+      accessId: this.accessId,
+      accessKey: this.accessKey,
+      epoch: new Date().getTime(),
+      resourcePath: this.resourcePath ?? '/',
+      queryParams: this.queryParams ?? '',
+      url: `https://${this.company}.logicmonitor.com/santaba/rest${this.resourcePath}`,
+      requestData: this.requestData ?? {},
+      apiVersion: 3,
+    };
+  }
+}
+
+/**
+ * This class generates the response object for the LogicMonitor API.
+ * @status The status of the API call (success|failure).
+ * @httpStatus The HTTP status code of the API call.
+ * @message The message from the API call.
+ * @payload The payload from the API call.
+ * @returns A properly formatted response object for the LogicMonitor API call.
+ */
+
+export class ResponseObjectDefaultGenerator {
+  constructor(
+    public status: string = 'success',
+    public httpStatus: number = 200,
+    public message: string = 'success',
+    public payload: any[any] = [],
+  ) {}
+
+  public Create(): ResponseObjectDefault {
+    return {
+      status: this.status,
+      httpStatus: this.httpStatus,
+      message: this.message,
+      payload: [],
+    };
+  }
+}
+
+export class AxiosParametersGenerator {
+  constructor(
+    private method: string,
+    private url: string,
+    private data: Object,
+    private authString: string,
+  ) {}
+
+  public Create(): AxiosRequestConfig {
+    return {
+      method: this.method,
+      url: this.url,
+      data: this.data ?? '',
+      headers: {
+        ContentType: 'application/json',
+        Authorization: this.authString,
+      },
+    };
+  }
 }

@@ -2,8 +2,10 @@ import { Model } from 'mongoose';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
-  ResponseObjectDefault,
   RequestObjectLMApi,
+  ResponseObjectDefault,
+  RequestObjectLMApiGenerator,
+  ResponseObjectDefaultGenerator,
 } from '../utils/utils.models';
 import { UtilsService } from '../utils/utils.service';
 import { StorageServiceMongoDB } from '../storage/storage-mongodb.service';
@@ -46,32 +48,23 @@ export class BackupServiceDatasources {
     groupName: string,
     response: any,
   ): Promise<void> {
-    let returnObj = {
-      status: 'success',
-      httpStatus: 0,
-      message: '',
-      payload: [],
-    };
-
+    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
     try {
       // Create an object to store the progress of the backup jobs.
       const progressTracking = {
         success: [],
         failure: [],
       };
-      const datasourcesGetObj: RequestObjectLMApi = {
-        method: 'GET',
-        accessId: accessId,
-        accessKey: accessKey,
-        epoch: new Date().getTime(),
-        resourcePath: '/setting/datasources',
-        queryParams: `filter=group~"${groupName}"`,
-        url: function (resourcePath: string) {
-          return `https://${company}.logicmonitor.com/santaba/rest${resourcePath}`;
-        },
-        requestData: {},
-        apiVersion: 3,
-      };
+      const datasourcesGetObj: RequestObjectLMApi =
+        new RequestObjectLMApiGenerator(
+          'GET',
+          accessId,
+          accessKey,
+          company,
+          '/setting/datasources',
+          `filter=group~"${groupName}"`,
+          '',
+        ).Create();
       const datasourcesList: ResponseObjectDefault =
         await this.utilsService.genericAPICall(datasourcesGetObj);
       returnObj.httpStatus = datasourcesList.httpStatus;
@@ -81,31 +74,30 @@ export class BackupServiceDatasources {
         );
       // Lets loop through the response and extract the items that match our filter into a new array.
       const payloadItems = JSON.parse(datasourcesList.payload).items;
+      Logger.log(`Datasources found: ${payloadItems.length}`);
       for (const dle of payloadItems) {
         let datasourceNameParsed: string = `datasource_${dle.name.replace(/\W/g, '_')}`;
         try {
-          const datasourcesGetXMLObj: RequestObjectLMApi = {
-            method: 'GET',
-            accessId: accessId,
-            accessKey: accessKey,
-            epoch: new Date().getTime(),
-            resourcePath: `/setting/datasources/${dle.id}`,
-            queryParams: 'format=xml',
-            url: function (resourcePath: string) {
-              return `https://${company}.logicmonitor.com/santaba/rest${resourcePath}`;
-            },
-            requestData: {},
-            apiVersion: 3,
-          };
+          const datasourcesGetXMLObj: RequestObjectLMApi =
+            new RequestObjectLMApiGenerator(
+              'GET',
+              accessId,
+              accessKey,
+              company,
+              `/setting/datasources/${dle.id}`,
+              'format=xml',
+              '',
+            ).Create();
           const datasourceXMLExport: ResponseObjectDefault =
             await this.utilsService.genericAPICall(datasourcesGetXMLObj);
           returnObj.httpStatus = datasourceXMLExport.httpStatus;
-          if (datasourceXMLExport.status == 'failure')
+          if (datasourceXMLExport.status == 'failure') {
             throw new Error(
               this.utilsService.defaultErrorHandlerString(
                 datasourceXMLExport.message,
               ),
             );
+          }
           if (typeof datasourceXMLExport.payload[0] === 'string') {
             // Store the XML string and JSON object to a file or in a database.
             const dataXML: string = datasourceXMLExport.payload[0];
@@ -120,25 +112,20 @@ export class BackupServiceDatasources {
               dataJSON: dataJSON,
             };
             // MongoDB storage call.
-            this.storageServiceMongoDb
-              .upsert(
+            try {
+              this.storageServiceMongoDb.upsert(
                 this.backupDatasourceModel,
                 { nameFormatted: datasourceNameParsed },
                 storageObj,
-              )
-              .then(() => {
-                progressTracking.success.push(
-                  `Success: ${datasourceNameParsed}`,
-                );
-              })
-              .catch((err) => {
-                // I am not sure if this is the correct way to handle the error.
-                const errMsg = this.utilsService.defaultErrorHandlerString(err);
-                progressTracking.failure.push(
-                  `Failure: ${datasourceNameParsed} - ${errMsg}`,
-                );
-              });
-            continue;
+              );
+              progressTracking.success.push(`Success: ${datasourceNameParsed}`);
+            } catch (err) {
+              // I am not sure if this is the correct way to handle the error.
+              const errMsg = this.utilsService.defaultErrorHandlerString(err);
+              progressTracking.failure.push(
+                `Failure: ${datasourceNameParsed} - ${errMsg}`,
+              );
+            }
           } else {
             throw new Error('Payload is not a string');
           }
@@ -150,14 +137,12 @@ export class BackupServiceDatasources {
       }
       returnObj.payload.push(progressTracking);
       if (progressTracking.failure.length > 0) {
-        returnObj.status = 'failure';
         returnObj.httpStatus = 500;
         throw new Error(
           `Backup failure: ${progressTracking.failure.length} failed.`,
         );
       }
       if (progressTracking.success.length == 0) {
-        returnObj.status = 'failure';
         returnObj.httpStatus = 404;
         throw new Error('No datasources found with the specified group name.');
       }
