@@ -164,7 +164,7 @@ export class UtilsService {
   }
 
   /**
-   * Validate a JSON object
+   * Validate a JSON object. This is an old method that is pointless in TypeScript. I may remove it later.
    * Source: https://learnersbucket.com/examples/javascript/how-to-validate-json-in-javascript/
    * @param {Object} obj The object to validate
    * @returns {boolean} A boolean indicating if the object is valid JSON
@@ -172,7 +172,8 @@ export class UtilsService {
    * validateJSON({ "name": "John", "age": 30, "city": "New York" }) // returns true
    */
 
-  validateJSON(obj: Object): boolean {
+  validateJSON(obj: any): boolean {
+    if (typeof obj === 'string') return false;
     let o = JSON.stringify(obj);
     try {
       JSON.parse(o);
