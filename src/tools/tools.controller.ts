@@ -61,17 +61,17 @@ export class ToolsController {
    * @returns {Promise<void>} Promise object.
    * @function backupDatasourcesPost
    * @memberof module:tools
-   * @endpoint tools/backup/datasources
+   * @endpoint tools/backup/datasources/bygroupname
    * @method POST
    * @api
    * @example
    * curl -X POST "http://localhost:3000/tools/backup/datasources" -d '{"company":"companyName","accessId":"accessId","accessKey":"accessKey","groupName":"groupName"}' -H "Content-Type: application/json"
    */
 
-  @Post('backup/datasources')
+  @Post('backup/datasources/bygroupname')
   @ApiOperation({
     summary:
-      'Backup datasources where the group name contains the groupName provided.',
+      'Backup datasources where the group name contain the groupName provided.',
   })
   @ApiResponse({ type: ResponseObjectDefault })
   @ApiTags('Tools: Backup')
@@ -79,7 +79,7 @@ export class ToolsController {
     @Body() body: ToolsBackupDatasourcesRequest,
     @Res() response: Response,
   ): Promise<void> {
-    await this.backupServiceDatasources.backupDatasources(
+    await this.backupServiceDatasources.backupDatasourcesByGroupName(
       body.company,
       body.accessId,
       body.accessKey,

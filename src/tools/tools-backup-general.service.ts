@@ -128,7 +128,6 @@ export class BackupServiceGeneral {
             `Failure: ${backupNameParsed} - ${errMsg}`,
           );
         }
-        // continue;
       }
       returnObj.payload.push(progressTracking);
       if (progressTracking.failure.length > 0) {

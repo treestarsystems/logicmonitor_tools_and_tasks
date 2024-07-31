@@ -41,7 +41,7 @@ export class BackupServiceDatasources {
    * @param {string} searchString  The search string to filter the datasources.
    * @param {Response} response  The response object to send the response back to the client.
    */
-  async backupDatasources(
+  async backupDatasourcesByGroupName(
     company: string,
     accessId: string,
     accessKey: string,
