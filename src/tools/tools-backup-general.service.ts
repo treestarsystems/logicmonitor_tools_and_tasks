@@ -239,9 +239,9 @@ export class BackupServiceGeneral {
 
   private processPayloadItems(
     payloadItems: any,
-    backupType: any,
+    backupType: string,
     company: string,
-    progressTracking: { success: any[]; failure: any[] },
+    progressTracking: { success: string[]; failure: string[] },
   ) {
     for (const pli of payloadItems) {
       let backupNameParsed = `${backupType}_${pli.name.replace(/\W/g, '_')}`;
