@@ -103,32 +103,12 @@ export class BackupServiceGeneral {
       }
       // Lets loop through the response and extract the items that match our filter into a new array.
       const payloadItems = JSON.parse(resultList.payload).items;
-      for (const pli of payloadItems) {
-        let backupNameParsed = `${backupType}_${pli.name.replace(/\W/g, '_')}`;
-        const dataJSON: object = pli;
-        const storageObj: BackupLMDataGeneral = {
-          type: backupType,
-          name: pli.name,
-          nameFormatted: backupNameParsed,
-          company: company,
-          dataJSON: dataJSON,
-        };
-        // MongoDB storage call.
-        try {
-          this.storageServiceMongoDb.upsert(
-            this.backupGeneralModel,
-            { nameFormatted: backupNameParsed },
-            storageObj,
-          );
-          progressTracking.success.push(`Success: ${backupNameParsed}`);
-        } catch (err) {
-          // I am not sure if this is the correct way to handle the error.
-          const errMsg = this.utilsService.defaultErrorHandlerString(err);
-          progressTracking.failure.push(
-            `Failure: ${backupNameParsed} - ${errMsg}`,
-          );
-        }
-      }
+      this.processPayloadItems(
+        payloadItems,
+        backupType,
+        company,
+        progressTracking,
+      );
       returnObj.payload.push(progressTracking);
       if (progressTracking.failure.length > 0) {
         returnObj.httpStatus = 500;
@@ -238,6 +218,55 @@ export class BackupServiceGeneral {
         );
       } else {
         Logger.error(`Error ${outputFileBasePath} may not exist.`);
+      }
+    }
+  }
+
+  /**
+   * Process the payload items and store them in MongoDB.
+   * @param {any} payloadItems  The payload items to process.
+   * @param {any} backupType  The type of backup.
+   * @param {string} company  The company name for the LogicMonitor account.
+   * @param {object} progressTracking  The object to track the progress of the backup jobs.
+   * @returns {void} Void.
+   * @function processPayloadItems
+   * @memberof module:tools
+   * @private
+   * @example
+   * processPayloadItems(payloadItems, backupType, company, progressTracking);
+   * @api
+   */
+
+  private processPayloadItems(
+    payloadItems: any,
+    backupType: any,
+    company: string,
+    progressTracking: { success: any[]; failure: any[] },
+  ) {
+    for (const pli of payloadItems) {
+      let backupNameParsed = `${backupType}_${pli.name.replace(/\W/g, '_')}`;
+      const dataJSON: object = pli;
+      const storageObj: BackupLMDataGeneral = {
+        type: backupType,
+        name: pli.name,
+        nameFormatted: backupNameParsed,
+        company: company,
+        dataJSON: dataJSON,
+      };
+      // MongoDB storage call.
+      try {
+        this.storageServiceMongoDb.upsert(
+          this.backupGeneralModel,
+          { nameFormatted: backupNameParsed },
+          storageObj,
+        );
+        progressTracking.success.push(`Success: ${backupNameParsed}`);
+      } catch (err) {
+        // I am not sure if this is the correct way to handle the error.
+        const errMsg = this.utilsService.defaultErrorHandlerString(err);
+        progressTracking.failure.push(
+          `Failure: ${backupNameParsed} - ${errMsg}`,
+        );
       }
     }
   }

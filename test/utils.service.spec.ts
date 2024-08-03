@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { UtilsService } from '../src/utils/utils.service';
 
 describe('UtilsService', () => {
@@ -90,14 +91,17 @@ describe('UtilsService', () => {
     });
   });
 
-  // describe('encodeQueryParameters', () => {
-  //   it('should encode the query parameters of a given URL', () => {
-  //     const result = utilsService.encodeQueryParameters(
-  //       'www.foobar.com/?first=1&second=12&third=5',
-  //     );
-  //     expect(result).toBe('www.foobar.com/?first=1&amp;second=12&amp;third=5');
-  //   });
-  // });
+  describe('encodeQueryParameters', () => {
+    it('should encode the query parameters of a given URL', () => {
+      const result = utilsService.encodeQueryParameters(
+        'www.foobar.com/?first="1 asdfas"&second=12&third=5',
+      );
+      Logger.log(result);
+      expect(result).toBe(
+        'www.foobar.com/?first=%221%20asdfas%22&second=12&third=5',
+      );
+    });
+  });
 
   describe('defaultErrorHandlerString', () => {
     it('should return the error string', () => {

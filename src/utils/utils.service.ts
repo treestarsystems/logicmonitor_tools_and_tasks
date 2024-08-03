@@ -214,6 +214,7 @@ export class UtilsService {
       .map((param) => {
         // Split each parameter into key and value
         const [key, value] = param.split('=');
+        Logger.log(`key: ${key}, value: ${value}`);
         // Return the encoded key-value pair, joined by '='
         return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
       })
