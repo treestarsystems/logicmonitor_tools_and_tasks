@@ -7,6 +7,15 @@ import {
 
 import { TasksService } from './tasks.service';
 
+/**
+ * TasksController class to handle all tasks related API calls.
+ * @class TasksController
+ * @endpoint tasks
+ * @memberof module:tasks
+ * @public
+ * @api
+ */
+
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
