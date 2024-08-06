@@ -8,17 +8,30 @@ import {
 import { TasksService } from './tasks.service';
 
 @Controller('tasks')
-@ApiTags('Tasks: Backup')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
-  @Post('backup')
+
+  /**
+   * Execute all backups (datasources by group name, alert rules, and report).
+   * @param {ToolsBackupDatasourcesRequest} body - The request body.
+   * @param {Response} response - The response object.
+   * @returns {Promise<void>} Promise object.
+   * @function backupDatasourcesPost
+   * @memberof module:tasks
+   * @endpoint tasks/backup
+   * @method POST
+   * @api
+   * @example
+   * curl -X POST "http://localhost:3000/tasks/backup" -H "Content-Type: application/json" -d '{"company":"companyName","accessId":"accessId","accessKey":"accessKey","groupName":"groupName"}'
+   */
+  @Post('backups')
   @ApiOperation({
     summary:
-      'Backup datasources where the group name contain the groupName provided.',
+      'Execute all backups (datasources by group name, alert rules, and report).',
   })
   @ApiResponse({ type: ResponseObjectDefault })
-  @ApiTags('Tools: Backup')
-  async backupDatasourcesPost(
+  @ApiTags('Tasks: Backups')
+  async executeTaskBackupsPost(
     @Body() body: ToolsBackupDatasourcesRequest,
     @Res() response: Response,
   ): Promise<void> {
