@@ -47,7 +47,8 @@ export class BackupServiceDatasources {
     accessKey: string,
     groupName: string,
     response: any,
-  ): Promise<void> {
+    directlyRespondToApiCall: boolean = true,
+  ): Promise<void | ResponseObjectDefault> {
     let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
     try {
       // Create an object to store the progress of the backup jobs.
@@ -74,7 +75,6 @@ export class BackupServiceDatasources {
         );
       // Lets loop through the response and extract the items that match our filter into a new array.
       const payloadItems = JSON.parse(datasourcesList.payload).items;
-      Logger.log(`Datasources found: ${payloadItems.length}`);
       for (const dle of payloadItems) {
         let datasourceNameParsed: string = `datasource_${dle.name.replace(/\W/g, '_')}`;
         try {
@@ -147,13 +147,24 @@ export class BackupServiceDatasources {
         throw new Error('No datasources found with the specified group name.');
       }
       returnObj.message = `Datasources backup completed: ${progressTracking.success.length} successful, ${progressTracking.failure.length} failed.`;
-      response.status(returnObj.httpStatus).send(returnObj);
+      if (directlyRespondToApiCall) {
+        response.status(returnObj.httpStatus).send(returnObj);
+      } else {
+        return returnObj;
+      }
     } catch (err) {
-      response
-        .status(returnObj.httpStatus)
-        .send(
-          this.utilsService.defaultErrorHandlerHttp(err, returnObj.httpStatus),
-        );
+      if (directlyRespondToApiCall) {
+        response
+          .status(returnObj.httpStatus)
+          .send(
+            this.utilsService.defaultErrorHandlerHttp(
+              err,
+              returnObj.httpStatus,
+            ),
+          );
+      } else {
+        return returnObj;
+      }
     }
   }
 }

@@ -61,7 +61,8 @@ export class BackupServiceGeneral {
     extraRequestProperties: RequestObjectLMApiExtraRequestProperties,
     request: any,
     response: any,
-  ): Promise<void> {
+    directlyRespondToApiCall: boolean = true,
+  ): Promise<void | ResponseObjectDefault> {
     let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
     // Get the backup type from the request URL.
     let backupType =
@@ -121,13 +122,24 @@ export class BackupServiceGeneral {
         throw new Error(`No ${backupType} found matching the request.`);
       }
       returnObj.message = `${this.utilsService.capitalizeFirstLetter(backupType)} backup completed: ${progressTracking.success.length} successful, ${progressTracking.failure.length} failed.`;
-      response.status(returnObj.httpStatus).send(returnObj);
+      if (directlyRespondToApiCall) {
+        response.status(returnObj.httpStatus).send(returnObj);
+      } else {
+        return returnObj;
+      }
     } catch (err) {
-      response
-        .status(returnObj.httpStatus)
-        .send(
-          this.utilsService.defaultErrorHandlerHttp(err, returnObj.httpStatus),
-        );
+      if (directlyRespondToApiCall) {
+        response
+          .status(returnObj.httpStatus)
+          .send(
+            this.utilsService.defaultErrorHandlerHttp(
+              err,
+              returnObj.httpStatus,
+            ),
+          );
+      } else {
+        return returnObj;
+      }
     }
   }
 
