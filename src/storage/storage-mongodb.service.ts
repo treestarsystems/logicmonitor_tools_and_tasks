@@ -4,10 +4,10 @@ import { Injectable, Logger } from '@nestjs/common';
  * StorageServiceMongoDB class to handle all MongoDB related operations.
  * @class StorageServiceMongoDB
  * @memberof module:storage
- * @implements {StorageServiceMongoDB}
- * @api
- * @export
  * @injectable
+ * @public
+ * @export
+ * @api
  */
 @Injectable()
 export class StorageServiceMongoDB {

@@ -12,8 +12,10 @@ import { Axios, AxiosRequestConfig, AxiosResponse } from 'axios';
  * UtilsService class to provide utility functions.
  * @class UtilsService
  * @memberof module:utils
- * @access public
+ * @injectable
  * @public
+ * @export
+ * @api
  */
 @Injectable()
 export class UtilsService {
