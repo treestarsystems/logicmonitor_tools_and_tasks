@@ -1,7 +1,7 @@
 // import * as fs from 'fs';
 import { promises as fs } from 'fs';
 import { Model } from 'mongoose';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   ResponseObjectDefault,
@@ -98,6 +98,10 @@ export class BackupServiceGeneral {
         await this.utilsService.genericAPICall(generalGetObj);
       returnObj.httpStatus = resultList.httpStatus;
       if (resultList.status == 'failure') {
+        progressTracking.failure.push(
+          `Failure: Retrieving ${backupType} list - ${resultList.message}`,
+        );
+        returnObj.payload.push(progressTracking);
         throw new Error(
           this.utilsService.defaultErrorHandlerString(resultList.message),
         );
@@ -184,7 +188,6 @@ export class BackupServiceGeneral {
         // Loop through the backups and add them to the fileContents object.
         for (const dbi of backupsListAll) {
           const fileName = `${company}_${dbi.nameFormatted}`;
-          Logger.log(dbi.dataXML);
           if (dbi.dataXML) {
             fileContents[`${fileName}.xml`] = dbi.dataXML;
             returnObj.payload.push(`File added: ${fileName}.xml`);
@@ -224,12 +227,8 @@ export class BackupServiceGeneral {
         .then(() => true)
         .catch(() => false);
       if (dirExists) {
+        // Remove the temporary directory.
         await fs.rm(outputFileBasePath, { recursive: true, force: true });
-        Logger.log(
-          `Temporary files at ${outputFileBasePath} have been removed.`,
-        );
-      } else {
-        Logger.error(`Error ${outputFileBasePath} may not exist.`);
       }
     }
   }

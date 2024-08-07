@@ -1,5 +1,5 @@
 import { Model } from 'mongoose';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   RequestObjectLMApi,
@@ -51,11 +51,11 @@ export class BackupServiceDatasources {
   ): Promise<void | ResponseObjectDefault> {
     let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
     try {
-      // Create an object to store the progress of the backup jobs.
       const progressTracking = {
         success: [],
         failure: [],
       };
+      // Create an object to store the progress of the backup jobs.
       const datasourcesGetObj: RequestObjectLMApi =
         new RequestObjectLMApiGenerator(
           'GET',
@@ -69,10 +69,15 @@ export class BackupServiceDatasources {
       const datasourcesList: ResponseObjectDefault =
         await this.utilsService.genericAPICall(datasourcesGetObj);
       returnObj.httpStatus = datasourcesList.httpStatus;
-      if (datasourcesList.status == 'failure')
+      if (datasourcesList.status == 'failure') {
+        progressTracking.failure.push(
+          `Failure: Retrieving datasource list - ${datasourcesList.message}`,
+        );
+        returnObj.payload.push(progressTracking);
         throw new Error(
           this.utilsService.defaultErrorHandlerString(datasourcesList.message),
         );
+      }
       // Lets loop through the response and extract the items that match our filter into a new array.
       const payloadItems = JSON.parse(datasourcesList.payload).items;
       for (const dle of payloadItems) {
@@ -92,11 +97,13 @@ export class BackupServiceDatasources {
             await this.utilsService.genericAPICall(datasourcesGetXMLObj);
           returnObj.httpStatus = datasourceXMLExport.httpStatus;
           if (datasourceXMLExport.status == 'failure') {
-            throw new Error(
-              this.utilsService.defaultErrorHandlerString(
-                datasourceXMLExport.message,
-              ),
+            const errMsg = this.utilsService.defaultErrorHandlerString(
+              datasourceXMLExport.message,
             );
+            progressTracking.failure.push(
+              `Failure: ${datasourceNameParsed} - ${errMsg}`,
+            );
+            throw new Error(errMsg);
           }
           if (typeof datasourceXMLExport.payload[0] === 'string') {
             // Store the XML string and JSON object to a file or in a database.

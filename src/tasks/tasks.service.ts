@@ -1,14 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { BackupServiceDatasources } from '../tools/tools-backup-datasources.service';
 import { BackupServiceGeneral } from '../tools/tools-backup-general.service';
 import {
-  RequestObjectLMApi,
   ResponseObjectDefault,
-  RequestObjectLMApiGenerator,
   ResponseObjectDefaultGenerator,
 } from '../utils/utils.models';
 import { UtilsService } from '../utils/utils.service';
-import e from 'express';
 
 @Injectable()
 export class TasksService {
@@ -77,16 +74,15 @@ export class TasksService {
           directlyRespondToApiCall,
         )) as ResponseObjectDefault;
 
-      // progressTracking.success.push(backupServiceDatasourcesResponse.payload[0]);
       progressTracking.success = [
-        ...backupServiceDatasourcesResponse.payload[0].success,
-        ...backupServiceGeneralResponseReports.payload[0].success,
-        ...backupServiceGeneralResponseAlertRules.payload[0].success,
+        ...(backupServiceDatasourcesResponse.payload[0]?.success ?? []),
+        ...(backupServiceGeneralResponseReports.payload[0]?.success ?? []),
+        ...(backupServiceGeneralResponseAlertRules.payload[0]?.success ?? []),
       ];
       progressTracking.failure = [
-        ...backupServiceDatasourcesResponse.payload[0].failure,
-        ...backupServiceGeneralResponseReports.payload[0].failure,
-        ...backupServiceGeneralResponseAlertRules.payload[0].failure,
+        ...(backupServiceDatasourcesResponse.payload[0]?.failure ?? []),
+        ...(backupServiceGeneralResponseReports.payload[0]?.failure ?? []),
+        ...(backupServiceGeneralResponseAlertRules.payload[0]?.failure ?? []),
       ];
 
       //TODO: Test a failure scenario.

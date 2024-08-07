@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   ResponseObjectDefault,
   RequestObjectLMApi,
@@ -7,6 +7,7 @@ import {
 } from './utils.models';
 import * as crypto from 'crypto';
 import { Axios, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { stat } from 'fs';
 
 /**
  * UtilsService class to provide utility functions.
@@ -250,13 +251,14 @@ export class UtilsService {
     err,
     httpStatusCode: number = 400,
   ): ResponseObjectDefault {
-    return {
-      status: 'failure',
-      // Set the HTTP status code to 400 if == 2000.
-      httpStatus: httpStatusCode == 200 ? 400 : httpStatusCode,
-      message: err?.message ? err.message : err,
-      payload: [],
-    };
+    const statusCode: number = httpStatusCode == 200 ? 400 : httpStatusCode;
+    const errorMessage: string = err?.message ? err.message : err;
+    const returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator(
+      'failure',
+      statusCode,
+      errorMessage,
+    ).Create();
+    return returnObj;
   }
 
   /**
@@ -343,7 +345,8 @@ export class UtilsService {
       // Set HTTP status code for use in error handling
       returnObj.httpStatus = status;
       if (status > 299) {
-        throw new Error(`(${status}) - ${JSON.parse(data).errorMessage}`);
+        const errorMessage: string = `(${status}) - ${JSON.parse(data)?.errorMessage}`;
+        throw errorMessage;
       }
       let rateLimitRemaining: number = headers['x-rate-limit-remaining'];
       let rateLimitWindow: number = headers['x-rate-limit-window'] * 1000 + 1;
