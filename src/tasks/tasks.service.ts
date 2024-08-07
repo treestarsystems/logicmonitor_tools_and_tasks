@@ -85,12 +85,12 @@ export class TasksService {
         ...(backupServiceGeneralResponseAlertRules.payload[0]?.failure ?? []),
       ];
 
-      //TODO: Test a failure scenario.
-      //   if (progressTracking.failure.length > 0) {
-      //     returnObj.httpStatus = 400;
-      //     throw new Error('A backup item failed');
-      //   }
       returnObj.payload = [progressTracking];
+      if (progressTracking.failure.length > 0) {
+        returnObj.status = 'failure';
+        returnObj.httpStatus = 400;
+        returnObj.message = 'A backup item failed';
+      }
       response.status(returnObj.httpStatus).send(returnObj);
     } catch (err) {
       response
