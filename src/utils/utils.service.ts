@@ -7,7 +7,6 @@ import {
 } from './utils.models';
 import * as crypto from 'crypto';
 import { Axios, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { stat } from 'fs';
 
 /**
  * UtilsService class to provide utility functions.
