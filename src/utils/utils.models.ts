@@ -160,7 +160,7 @@ export class RequestObjectLMApi extends BaseRequestObjectLM {
  * @company The company name for the LogicMonitor account.
  * @accessId The access ID for the LogicMonitor account.
  * @accessKey The access key for the LogicMonitor account.
- * @searchString The search string to filter the datasources by group name.
+ * @groupName The search string to filter the datasources by group name.
  */
 
 export class ToolsBackupDatasourcesRequest extends BaseRequestObjectLM {

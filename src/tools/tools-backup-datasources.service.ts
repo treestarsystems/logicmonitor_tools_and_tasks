@@ -1,5 +1,5 @@
 import { Model } from 'mongoose';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   RequestObjectLMApi,
@@ -47,14 +47,15 @@ export class BackupServiceDatasources {
     accessKey: string,
     groupName: string,
     response: any,
-  ): Promise<void> {
+    directlyRespondToApiCall: boolean = true,
+  ): Promise<void | ResponseObjectDefault> {
     let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
     try {
-      // Create an object to store the progress of the backup jobs.
       const progressTracking = {
         success: [],
         failure: [],
       };
+      // Create an object to store the progress of the backup jobs.
       const datasourcesGetObj: RequestObjectLMApi =
         new RequestObjectLMApiGenerator(
           'GET',
@@ -68,13 +69,17 @@ export class BackupServiceDatasources {
       const datasourcesList: ResponseObjectDefault =
         await this.utilsService.genericAPICall(datasourcesGetObj);
       returnObj.httpStatus = datasourcesList.httpStatus;
-      if (datasourcesList.status == 'failure')
+      if (datasourcesList.status == 'failure') {
+        progressTracking.failure.push(
+          `Failure: Retrieving datasource list - ${datasourcesList.message}`,
+        );
+        returnObj.payload.push(progressTracking);
         throw new Error(
           this.utilsService.defaultErrorHandlerString(datasourcesList.message),
         );
+      }
       // Lets loop through the response and extract the items that match our filter into a new array.
       const payloadItems = JSON.parse(datasourcesList.payload).items;
-      Logger.log(`Datasources found: ${payloadItems.length}`);
       for (const dle of payloadItems) {
         let datasourceNameParsed: string = `datasource_${dle.name.replace(/\W/g, '_')}`;
         try {
@@ -92,11 +97,13 @@ export class BackupServiceDatasources {
             await this.utilsService.genericAPICall(datasourcesGetXMLObj);
           returnObj.httpStatus = datasourceXMLExport.httpStatus;
           if (datasourceXMLExport.status == 'failure') {
-            throw new Error(
-              this.utilsService.defaultErrorHandlerString(
-                datasourceXMLExport.message,
-              ),
+            const errMsg = this.utilsService.defaultErrorHandlerString(
+              datasourceXMLExport.message,
             );
+            progressTracking.failure.push(
+              `Failure: ${datasourceNameParsed} - ${errMsg}`,
+            );
+            throw new Error(errMsg);
           }
           if (typeof datasourceXMLExport.payload[0] === 'string') {
             // Store the XML string and JSON object to a file or in a database.
@@ -147,13 +154,24 @@ export class BackupServiceDatasources {
         throw new Error('No datasources found with the specified group name.');
       }
       returnObj.message = `Datasources backup completed: ${progressTracking.success.length} successful, ${progressTracking.failure.length} failed.`;
-      response.status(returnObj.httpStatus).send(returnObj);
+      if (directlyRespondToApiCall) {
+        response.status(returnObj.httpStatus).send(returnObj);
+      } else {
+        return returnObj;
+      }
     } catch (err) {
-      response
-        .status(returnObj.httpStatus)
-        .send(
-          this.utilsService.defaultErrorHandlerHttp(err, returnObj.httpStatus),
-        );
+      if (directlyRespondToApiCall) {
+        response
+          .status(returnObj.httpStatus)
+          .send(
+            this.utilsService.defaultErrorHandlerHttp(
+              err,
+              returnObj.httpStatus,
+            ),
+          );
+      } else {
+        return returnObj;
+      }
     }
   }
 }

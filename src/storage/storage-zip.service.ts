@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as archiver from 'archiver';
 import { createWriteStream } from 'fs';
 
@@ -31,9 +31,6 @@ export class StorageServiceZip {
       });
 
       output.on('close', () => {
-        Logger.log(
-          `ZIP file created successfully. Total bytes: ${archive.pointer()}`,
-        );
         resolve();
       });
 
