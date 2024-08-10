@@ -10,8 +10,8 @@ import { TasksService } from './tasks.service';
 /**
  * TasksController class to handle all tasks related API calls.
  * @class TasksController
- * @endpoint tasks
  * @memberof module:tasks
+ * @endpoint tasks
  * @public
  * @api
  */
