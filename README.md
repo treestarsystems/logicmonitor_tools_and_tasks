@@ -4,6 +4,11 @@ LogicMonitor Tools and Tasks is a project that will allow users to interact with
 ## Documentation
 Docs are served at http://localhost:3000/api/v1/docs
 
+## Setup
+Rename and fill in the following files with your own information:
+- .env-rename
+- schedule-conf.json-rename
+
 ## Installation
 
 ```bash
