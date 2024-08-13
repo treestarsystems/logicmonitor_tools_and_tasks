@@ -36,6 +36,23 @@ export class BaseRequestObjectLM {
 }
 
 /**
+ * This class is for credentials to run scheduled tasks.
+ * @accessId The access ID for the LogicMonitor account.
+ * @accessKey The access key for the LogicMonitor account.
+ * @company The company name for the LogicMonitor account.
+ */
+
+export class SchedulesConf extends BaseRequestObjectLM {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The company name for the LogicMonitor account.',
+    type: 'string',
+  })
+  company: string;
+}
+
+/**
  * This class is used to repsond with data from the underlying API calls in a default format.
  * The data is stored in the following format:
  * @status The status of the API call (success|failure).

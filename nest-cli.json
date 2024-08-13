@@ -2,7 +2,15 @@
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
-  "compilerOptions": {
+  "compilerOptions": {    
+    "assets": [
+      {
+        "include": "schedule-conf.json",
+        "outDir": "dist/conf",
+        "watchAssets": true
+      }      
+    ],
+    "watchAssets": true,
     "deleteOutDir": true
   }
 }

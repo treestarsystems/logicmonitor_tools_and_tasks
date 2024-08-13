@@ -25,7 +25,7 @@ export class TasksService {
     accessKey: string,
     groupName: string,
     response: any,
-  ): Promise<void> {
+  ): Promise<void | ResponseObjectDefault> {
     let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
     const directlyRespondToApiCall = false;
     const extraRequestProperties = {
@@ -91,13 +91,24 @@ export class TasksService {
         returnObj.httpStatus = 400;
         returnObj.message = 'A backup item failed';
       }
-      response.status(returnObj.httpStatus).send(returnObj);
+      if (directlyRespondToApiCall) {
+        response.status(returnObj.httpStatus).send(returnObj);
+      } else {
+        return returnObj;
+      }
     } catch (err) {
-      response
-        .status(returnObj.httpStatus)
-        .send(
-          this.utilsService.defaultErrorHandlerHttp(err, returnObj.httpStatus),
-        );
+      if (directlyRespondToApiCall) {
+        response
+          .status(returnObj.httpStatus)
+          .send(
+            this.utilsService.defaultErrorHandlerHttp(
+              err,
+              returnObj.httpStatus,
+            ),
+          );
+      } else {
+        return returnObj;
+      }
     }
   }
 }

@@ -41,7 +41,7 @@ lerna-debug.log*
 .env.test.local
 .env.production.local
 .env.local
-.schedule-conf.json
+schedule-conf.json
 
 # temp directory
 .temp

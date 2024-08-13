@@ -2,11 +2,13 @@
   {
     "company": "xxxx",
     "accessId": "xxxx",
-    "accessKey": "xxxx"
+    "accessKey": "xxxx",
+    "groupName": "xxxx"
   },
   {
     "company": "xxxx",
     "accessId": "xxxx",
-    "accessKey": "xxxx"
+    "accessKey": "xxxx",
+    "groupName": "xxxx"
   }
 ]
