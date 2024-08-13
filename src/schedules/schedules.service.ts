@@ -1,12 +1,11 @@
-// https://docs.nestjs.com/techniques/task-scheduling
+import * as path from 'path';
+import { promises as fs } from 'fs';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { TasksService } from '../tasks/tasks.service';
-import { promises as fs } from 'fs';
 import { ToolsBackupDatasourcesRequest } from '../utils/utils.models';
 import { ResponseObjectDefault } from '../utils/utils.models';
 import { UtilsService } from '../utils/utils.service';
-import * as path from 'path';
 @Injectable()
 export class SchedulesService {
   constructor(
@@ -41,7 +40,7 @@ export class SchedulesService {
     try {
       const confData = await this.scheduleReadConf(this.scheduleConfFilePath);
       for (const conf of confData) {
-        Logger.log(`Executing backup for ${conf.company}`);
+        Logger.log(`Executing backup for ${conf.company.toUpperCase()}`);
         const scheduledTaskResult = (await this.tasksService.executeTaskBackups(
           conf.company,
           conf.accessId,
