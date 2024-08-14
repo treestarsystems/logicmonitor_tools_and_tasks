@@ -80,7 +80,7 @@ export class SchedulesService {
 
   // Schedule a task to run at 12:00 AM and 12:00 PM every day.
   @Cron('0 0,12 * * *', {
-    name: 'schedules.task: Daily Backup',
+    name: 'schedules.task: daily backup',
     timeZone: 'America/New_York',
   })
   async scheduleTaskDailyBackup() {
