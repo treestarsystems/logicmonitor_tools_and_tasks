@@ -47,7 +47,7 @@ export class SchedulesService {
       try {
         last =
           value?.lastDate()?.toLocaleString('en-US', timeZoneSettings) ??
-          'Never, or not yet run since server start.';
+          'Never, or not yet run since application start.';
       } catch (err) {
         last = this.utilsService.defaultErrorHandlerString(err);
       }
