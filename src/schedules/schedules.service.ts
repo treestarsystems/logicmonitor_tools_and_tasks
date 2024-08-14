@@ -23,7 +23,6 @@ export class SchedulesService {
     `../../${process.env.SCHEDULES_CONF_FILE_NAME}`,
   );
 
-  // TODO: This needs a return type.
   scheduleListCronJobs(
     response,
     directlyRespondToApiCall: boolean = true,
