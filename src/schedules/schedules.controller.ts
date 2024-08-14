@@ -8,7 +8,7 @@ import { ResponseObjectDefault } from 'src/utils/utils.models';
 export class SchedulesController {
   constructor(private readonly schedulesService: SchedulesService) {}
 
-  @Get('list')
+  @Get()
   @ApiOperation({
     summary: 'List all scheduled cron jobs.',
   })
