@@ -13,6 +13,7 @@ import {
   BackupSchemaDatasource,
   BackupSchemaGeneral,
 } from '../storage/schemas/storage-mongodb.schema';
+import { SchedulesController } from './schedules.controller';
 
 @Module({
   imports: [
@@ -30,5 +31,6 @@ import {
     StorageServiceMongoDB,
     StorageServiceZip,
   ],
+  controllers: [SchedulesController],
 })
 export class SchedulesModule {}

@@ -17,6 +17,7 @@ import { TasksService } from './tasks.service';
  */
 
 @Controller('tasks')
+@ApiTags('Tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
@@ -39,7 +40,6 @@ export class TasksController {
       'Execute all backups (datasources by group name, alert rules, and report).',
   })
   @ApiResponse({ type: ResponseObjectDefault })
-  @ApiTags('Tasks: Backups')
   async executeTaskBackupsPost(
     @Body() body: ToolsBackupDatasourcesRequest,
     @Res() response: Response,

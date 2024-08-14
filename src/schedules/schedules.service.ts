@@ -1,22 +1,70 @@
 import * as path from 'path';
 import { promises as fs } from 'fs';
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { Cron, SchedulerRegistry } from '@nestjs/schedule';
 import { TasksService } from '../tasks/tasks.service';
 import { ToolsBackupDatasourcesRequest } from '../utils/utils.models';
 import { ResponseObjectDefault } from '../utils/utils.models';
 import { UtilsService } from '../utils/utils.service';
+import {
+  ResponseObjectDefaultGenerator,
+  ScheduleListCronJobsResponse,
+} from '../utils/utils.models';
 @Injectable()
 export class SchedulesService {
   constructor(
     private tasksService: TasksService,
     private utilsService: UtilsService,
+    private schedulerRegistry: SchedulerRegistry,
   ) {}
 
   private readonly scheduleConfFilePath: string = path.resolve(
     __dirname,
     `../../${process.env.SCHEDULES_CONF_FILE_NAME}`,
   );
+
+  // TODO: This needs a return type.
+  scheduleListCronJobs(
+    response,
+    directlyRespondToApiCall: boolean = true,
+  ): ResponseObjectDefault {
+    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
+    const timeZoneSettings = {
+      timeZone: 'America/New_York',
+    };
+    const jobsGet = this.schedulerRegistry.getCronJobs();
+    const jobsList = [];
+    jobsGet.forEach((value, key, map) => {
+      let next, last;
+      try {
+        next = value
+          ?.nextDate()
+          ?.toJSDate()
+          ?.toLocaleString('en-US', timeZoneSettings);
+      } catch (err) {
+        next = this.utilsService.defaultErrorHandlerString(err);
+      }
+      try {
+        last =
+          value?.lastDate()?.toLocaleString('en-US', timeZoneSettings) ??
+          'Never, or not yet run since server start.';
+      } catch (err) {
+        last = this.utilsService.defaultErrorHandlerString(err);
+      }
+      const jobObj: ScheduleListCronJobsResponse = {
+        jobName: key,
+        nextRun: next,
+        lastRun: last,
+      };
+      jobsList.push(jobObj);
+    });
+    returnObj.payload = jobsList;
+    if (directlyRespondToApiCall) {
+      response.status(returnObj.httpStatus).send(returnObj);
+    } else {
+      return returnObj;
+    }
+  }
 
   async scheduleReadConf(
     confFilePath,
