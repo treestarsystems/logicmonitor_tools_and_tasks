@@ -78,7 +78,7 @@ export class SchedulesService {
     }
   }
 
-  // Schedule a task to run at 12:00 AM and 12:00 PM every day.
+  // Schedule a task to run at 12:00 AM EST, 12:00 PM EST, and 6:00PM EST every day.
   @Cron('0 0,12,18 * * *', {
     name: 'schedules.task: daily backup',
     timeZone: 'America/New_York',
