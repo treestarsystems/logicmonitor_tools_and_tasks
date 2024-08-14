@@ -47,6 +47,7 @@ export class SchedulesService {
           conf.accessKey,
           conf.groupName,
           {},
+          false,
         )) as ResponseObjectDefault;
         Logger.log(
           `Finished backup for ${conf.company.toUpperCase()} with result: ${this.utilsService.capitalizeFirstLetter(scheduledTaskResult.message)}`,
