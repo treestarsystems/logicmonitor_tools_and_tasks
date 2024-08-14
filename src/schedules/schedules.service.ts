@@ -34,7 +34,7 @@ export class SchedulesService {
     const jobsGet = this.schedulerRegistry.getCronJobs();
     const jobsList = [];
     jobsGet.forEach((value, key, map) => {
-      let next, last;
+      let next, last, future;
       try {
         next = value
           ?.nextDate()
@@ -50,10 +50,21 @@ export class SchedulesService {
       } catch (err) {
         last = this.utilsService.defaultErrorHandlerString(err);
       }
+      try {
+        future = value
+          ?.nextDates(4)
+          .map((date) => {
+            return date?.toJSDate()?.toLocaleString('en-US', timeZoneSettings);
+          })
+          .slice(1, 4);
+      } catch (err) {
+        future = this.utilsService.defaultErrorHandlerString(err);
+      }
       const jobObj: ScheduleListCronJobsResponse = {
         jobName: key,
         nextRun: next,
         lastRun: last,
+        futureRun: future,
       };
       jobsList.push(jobObj);
     });

@@ -250,6 +250,7 @@ export class ToolsBackupGeneralRequest extends BaseRequestObjectLM {
  * @jobName The name of the job.
  * @nextRun The next run time of the job in EST.
  * @lastRun The last run time of the job in EST.
+ * @futureRun The future run times of the job in EST.
  */
 export class ScheduleListCronJobsResponse {
   @IsString()
@@ -275,6 +276,14 @@ export class ScheduleListCronJobsResponse {
     type: 'string',
   })
   lastRun: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The future run times of the job in EST',
+    type: 'enum',
+  })
+  futureRun: string[];
 }
 
 /**
