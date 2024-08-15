@@ -110,7 +110,7 @@ export class BackupServiceDatasources {
             const dataXML: string = datasourceXMLExport.payload[0];
             const dataJSON: object = dle;
             const storageObj: BackupLMDataDatasource = {
-              type: 'dataSource',
+              type: 'datasource',
               name: dle.name,
               nameFormatted: datasourceNameParsed,
               company: company,

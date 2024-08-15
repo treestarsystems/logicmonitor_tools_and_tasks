@@ -25,9 +25,9 @@ export class TasksService {
     accessKey: string,
     groupName: string,
     response: any,
-  ): Promise<void> {
+    directlyRespondToApiCall: boolean = true,
+  ): Promise<void | ResponseObjectDefault> {
     let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
-    const directlyRespondToApiCall = false;
     const extraRequestProperties = {
       resourcePath: '',
       queryParams: '',
@@ -47,7 +47,7 @@ export class TasksService {
           accessKey,
           groupName,
           response,
-          directlyRespondToApiCall,
+          false,
         )) as ResponseObjectDefault;
       // Backup reports data.
       extraRequestProperties.resourcePath = '/report/reports';
@@ -59,7 +59,7 @@ export class TasksService {
           extraRequestProperties,
           { originalUrl: 'backup/reports' },
           response,
-          directlyRespondToApiCall,
+          false,
         )) as ResponseObjectDefault;
       // Backup alert rules data.
       extraRequestProperties.resourcePath = '/setting/alert/rules';
@@ -71,7 +71,7 @@ export class TasksService {
           extraRequestProperties,
           { originalUrl: 'backup/alertrules' },
           response,
-          directlyRespondToApiCall,
+          false,
         )) as ResponseObjectDefault;
 
       progressTracking.success = [
@@ -91,13 +91,24 @@ export class TasksService {
         returnObj.httpStatus = 400;
         returnObj.message = 'A backup item failed';
       }
-      response.status(returnObj.httpStatus).send(returnObj);
+      if (directlyRespondToApiCall) {
+        response.status(returnObj.httpStatus).send(returnObj);
+      } else {
+        return returnObj;
+      }
     } catch (err) {
-      response
-        .status(returnObj.httpStatus)
-        .send(
-          this.utilsService.defaultErrorHandlerHttp(err, returnObj.httpStatus),
-        );
+      if (directlyRespondToApiCall) {
+        response
+          .status(returnObj.httpStatus)
+          .send(
+            this.utilsService.defaultErrorHandlerHttp(
+              err,
+              returnObj.httpStatus,
+            ),
+          );
+      } else {
+        return returnObj;
+      }
     }
   }
 }

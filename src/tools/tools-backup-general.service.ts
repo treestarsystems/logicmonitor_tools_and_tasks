@@ -169,11 +169,11 @@ export class BackupServiceGeneral {
       // Find all backups in the MongoDB database.
       const backupsListGeneral = await this.storageServiceMongoDb.find(
         this.backupGeneralModel,
-        { company: company, type: { $ne: 'datasource' } },
+        { company: company, type: { $not: new RegExp('datasource', 'i') } },
       );
       const backupsListDatasources = await this.storageServiceMongoDb.find(
         this.backupDatasourceModel,
-        { company: company, type: 'datasource' },
+        { company: company, type: new RegExp('datasource', 'i') },
       );
       // Combine the two arrays into one.
       backupsListAll.push(...backupsListDatasources, ...backupsListGeneral);

@@ -246,6 +246,47 @@ export class ToolsBackupGeneralRequest extends BaseRequestObjectLM {
 }
 
 /**
+ * Job cron data for the scheduleListCronJobs API call.
+ * @jobName The name of the job.
+ * @nextRun The next run time of the job in EST.
+ * @lastRun The last run time of the job in EST.
+ * @futureRun The future run times of the job in EST.
+ */
+export class ScheduleListCronJobsResponse {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'Job name',
+    type: 'string',
+  })
+  jobName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The next run time of the job in EST',
+    type: 'string',
+  })
+  nextRun: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The last run time of the job in EST',
+    type: 'string',
+  })
+  lastRun: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The future run times of the job in EST',
+    type: 'enum',
+  })
+  futureRun: string[];
+}
+
+/**
  * This class generates the request object for the LogicMonitor API.
  * @method The method to use for the API call.
  * @accessId The access ID for the LogicMonitor account.
