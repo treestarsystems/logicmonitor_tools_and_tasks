@@ -126,7 +126,7 @@ export class RequestObjectLMApi extends BaseRequestObjectLM {
       'The query parameters for the API call. This is used to filter the data being returned in some cases.',
     type: 'string',
   })
-  queryParams: string;
+  queryParams?: string;
 
   @IsObject()
   @IsNotEmpty()
@@ -135,7 +135,7 @@ export class RequestObjectLMApi extends BaseRequestObjectLM {
       'The data to send in the API call. This is used to create or update data in LogicMonitor.',
     type: 'string',
   })
-  requestData: Object;
+  requestData?: Object;
 
   // @IsObject()
   @IsNotEmpty()
@@ -305,8 +305,8 @@ export class RequestObjectLMApiGenerator {
     private accessKey: string,
     private company: string,
     private resourcePath: string,
-    private queryParams: string,
-    private requestData: Object,
+    private queryParams?: string,
+    private requestData?: Object,
   ) {}
 
   public Create(): RequestObjectLMApi {
@@ -357,6 +357,7 @@ interface RequestObjectLMApiInterface {
   epoch: number;
   queryParams?: string;
   url: any;
+  resourcePath: string;
   requestData?: Record<string, any>;
   apiVersion: number;
 }
@@ -370,6 +371,7 @@ export class RequestObjectLMApiBuilder {
       epoch: new Date().getTime(),
       queryParams: '',
       url: '',
+      resourcePath: '',
       requestData: {},
       apiVersion: 3,
     };
@@ -396,6 +398,7 @@ export class RequestObjectLMApiBuilder {
   }
 
   setUrl(company: string, resourcePath: string): RequestObjectLMApiBuilder {
+    this.requestObj.resourcePath = resourcePath;
     this.requestObj.url = `https://${company}.logicmonitor.com/santaba/rest${resourcePath}`;
     return this;
   }

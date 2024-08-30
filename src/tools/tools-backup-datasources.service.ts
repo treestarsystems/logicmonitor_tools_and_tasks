@@ -4,8 +4,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import {
   RequestObjectLMApi,
   ResponseObjectDefault,
-  RequestObjectLMApiGenerator,
   ResponseObjectDefaultGenerator,
+  RequestObjectLMApiBuilder,
 } from '../utils/utils.models';
 import { UtilsService } from '../utils/utils.service';
 import { StorageServiceMongoDB } from '../storage/storage-mongodb.service';
@@ -55,17 +55,16 @@ export class BackupServiceDatasources {
         success: [],
         failure: [],
       };
-      // Create an object to store the progress of the backup jobs.
+
       const datasourcesGetObj: RequestObjectLMApi =
-        new RequestObjectLMApiGenerator(
-          'GET',
-          accessId,
-          accessKey,
-          company,
-          '/setting/datasources',
-          `filter=group~"${groupName}"`,
-          '',
-        ).Create();
+        new RequestObjectLMApiBuilder()
+          .setMethod('GET')
+          .setAccessId(accessId)
+          .setAccessKey(accessKey)
+          .setQueryParams(`filter=group~"${groupName}"`)
+          .setUrl(company, '/setting/datasources')
+          .build();
+
       const datasourcesList: ResponseObjectDefault =
         await this.utilsService.genericAPICall(datasourcesGetObj);
       returnObj.httpStatus = datasourcesList.httpStatus;
@@ -84,15 +83,14 @@ export class BackupServiceDatasources {
         let datasourceNameParsed: string = `datasource_${dle.name.replace(/\W/g, '_')}`;
         try {
           const datasourcesGetXMLObj: RequestObjectLMApi =
-            new RequestObjectLMApiGenerator(
-              'GET',
-              accessId,
-              accessKey,
-              company,
-              `/setting/datasources/${dle.id}`,
-              'format=xml',
-              '',
-            ).Create();
+            new RequestObjectLMApiBuilder()
+              .setMethod('GET')
+              .setAccessId(accessId)
+              .setAccessKey(accessKey)
+              .setQueryParams('format=xml')
+              .setUrl(company, `/setting/datasources/${dle.id}`)
+              .build();
+
           const datasourceXMLExport: ResponseObjectDefault =
             await this.utilsService.genericAPICall(datasourcesGetXMLObj);
           returnObj.httpStatus = datasourceXMLExport.httpStatus;
