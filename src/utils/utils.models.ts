@@ -11,7 +11,8 @@ import { AxiosRequestConfig } from 'axios';
 
 /**
  * This is a base class used to store request data for LogicMonitor API calls.
- * @accessId The access ID for the LogicMonitor account.
+ * @class {class}
+ * @accessId {string} The access ID for the LogicMonitor account.
  * @accessKey The access key for the LogicMonitor account.
  */
 
@@ -324,6 +325,92 @@ export class RequestObjectLMApiGenerator {
 }
 
 /**
+ * Interface representing a request object for LogicMonitor API.
+ *
+ * @interface RequestObjectLMApiInterface
+ * @property {string} method - The HTTP method (e.g., 'GET', 'POST').
+ * @property {string} accessId - The access ID for authentication.
+ * @property {string} accessKey - The access key for authentication.
+ * @property {number} epoch - The epoch timestamp for the request.
+ * @property {string} [queryParams] - The optional query parameters for the API request.
+ * @property {any} url - The URL for the API request.
+ * @property {Record<string, any>} [requestData] - The optional data to send with the request.
+ * @property {number} apiVersion - The version of the API being used.
+ *
+ * @example
+ * const requestObject: RequestObjectLMApiInterface = {
+ *   method: 'GET',
+ *   accessId: 'your-access-id',
+ *   accessKey: 'your-access-key',
+ *   epoch: 1627384956,
+ *   queryParams: 'param1=value1&param2=value2',
+ *   url: 'https://api.logicmonitor.com/some-endpoint',
+ *   requestData: { key: 'value' },
+ *   apiVersion: 2
+ * };
+ */
+
+interface RequestObjectLMApiInterface {
+  method: string;
+  accessId: string;
+  accessKey: string;
+  epoch: number;
+  queryParams?: string;
+  url: any;
+  requestData?: Record<string, any>;
+  apiVersion: number;
+}
+export class RequestObjectLMApiBuilder {
+  private requestObj: RequestObjectLMApiInterface;
+  constructor() {
+    this.requestObj = {
+      method: '',
+      accessId: '',
+      accessKey: '',
+      epoch: new Date().getTime(),
+      queryParams: '',
+      url: '',
+      requestData: {},
+      apiVersion: 3,
+    };
+  }
+
+  setMethod(method: string): RequestObjectLMApiBuilder {
+    this.requestObj.method = method;
+    return this;
+  }
+
+  setAccessId(accessId: string): RequestObjectLMApiBuilder {
+    this.requestObj.accessId = accessId;
+    return this;
+  }
+
+  setAccessKey(accessKey: string): RequestObjectLMApiBuilder {
+    this.requestObj.accessKey = accessKey;
+    return this;
+  }
+
+  setQueryParams(queryParams: string): RequestObjectLMApiBuilder {
+    this.requestObj.queryParams = queryParams;
+    return this;
+  }
+
+  setUrl(company: string, resourcePath: string): RequestObjectLMApiBuilder {
+    this.requestObj.url = `https://${company}.logicmonitor.com/santaba/rest${resourcePath}`;
+    return this;
+  }
+
+  setRequestData(requestData: Record<string, any>): RequestObjectLMApiBuilder {
+    this.requestObj.requestData = requestData;
+    return this;
+  }
+
+  build(): RequestObjectLMApiInterface {
+    return this.requestObj;
+  }
+}
+
+/**
  * This class generates the response object for the LogicMonitor API.
  * @status The status of the API call (success|failure).
  * @httpStatus The HTTP status code of the API call.
@@ -351,39 +438,18 @@ export class ResponseObjectDefaultGenerator {
 }
 
 /**
- * This class generates the request object for the LogicMonitor API.
- * @method The method to use for the API call.
- * @url The URL for the API call.
- * @data The data to send in the API call.
- * @authString The authorization string for the API call.
- * @returns A properly formatted request object for the Axios call to interact with the LogicMonitor API.
+ * Configuration object for Axios requests.
+ * @interface AxiosRequestConf
+ * @property {string} method - The HTTP method to use for the request (e.g., 'GET', 'POST').
+ * @property {string} url - The URL to send the request to.
+ * @property {any} [data] - The optional data to send with the request (for POST, PUT, PATCH methods).
+ * @property {Record<string, string | number>} headers - The headers to include in the request.
  */
 
-// export class AxiosParametersGenerator {
-//   constructor(
-//     private method: string,
-//     private url: string,
-//     private data: Object,
-//     private authString: string,
-//   ) {}
-
-//   public Create(): AxiosRequestConfig {
-//     return {
-//       method: this.method,
-//       url: this.url,
-//       data: this.data ?? '',
-//       headers: {
-//         ContentType: 'application/json',
-//         Authorization: this.authString,
-//       },
-//     };
-//   }
-// }
-
-interface AxiosRequestConf {
+interface AxiosParametersInterface {
   method: string;
   url: string;
-  data?: any;
+  requestData?: Record<string, string | number>;
   headers?: Record<string, string | number>;
 }
 
@@ -392,7 +458,7 @@ interface AxiosRequestConf {
  * @returns A properly formatted request object for the Axios call to interact with the LogicMonitor API.
  */
 export class AxiosParametersBuilder {
-  private axiosRequestConfig: AxiosRequestConf;
+  private axiosRequestConfig: AxiosParametersInterface;
 
   constructor() {
     this.axiosRequestConfig = {
@@ -421,12 +487,12 @@ export class AxiosParametersBuilder {
     return this;
   }
 
-  setData(data: any): AxiosParametersBuilder {
-    this.axiosRequestConfig.data = data ?? '';
+  setData(requestData: any): AxiosParametersBuilder {
+    this.axiosRequestConfig.requestData = requestData ?? '';
     return this;
   }
 
-  build(): AxiosRequestConf {
+  build(): AxiosParametersInterface {
     return this.axiosRequestConfig;
   }
 }

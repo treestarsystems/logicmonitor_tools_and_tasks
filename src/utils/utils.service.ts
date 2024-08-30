@@ -3,7 +3,6 @@ import {
   ResponseObjectDefault,
   RequestObjectLMApi,
   ResponseObjectDefaultGenerator,
-  // AxiosParametersGenerator,
   AxiosParametersBuilder,
 } from './utils.models';
 import * as crypto from 'crypto';
@@ -294,35 +293,25 @@ export class UtilsService {
 
   /**
    * Handles API calls with rate limiting.
-   * @param {Record<string, any>} headers - The headers from the API response.
+   * @param {AxiosResponse} apiResponse - The response from the API call.
    * @param {any} apiRequest - The API request object.
    * @param {AxiosRequestConfig} axiosParametersObj - The Axios request configuration object.
-   * @param {number} status - The HTTP status code from the API response.
-   * @param {any} data - The data from the API response.
    * @returns {Promise<any>} - A promise that resolves to the API response object.
    * @throws {Error} Throws an error if the authentication string is invalid.
    * @example
-   * const headers = { 'x-rate-limit-remaining': 0, 'x-rate-limit-window': 60 };
-   * const apiRequest = new Axios(axiosParametersObj);
-   * const axiosParametersObj = { method: 'GET', url: 'https://api.example.com/data' };
-   * const status = 200;
-   * const data = { key: 'value' };
-   *
-   * const response = await genericAPICallHandleRateLimit(headers, apiRequest, axiosParametersObj, status, data);
+   * const response = await genericAPICallHandleRateLimit(apiResponse, apiRequest, axiosParametersObj);
    * console.log(response);
    */
 
   private async genericAPICallHandleRateLimit(
-    headers: Record<string, any>,
+    apiResponse: AxiosResponse,
     apiRequest: any,
     axiosParametersObj: AxiosRequestConfig,
-    status: number,
-    data: any,
   ): Promise<any> {
+    const { data, status, headers } = apiResponse;
     let rateLimitRemaining: number = headers['x-rate-limit-remaining'];
     let rateLimitWindow: number = headers['x-rate-limit-window'] * 1000 + 1;
     let returnObj: any = {};
-
     if (rateLimitRemaining == 0) {
       await new Promise((resolve) => setTimeout(resolve, rateLimitWindow));
       const apiResponse: AxiosResponse =
@@ -385,14 +374,12 @@ export class UtilsService {
         throw errorMessage;
       }
       let rateLimitRemaining: number = headers['x-rate-limit-remaining'];
-      // If zero we need to delay the API call.
+      // If zero we need to delay the API call and retry.
       if (rateLimitRemaining == 0) {
         returnObj = await this.genericAPICallHandleRateLimit(
-          headers,
+          apiResponse,
           apiRequest,
           axiosParametersObj,
-          status,
-          data,
         );
       } else {
         returnObj.payload = [data];
