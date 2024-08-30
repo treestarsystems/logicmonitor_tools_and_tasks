@@ -359,23 +359,74 @@ export class ResponseObjectDefaultGenerator {
  * @returns A properly formatted request object for the Axios call to interact with the LogicMonitor API.
  */
 
-export class AxiosParametersGenerator {
-  constructor(
-    private method: string,
-    private url: string,
-    private data: Object,
-    private authString: string,
-  ) {}
+// export class AxiosParametersGenerator {
+//   constructor(
+//     private method: string,
+//     private url: string,
+//     private data: Object,
+//     private authString: string,
+//   ) {}
 
-  public Create(): AxiosRequestConfig {
-    return {
-      method: this.method,
-      url: this.url,
-      data: this.data ?? '',
+//   public Create(): AxiosRequestConfig {
+//     return {
+//       method: this.method,
+//       url: this.url,
+//       data: this.data ?? '',
+//       headers: {
+//         ContentType: 'application/json',
+//         Authorization: this.authString,
+//       },
+//     };
+//   }
+// }
+
+interface AxiosRequestConf {
+  method: string;
+  url: string;
+  data?: any;
+  headers?: Record<string, string | number>;
+}
+
+/**
+ * This class builds the request object for the LogicMonitor API.
+ * @returns A properly formatted request object for the Axios call to interact with the LogicMonitor API.
+ */
+export class AxiosParametersBuilder {
+  private axiosRequestConfig: AxiosRequestConf;
+
+  constructor() {
+    this.axiosRequestConfig = {
+      url: '',
+      method: '',
       headers: {
-        ContentType: 'application/json',
-        Authorization: this.authString,
+        Authorization: '',
+        'Content-Type': 'application/json',
+        'X-Version': 3,
       },
     };
+  }
+
+  setMethod(method: string): AxiosParametersBuilder {
+    this.axiosRequestConfig.method = method;
+    return this;
+  }
+
+  setUrl(url: string): AxiosParametersBuilder {
+    this.axiosRequestConfig.url = url;
+    return this;
+  }
+
+  setAuthString(authString: string): AxiosParametersBuilder {
+    this.axiosRequestConfig.headers['Authorization'] = authString;
+    return this;
+  }
+
+  setData(data: any): AxiosParametersBuilder {
+    this.axiosRequestConfig.data = data ?? '';
+    return this;
+  }
+
+  build(): AxiosRequestConf {
+    return this.axiosRequestConfig;
   }
 }

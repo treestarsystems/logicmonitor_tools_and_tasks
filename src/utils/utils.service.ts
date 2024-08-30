@@ -3,7 +3,8 @@ import {
   ResponseObjectDefault,
   RequestObjectLMApi,
   ResponseObjectDefaultGenerator,
-  AxiosParametersGenerator,
+  // AxiosParametersGenerator,
+  AxiosParametersBuilder,
 } from './utils.models';
 import * as crypto from 'crypto';
 import { Axios, AxiosRequestConfig, AxiosResponse } from 'axios';
@@ -309,7 +310,8 @@ export class UtilsService {
     requestObjectLMApi: RequestObjectLMApi,
   ): Promise<ResponseObjectDefault> {
     let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
-    const { method, queryParams, apiVersion, url } = requestObjectLMApi;
+    // const { method, queryParams, apiVersion, url } = requestObjectLMApi;
+    const { method, queryParams, url } = requestObjectLMApi;
     let urlString: string = `${url}?size=1000&`;
     if (queryParams) {
       urlString += `${queryParams}`;
@@ -327,15 +329,14 @@ export class UtilsService {
       if (!authString.toLowerCase().includes('lmv1')) {
         throw new Error('Invalid authString');
       }
-      let axiosParametersObj: AxiosRequestConfig = new AxiosParametersGenerator(
-        method,
-        urlStringEncoded,
-        requestObjectLMApi?.requestData,
-        authString,
-      ).Create();
-      if (apiVersion) {
-        axiosParametersObj.headers['X-Version'] = apiVersion;
-      }
+
+      const axiosParametersObj: AxiosRequestConfig =
+        new AxiosParametersBuilder()
+          .setMethod(method)
+          .setUrl(urlStringEncoded)
+          .setAuthString(authString)
+          .build();
+
       const apiRequest = new Axios(axiosParametersObj);
       const apiResponse: AxiosResponse =
         await apiRequest.request(axiosParametersObj);
