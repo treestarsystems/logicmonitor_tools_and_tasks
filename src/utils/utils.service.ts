@@ -293,6 +293,51 @@ export class UtilsService {
   }
 
   /**
+   * Handles API calls with rate limiting.
+   * @param {Record<string, any>} headers - The headers from the API response.
+   * @param {any} apiRequest - The API request object.
+   * @param {AxiosRequestConfig} axiosParametersObj - The Axios request configuration object.
+   * @param {number} status - The HTTP status code from the API response.
+   * @param {any} data - The data from the API response.
+   * @returns {Promise<any>} - A promise that resolves to the API response object.
+   * @throws {Error} Throws an error if the authentication string is invalid.
+   * @example
+   * const headers = { 'x-rate-limit-remaining': 0, 'x-rate-limit-window': 60 };
+   * const apiRequest = new Axios(axiosParametersObj);
+   * const axiosParametersObj = { method: 'GET', url: 'https://api.example.com/data' };
+   * const status = 200;
+   * const data = { key: 'value' };
+   *
+   * const response = await genericAPICallHandleRateLimit(headers, apiRequest, axiosParametersObj, status, data);
+   * console.log(response);
+   */
+
+  private async genericAPICallHandleRateLimit(
+    headers: Record<string, any>,
+    apiRequest: any,
+    axiosParametersObj: AxiosRequestConfig,
+    status: number,
+    data: any,
+  ): Promise<any> {
+    let rateLimitRemaining: number = headers['x-rate-limit-remaining'];
+    let rateLimitWindow: number = headers['x-rate-limit-window'] * 1000 + 1;
+    let returnObj: any = {};
+
+    if (rateLimitRemaining == 0) {
+      await new Promise((resolve) => setTimeout(resolve, rateLimitWindow));
+      const apiResponse: AxiosResponse =
+        await apiRequest.request(axiosParametersObj);
+      const { data, status } = apiResponse;
+      returnObj.httpStatus = status;
+      returnObj.payload = [data];
+    } else {
+      returnObj.httpStatus = status;
+      returnObj.payload = [data];
+    }
+    return returnObj;
+  }
+
+  /**
    * Make a generic API call to LogicMonitor
    * @param {RequestObjectLMApi} requestObjectLMApi An object containing the method, requestData, queryParams, apiVersion, and url
    * @returns {Promise<ResponseObjectDefault>} An object with status, message, and payload properties
@@ -310,64 +355,47 @@ export class UtilsService {
     requestObjectLMApi: RequestObjectLMApi,
   ): Promise<ResponseObjectDefault> {
     let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
-    // const { method, queryParams, apiVersion, url } = requestObjectLMApi;
-    const { method, queryParams, url } = requestObjectLMApi;
-    let urlString: string = `${url}?size=1000&`;
-    if (queryParams) {
-      urlString += `${queryParams}`;
-    }
-    // Encode the query parameters in the URL
-    const urlStringEncoded: string = this.encodeQueryParameters(urlString);
-    // Remove requestData from the request object if the method is 'get' or 'delete'
-    let methodRegEx = /^get$|^delete$/gi;
-    if (methodRegEx.test(method)) {
-      delete requestObjectLMApi.requestData;
-    }
     try {
-      const { generateAuthString } = this;
-      let authString: string = generateAuthString(requestObjectLMApi);
+      const { method, queryParams, url } = requestObjectLMApi;
+      const urlStringEncoded: string = this.encodeQueryParameters(
+        `${url}?size=1000&${queryParams ?? ''}`,
+      );
+      // Remove requestData from the request object if the method is 'get' or 'delete'
+      let methodRegEx = /^get$|^delete$/gi;
+      if (methodRegEx.test(method)) {
+        delete requestObjectLMApi.requestData;
+      }
+      let authString: string = this.generateAuthString(requestObjectLMApi);
       if (!authString.toLowerCase().includes('lmv1')) {
         throw new Error('Invalid authString');
       }
-
       const axiosParametersObj: AxiosRequestConfig =
         new AxiosParametersBuilder()
           .setMethod(method)
           .setUrl(urlStringEncoded)
           .setAuthString(authString)
           .build();
-
       const apiRequest = new Axios(axiosParametersObj);
       const apiResponse: AxiosResponse =
         await apiRequest.request(axiosParametersObj);
       const { data, status, headers } = apiResponse;
-
-      // Set HTTP status code for use in error handling
       returnObj.httpStatus = status;
       if (status > 299) {
         const errorMessage: string = `(${status}) - ${JSON.parse(data)?.errorMessage}`;
         throw errorMessage;
       }
       let rateLimitRemaining: number = headers['x-rate-limit-remaining'];
-      let rateLimitWindow: number = headers['x-rate-limit-window'] * 1000 + 1;
-      let whileVar: boolean = false;
+      // If zero we need to delay the API call.
       if (rateLimitRemaining == 0) {
-        whileVar = true;
-        while (whileVar) {
-          setTimeout(async () => {
-            //If rate limit reached we need to wait.
-            const apiResponse: AxiosResponse =
-              await apiRequest.request(axiosParametersObj);
-            const { data } = apiResponse;
-            returnObj.httpStatus = status;
-            returnObj.payload = [data];
-          }, rateLimitWindow);
-          return returnObj;
-        }
+        returnObj = await this.genericAPICallHandleRateLimit(
+          headers,
+          apiRequest,
+          axiosParametersObj,
+          status,
+          data,
+        );
       } else {
-        returnObj.httpStatus = status;
         returnObj.payload = [data];
-        return returnObj;
       }
       return returnObj;
     } catch (err) {
