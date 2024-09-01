@@ -7,7 +7,7 @@ import { ToolsBackupDatasourcesRequest } from '../utils/utils.models';
 import { ResponseObjectDefault } from '../utils/utils.models';
 import { UtilsService } from '../utils/utils.service';
 import {
-  ResponseObjectDefaultGenerator,
+  ResponseObjectDefaultBuilder,
   ScheduleListCronJobsResponse,
 } from '../utils/utils.models';
 @Injectable()
@@ -27,7 +27,8 @@ export class SchedulesService {
     response,
     directlyRespondToApiCall: boolean = true,
   ): ResponseObjectDefault {
-    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
+    let returnObj: ResponseObjectDefault =
+      new ResponseObjectDefaultBuilder().build();
     const timeZoneSettings = {
       timeZone: 'America/New_York',
     };

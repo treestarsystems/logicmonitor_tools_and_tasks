@@ -1,5 +1,12 @@
+import * as sinon from 'sinon';
+import * as crypto from 'crypto';
 import { Logger } from '@nestjs/common';
 import { UtilsService } from '../src/utils/utils.service';
+import { Axios, AxiosResponse } from 'axios';
+import {
+  RequestObjectLMApi,
+  ResponseObjectDefault,
+} from '../src/utils/utils.models';
 
 describe('UtilsService', () => {
   let utilsService: UtilsService;
@@ -18,7 +25,6 @@ describe('UtilsService', () => {
   describe('genSpecial', () => {
     it('should generate a random alphanumeric string with special characters', () => {
       const result = utilsService.genSpecial(10);
-      // expect(result).toMatch(/[a-zA-Z0-9!@#$%*_\-(),;:.]{10}/);
       expect(result).toMatch(/[a-zA-Z0-9!@#$%_\-(),;:.*]{10}/);
     });
   });
@@ -126,5 +132,159 @@ describe('UtilsService', () => {
     });
   });
 
-  // Add more test cases for other methods in the UtilsService class
+  describe('generateAuthString', () => {
+    it('should generate a valid authorization string', () => {
+      const requestObjectLMApi = {
+        method: 'GET',
+        epoch: 1609459200000,
+        resourcePath: '/resource/path',
+        accessId: 'testAccessId',
+        accessKey: 'testAccessKey',
+        requestData: { key: 'value' },
+        url: '',
+        apiVersion: 3,
+      };
+
+      const expectedSignature = crypto
+        .createHmac('sha256', requestObjectLMApi.accessKey)
+        .update(
+          `${requestObjectLMApi.method}${requestObjectLMApi.epoch}${JSON.stringify(requestObjectLMApi.requestData)}${requestObjectLMApi.resourcePath}`,
+        )
+        .digest('hex');
+      const expectedAuthString = `LMv1 ${requestObjectLMApi.accessId}:${Buffer.from(expectedSignature, 'utf-8').toString('base64')}:${requestObjectLMApi.epoch}`;
+      const result = utilsService.generateAuthString(requestObjectLMApi);
+      expect(result).toEqual(expectedAuthString);
+    });
+
+    it('should handle missing requestData gracefully', () => {
+      const requestObjectLMApi = {
+        method: 'GET',
+        epoch: 1609459200000,
+        resourcePath: '/resource/path',
+        accessId: 'testAccessId',
+        accessKey: 'testAccessKey',
+        requestData: null,
+        url: '',
+        apiVersion: 3,
+      };
+
+      const expectedSignature = crypto
+        .createHmac('sha256', requestObjectLMApi.accessKey)
+        .update(
+          `${requestObjectLMApi.method}${requestObjectLMApi.epoch}${requestObjectLMApi.resourcePath}`,
+        )
+        .digest('hex');
+      const expectedAuthString = `LMv1 ${requestObjectLMApi.accessId}:${Buffer.from(expectedSignature, 'utf-8').toString('base64')}:${requestObjectLMApi.epoch}`;
+      const result = utilsService.generateAuthString(requestObjectLMApi);
+      expect(result).toEqual(expectedAuthString);
+    });
+
+    describe('utilsService.genericAPICall', () => {
+      it('should make a successful API call and return the response data', async () => {
+        const requestObjectLMApi: RequestObjectLMApi = {
+          method: 'GET',
+          queryParams: 'param1=value1&param2=value2',
+          url: 'https://api.example.com/resource',
+          accessId: 'testAccessId',
+          accessKey: 'testAccessKey',
+          epoch: 1609459200000,
+          resourcePath: '/resource/path',
+          requestData: null,
+          apiVersion: 3,
+        };
+
+        const mockResponse: AxiosResponse = {
+          data: { key: 'value' },
+          status: 200,
+          statusText: 'OK',
+          headers: { 'x-rate-limit-remaining': 10 },
+          config: {
+            headers: undefined,
+          },
+        };
+
+        const axiosStub = sinon
+          .stub(Axios.prototype, 'request')
+          .resolves(mockResponse);
+
+        const result: ResponseObjectDefault =
+          await utilsService.genericAPICall(requestObjectLMApi);
+
+        expect(result.httpStatus).toEqual(200);
+        expect(result.payload).toEqual([{ key: 'value' }]);
+
+        axiosStub.restore();
+      });
+
+      it('should handle rate limit and retry the API call', async () => {
+        const requestObjectLMApi: RequestObjectLMApi = {
+          method: 'GET',
+          queryParams: 'param1=value1&param2=value2',
+          url: 'https://api.example.com/resource',
+          accessId: 'testAccessId',
+          accessKey: 'testAccessKey',
+          epoch: 1609459200000,
+          resourcePath: '/resource/path',
+          requestData: null,
+          apiVersion: 3,
+        };
+
+        const mockResponse: AxiosResponse = {
+          data: { key: 'value' },
+          status: 200,
+          statusText: 'OK',
+          headers: { 'x-rate-limit-remaining': 0 },
+          config: {
+            headers: undefined,
+          },
+        };
+
+        const axiosStub = sinon
+          .stub(Axios.prototype, 'request')
+          .resolves(mockResponse);
+        const rateLimitStub = sinon
+          .stub(utilsService, 'genericAPICallHandleRateLimit')
+          .resolves({
+            httpStatus: 200,
+            payload: [{ key: 'value' }],
+          });
+
+        const result: ResponseObjectDefault =
+          await utilsService.genericAPICall(requestObjectLMApi);
+
+        expect(result.httpStatus).toEqual(200);
+        expect(result.payload).toEqual([{ key: 'value' }]);
+
+        axiosStub.restore();
+        rateLimitStub.restore();
+      });
+
+      it('should handle errors and return a default error response', async () => {
+        const requestObjectLMApi: RequestObjectLMApi = {
+          method: 'GET',
+          queryParams: 'param1=value1&param2=value2',
+          url: 'https://api.example.com/resource',
+          accessId: 'testAccessId',
+          accessKey: 'testAccessKey',
+          epoch: 1609459200000,
+          resourcePath: '/resource/path',
+          requestData: null,
+          apiVersion: 3,
+        };
+
+        const axiosStub = sinon
+          .stub(Axios.prototype, 'request')
+          .rejects(new Error('Test error'));
+
+        const result: ResponseObjectDefault =
+          await utilsService.genericAPICall(requestObjectLMApi);
+
+        // expect(result.httpStatus).not.toEqual(400);
+        expect(result.httpStatus).toEqual(400);
+        expect(result.payload).toStrictEqual([]);
+
+        axiosStub.restore();
+      });
+    });
+  });
 });
