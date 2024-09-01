@@ -279,7 +279,6 @@ describe('UtilsService', () => {
         const result: ResponseObjectDefault =
           await utilsService.genericAPICall(requestObjectLMApi);
 
-        // expect(result.httpStatus).not.toEqual(400);
         expect(result.httpStatus).toEqual(400);
         expect(result.payload).toStrictEqual([]);
 

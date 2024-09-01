@@ -1,4 +1,3 @@
-// import * as fs from 'fs';
 import { promises as fs } from 'fs';
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
@@ -66,9 +65,8 @@ export class BackupServiceGeneral {
     let returnObj: ResponseObjectDefault =
       new ResponseObjectDefaultBuilder().build();
     // Get the backup type from the request URL.
-    let backupType =
-      request.originalUrl.split('/')[request.originalUrl.split('/').length - 1];
-    if (backupType.endsWith('s')) {
+    let backupType = request.originalUrl.split('/').pop();
+    if (backupType?.endsWith('s')) {
       backupType = backupType.slice(0, -1);
     }
     // Confirm the backup type matches the resource path.
@@ -96,14 +94,15 @@ export class BackupServiceGeneral {
       const resultList: ResponseObjectDefault =
         await this.utilsService.genericAPICall(generalGetObj);
       returnObj.httpStatus = resultList.httpStatus;
-      if (resultList.status == 'failure') {
-        progressTracking.failure.push(
-          `Failure: Retrieving ${backupType} list - ${resultList.message}`,
-        );
+
+      if (resultList.status === 'failure') {
+        const failureMessage = `Failure: Retrieving ${backupType} list - ${resultList.message}`;
+        progressTracking.failure.push(failureMessage);
         returnObj.payload.push(progressTracking);
-        throw new Error(
-          this.utilsService.defaultErrorHandlerString(resultList.message),
+        const errorMessage = this.utilsService.defaultErrorHandlerString(
+          resultList.message,
         );
+        throw new Error(errorMessage);
       }
       // Lets loop through the response and extract the items that match our filter into a new array.
       const payloadItems = JSON.parse(resultList.payload).items;
@@ -127,9 +126,9 @@ export class BackupServiceGeneral {
       returnObj.message = `${this.utilsService.capitalizeFirstLetter(backupType)} backup completed: ${progressTracking.success.length} successful, ${progressTracking.failure.length} failed.`;
       if (directlyRespondToApiCall) {
         response.status(returnObj.httpStatus).send(returnObj);
-      } else {
-        return returnObj;
+        return;
       }
+      return returnObj;
     } catch (err) {
       if (directlyRespondToApiCall) {
         response
