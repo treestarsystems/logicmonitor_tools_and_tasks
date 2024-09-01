@@ -27,7 +27,7 @@ export class UtilsService {
    * genRandomString(10) // returns 'aBcDeFgHiJ'
    */
 
-  genRegular(stringLength: number): string {
+  public genRegular(stringLength: number): string {
     const regularchar: string =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let text: string = '';
@@ -47,7 +47,7 @@ export class UtilsService {
    * genSpecial(10) // returns 'aBcDeFgHiJ!@#$%'
    */
 
-  genSpecial(stringLength: number): string {
+  public genSpecial(stringLength: number): string {
     const specialchar: string =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%_-(),;:.*';
     let text: string = '';
@@ -67,7 +67,7 @@ export class UtilsService {
    * genSpecialOnly(10) // returns '!@#$%_-(),'
    */
 
-  genSpecialOnly(stringLength: number): string {
+  public genSpecialOnly(stringLength: number): string {
     const specialchar: string = '!@#$%_-(),;:.*';
     let text: string = '';
     for (let i = 0; i < stringLength; i++) {
@@ -87,7 +87,7 @@ export class UtilsService {
    * getRandomInt(1, 10) // returns 5
    */
 
-  getRandomInt(min: number, max: number): number {
+  public getRandomInt(min: number, max: number): number {
     return Math.round(Math.random() * (max - min) + min);
   }
 
@@ -97,7 +97,7 @@ export class UtilsService {
    * @returns {string} The string with the first letter capitalized.
    */
 
-  capitalizeFirstLetter(str: string): string {
+  public capitalizeFirstLetter(str: string): string {
     if (!str) return str;
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
@@ -110,7 +110,7 @@ export class UtilsService {
    * randomCaps('hello') // returns 'heLlo'
    */
 
-  randomCaps(word: string): string {
+  public randomCaps(word: string): string {
     const position: number = this.getRandomInt(0, word.length);
     return `${this.replaceAt(word, position, word.charAt(position).toUpperCase())}`;
   }
@@ -123,7 +123,7 @@ export class UtilsService {
    * insertSpecialChars('hello') // returns 'hel!lo'
    */
 
-  insertSpecialChars(word: string): string {
+  public insertSpecialChars(word: string): string {
     const specialchar: string = '!@#$%_-(),;:.*';
     let index: number = this.getRandomInt(1, word.length);
     let text: string = specialchar.charAt(
@@ -141,7 +141,7 @@ export class UtilsService {
    * @returns {string} The string with the character replaced
    */
 
-  replaceAt(
+  public replaceAt(
     originalString: string,
     replacementIndex: number,
     replacementString: string,
@@ -157,7 +157,7 @@ export class UtilsService {
    * uuidv4() // returns 'bee5063a-4711-45eb-8a44-d84cc4925b8b'
    */
 
-  uuidv4(): string {
+  public uuidv4(): string {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
       let r = (Math.random() * 16) | 0,
         v = c == 'x' ? r : (r & 0x3) | 0x8;
@@ -174,7 +174,7 @@ export class UtilsService {
    * validateJSON({ "name": "John", "age": 30, "city": "New York" }) // returns true
    */
 
-  validateJSON(obj: any): boolean {
+  public validateJSON(obj: any): boolean {
     if (typeof obj === 'string') return false;
     let o = JSON.stringify(obj);
     try {
@@ -199,7 +199,7 @@ export class UtilsService {
    * encodeQueryParameters('www.foobar.com/?first=1&second=12&third=5') // returns 'www.foobar.com/?first=1&amp;second=12&amp;third=5'
    */
 
-  encodeQueryParameters(url: string): string {
+  public encodeQueryParameters(url: string): string {
     // Split the URL into the base URL and query parameters
     const [baseUrl, queryParamsString] = url.split('?');
 
@@ -233,7 +233,7 @@ export class UtilsService {
    * defaultErrorHandlerString('Error: Something went wrong') // returns 'Error: Error: Something went wrong'
    */
 
-  defaultErrorHandlerString(err): string {
+  public defaultErrorHandlerString(err): string {
     return err?.message ? err.message : err;
   }
 
@@ -246,7 +246,7 @@ export class UtilsService {
    * defaultErrorHandler('Error: Something went wrong') // returns { status: 'failure', httpStatusCode: 400, message: 'Error: Error: Something went wrong', payload: [] }
    */
 
-  defaultErrorHandlerHttp(
+  public defaultErrorHandlerHttp(
     err,
     httpStatusCode: number = 400,
   ): ResponseObjectDefault {
@@ -267,7 +267,7 @@ export class UtilsService {
    * @throws Will return the error if an exception occurs during the generation process.
    */
 
-  generateAuthString(requestObjectLMApi: RequestObjectLMApi): string {
+  public generateAuthString(requestObjectLMApi: RequestObjectLMApi): string {
     try {
       const { method, epoch, resourcePath, accessId, accessKey, requestData } =
         requestObjectLMApi;
@@ -332,7 +332,7 @@ export class UtilsService {
    * }) // returns { status: 'success', httpStatus: 200, message: 'success', payload: [{ name: 'John', age: 30, city: 'New York' }] }
    */
 
-  async genericAPICall(
+  public async genericAPICall(
     requestObjectLMApi: RequestObjectLMApi,
   ): Promise<ResponseObjectDefault> {
     let returnObj: ResponseObjectDefault =
