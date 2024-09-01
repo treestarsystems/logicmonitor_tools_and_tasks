@@ -264,16 +264,8 @@ export class UtilsService {
   /**
    * Generate an authentication string for LogicMonitor API calls
    * @param {RequestObjectLMApi} requestObject An object containing the method, epoch, requestData, resourcePath, accessId, and accessKey
-   * @returns {string} An authentication string
-   * @example
-   * generateAuthString({
-   *  method: 'get',
-   * epoch: '1234567890',
-   * requestData: { name: 'John', age: 30, city: 'New York' },
-   * resourcePath: '/api/v1/endpoint',
-   * accessId: '
-   * accessKey:
-   * }) // returns 'LMv1 accessId:signature:epoch'
+   * @returns {string} The generated authorization string.
+   * @throws Will return the error if an exception occurs during the generation process.
    */
 
   generateAuthString(requestObjectLMApi: RequestObjectLMApi): string {

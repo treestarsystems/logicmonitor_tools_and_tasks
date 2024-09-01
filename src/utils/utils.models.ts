@@ -9,6 +9,38 @@ import {
 } from 'class-validator';
 
 /**
+ * Interface representing a default response object.
+ * @interface ResponseObjectDefaultInterface
+ * @property {string} status - The status of the response.
+ * @property {number} httpStatus - The HTTP status code of the response.
+ * @property {string} message - The message associated with the response.
+ * @property {any[any]} payload - The payload of the response.
+ */
+
+interface ResponseObjectDefaultInterface {
+  status: string;
+  httpStatus: number;
+  message: string;
+  payload: any[any];
+}
+
+/**
+ * Configuration object for Axios requests.
+ * @interface AxiosRequestConf
+ * @property {string} method - The HTTP method to use for the request (e.g., 'GET', 'POST').
+ * @property {string} url - The URL to send the request to.
+ * @property {any} [data] - The optional data to send with the request (for POST, PUT, PATCH methods).
+ * @property {Record<string, string | number>} headers - The headers to include in the request.
+ */
+
+interface AxiosParametersInterface {
+  method: string;
+  url: string;
+  requestData?: Record<string, string | number>;
+  headers?: Record<string, string | number>;
+}
+
+/**
  * This is a base class used to store request data for LogicMonitor API calls.
  * @class {class}
  * @accessId {string} The access ID for the LogicMonitor account.
@@ -413,22 +445,6 @@ export class RequestObjectLMApiBuilder {
 }
 
 /**
- * Interface representing a default response object.
- * @interface ResponseObjectDefaultInterface
- * @property {string} status - The status of the response.
- * @property {number} httpStatus - The HTTP status code of the response.
- * @property {string} message - The message associated with the response.
- * @property {any[any]} payload - The payload of the response.
- */
-
-interface ResponseObjectDefaultInterface {
-  status: string;
-  httpStatus: number;
-  message: string;
-  payload: any[any];
-}
-
-/**
  * Builder class for creating a default response object.
  * @class ResponseObjectDefaultBuilder
  * @implements {ResponseObjectDefaultInterface}
@@ -496,22 +512,6 @@ export class ResponseObjectDefaultBuilder {
   public build(): ResponseObjectDefaultInterface {
     return this.responseObjectDefault;
   }
-}
-
-/**
- * Configuration object for Axios requests.
- * @interface AxiosRequestConf
- * @property {string} method - The HTTP method to use for the request (e.g., 'GET', 'POST').
- * @property {string} url - The URL to send the request to.
- * @property {any} [data] - The optional data to send with the request (for POST, PUT, PATCH methods).
- * @property {Record<string, string | number>} headers - The headers to include in the request.
- */
-
-interface AxiosParametersInterface {
-  method: string;
-  url: string;
-  requestData?: Record<string, string | number>;
-  headers?: Record<string, string | number>;
 }
 
 /**
