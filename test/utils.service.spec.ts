@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { UtilsService } from '../src/utils/utils.service';
+import * as crypto from 'crypto';
 
 describe('UtilsService', () => {
   let utilsService: UtilsService;
@@ -18,7 +19,6 @@ describe('UtilsService', () => {
   describe('genSpecial', () => {
     it('should generate a random alphanumeric string with special characters', () => {
       const result = utilsService.genSpecial(10);
-      // expect(result).toMatch(/[a-zA-Z0-9!@#$%*_\-(),;:.]{10}/);
       expect(result).toMatch(/[a-zA-Z0-9!@#$%_\-(),;:.*]{10}/);
     });
   });
@@ -126,5 +126,51 @@ describe('UtilsService', () => {
     });
   });
 
-  // Add more test cases for other methods in the UtilsService class
+  describe('generateAuthString', () => {
+    it('should generate a valid authorization string', () => {
+      const requestObjectLMApi = {
+        method: 'GET',
+        epoch: 1609459200000,
+        resourcePath: '/resource/path',
+        accessId: 'testAccessId',
+        accessKey: 'testAccessKey',
+        requestData: { key: 'value' },
+        url: '',
+        apiVersion: 3,
+      };
+
+      const expectedSignature = crypto
+        .createHmac('sha256', requestObjectLMApi.accessKey)
+        .update(
+          `${requestObjectLMApi.method}${requestObjectLMApi.epoch}${JSON.stringify(requestObjectLMApi.requestData)}${requestObjectLMApi.resourcePath}`,
+        )
+        .digest('hex');
+      const expectedAuthString = `LMv1 ${requestObjectLMApi.accessId}:${Buffer.from(expectedSignature, 'utf-8').toString('base64')}:${requestObjectLMApi.epoch}`;
+      const result = utilsService.generateAuthString(requestObjectLMApi);
+      expect(result).toEqual(expectedAuthString);
+    });
+
+    it('should handle missing requestData gracefully', () => {
+      const requestObjectLMApi = {
+        method: 'GET',
+        epoch: 1609459200000,
+        resourcePath: '/resource/path',
+        accessId: 'testAccessId',
+        accessKey: 'testAccessKey',
+        requestData: null,
+        url: '',
+        apiVersion: 3,
+      };
+
+      const expectedSignature = crypto
+        .createHmac('sha256', requestObjectLMApi.accessKey)
+        .update(
+          `${requestObjectLMApi.method}${requestObjectLMApi.epoch}${requestObjectLMApi.resourcePath}`,
+        )
+        .digest('hex');
+      const expectedAuthString = `LMv1 ${requestObjectLMApi.accessId}:${Buffer.from(expectedSignature, 'utf-8').toString('base64')}:${requestObjectLMApi.epoch}`;
+      const result = utilsService.generateAuthString(requestObjectLMApi);
+      expect(result).toEqual(expectedAuthString);
+    });
+  });
 });
