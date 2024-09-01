@@ -3,7 +3,7 @@ import { BackupServiceDatasources } from '../tools/tools-backup-datasources.serv
 import { BackupServiceGeneral } from '../tools/tools-backup-general.service';
 import {
   ResponseObjectDefault,
-  ResponseObjectDefaultGenerator,
+  ResponseObjectDefaultBuilder,
 } from '../utils/utils.models';
 import { UtilsService } from '../utils/utils.service';
 
@@ -15,10 +15,6 @@ export class TasksService {
     private utilsService: UtilsService,
   ) {}
 
-  //   getTaskList(): string {
-  //     return 'This action returns all tasks';
-  //   }
-
   async executeTaskBackups(
     company: string,
     accessId: string,
@@ -27,7 +23,8 @@ export class TasksService {
     response: any,
     directlyRespondToApiCall: boolean = true,
   ): Promise<void | ResponseObjectDefault> {
-    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
+    let returnObj: ResponseObjectDefault =
+      new ResponseObjectDefaultBuilder().build();
     const extraRequestProperties = {
       resourcePath: '',
       queryParams: '',
@@ -107,7 +104,7 @@ export class TasksService {
             ),
           );
       } else {
-        return returnObj;
+        return this.utilsService.defaultErrorHandlerHttp(err);
       }
     }
   }

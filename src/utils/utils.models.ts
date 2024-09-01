@@ -7,7 +7,6 @@ import {
   IsString,
   IsNotEmpty,
 } from 'class-validator';
-import { AxiosRequestConfig } from 'axios';
 
 /**
  * This is a base class used to store request data for LogicMonitor API calls.
@@ -45,7 +44,7 @@ export class BaseRequestObjectLM {
  * @payload The payload from the API call.
  */
 
-export class ResponseObjectDefault {
+export class ResponseObjectDefault implements ResponseObjectDefaultInterface {
   @IsString()
   @ApiProperty({
     description: 'The custom status of the API call',
@@ -288,45 +287,7 @@ export class ScheduleListCronJobsResponse {
 }
 
 /**
- * This class generates the request object for the LogicMonitor API.
- * @method The method to use for the API call.
- * @accessId The access ID for the LogicMonitor account.
- * @accessKey The access key for the LogicMonitor account.
- * @company The company name for the LogicMonitor account.
- * @resourcePath The path to the resource that the API call is being made to.
- * @queryParams The query parameters for the API call.
- * @requestData The data to send in the API call.
- * @returns A properly formatted request object for the LogicMonitor API call.
- */
-export class RequestObjectLMApiGenerator {
-  constructor(
-    private method: string,
-    private accessId: string,
-    private accessKey: string,
-    private company: string,
-    private resourcePath: string,
-    private queryParams?: string,
-    private requestData?: Object,
-  ) {}
-
-  public Create(): RequestObjectLMApi {
-    return {
-      method: this.method,
-      accessId: this.accessId,
-      accessKey: this.accessKey,
-      epoch: new Date().getTime(),
-      resourcePath: this.resourcePath ?? '/',
-      queryParams: this.queryParams ?? '',
-      url: `https://${this.company}.logicmonitor.com/santaba/rest${this.resourcePath}`,
-      requestData: this.requestData ?? {},
-      apiVersion: 3,
-    };
-  }
-}
-
-/**
  * Interface representing a request object for LogicMonitor API.
- *
  * @interface RequestObjectLMApiInterface
  * @property {string} method - The HTTP method (e.g., 'GET', 'POST').
  * @property {string} accessId - The access ID for authentication.
@@ -336,18 +297,6 @@ export class RequestObjectLMApiGenerator {
  * @property {any} url - The URL for the API request.
  * @property {Record<string, any>} [requestData] - The optional data to send with the request.
  * @property {number} apiVersion - The version of the API being used.
- *
- * @example
- * const requestObject: RequestObjectLMApiInterface = {
- *   method: 'GET',
- *   accessId: 'your-access-id',
- *   accessKey: 'your-access-key',
- *   epoch: 1627384956,
- *   queryParams: 'param1=value1&param2=value2',
- *   url: 'https://api.logicmonitor.com/some-endpoint',
- *   requestData: { key: 'value' },
- *   apiVersion: 2
- * };
  */
 
 interface RequestObjectLMApiInterface {
@@ -361,8 +310,18 @@ interface RequestObjectLMApiInterface {
   requestData?: Record<string, any>;
   apiVersion: number;
 }
+/**
+ * Builder class for creating a request object for LogicMonitor API.
+ * @class RequestObjectLMApiBuilder
+ * @implements {RequestObjectLMApiInterface}
+ */
 export class RequestObjectLMApiBuilder {
   private requestObj: RequestObjectLMApiInterface;
+
+  /**
+   * Creates an instance of RequestObjectLMApiBuilder.
+   * Initializes the request object with default values.
+   */
   constructor() {
     this.requestObj = {
       method: '',
@@ -377,66 +336,165 @@ export class RequestObjectLMApiBuilder {
     };
   }
 
-  setMethod(method: string): RequestObjectLMApiBuilder {
+  /**
+   * Sets the HTTP method for the request object.
+   * @param {string} method - The HTTP method to set.
+   * @returns {RequestObjectLMApiBuilder} The builder instance.
+   */
+  public setMethod(method: string): RequestObjectLMApiBuilder {
     this.requestObj.method = method;
     return this;
   }
 
-  setAccessId(accessId: string): RequestObjectLMApiBuilder {
+  /**
+   * Sets the access ID for the request object.
+   * @param {string} accessId - The access ID to set.
+   * @returns {RequestObjectLMApiBuilder} The builder instance.
+   */
+  public setAccessId(accessId: string): RequestObjectLMApiBuilder {
     this.requestObj.accessId = accessId;
     return this;
   }
 
-  setAccessKey(accessKey: string): RequestObjectLMApiBuilder {
+  /**
+   * Sets the access key for the request object.
+   * @param {string} accessKey - The access key to set.
+   * @returns {RequestObjectLMApiBuilder} The builder instance.
+   */
+  public setAccessKey(accessKey: string): RequestObjectLMApiBuilder {
     this.requestObj.accessKey = accessKey;
     return this;
   }
 
-  setQueryParams(queryParams: string): RequestObjectLMApiBuilder {
+  /**
+   * Sets the query parameters for the request object.
+   * @param {string} queryParams - The query parameters to set.
+   * @returns {RequestObjectLMApiBuilder} The builder instance.
+   */
+  public setQueryParams(queryParams: string): RequestObjectLMApiBuilder {
     this.requestObj.queryParams = queryParams;
     return this;
   }
 
-  setUrl(company: string, resourcePath: string): RequestObjectLMApiBuilder {
+  /**
+   * Sets the URL and resource path for the request object.
+   * @param {string} company - The company name to include in the URL.
+   * @param {string} resourcePath - The resource path to set.
+   * @returns {RequestObjectLMApiBuilder} The builder instance.
+   */
+  public setUrl(
+    company: string,
+    resourcePath: string,
+  ): RequestObjectLMApiBuilder {
     this.requestObj.resourcePath = resourcePath;
     this.requestObj.url = `https://${company}.logicmonitor.com/santaba/rest${resourcePath}`;
     return this;
   }
 
-  setRequestData(requestData: Record<string, any>): RequestObjectLMApiBuilder {
+  /**
+   * Sets the request data for the request object.
+   * @param {Record<string, any>} requestData - The request data to set.
+   * @returns {RequestObjectLMApiBuilder} The builder instance.
+   */
+  public setRequestData(
+    requestData: Record<string, any>,
+  ): RequestObjectLMApiBuilder {
     this.requestObj.requestData = requestData;
     return this;
   }
 
-  build(): RequestObjectLMApiInterface {
+  /**
+   * Builds and returns the request object.
+   * @returns {RequestObjectLMApiInterface} The built request object.
+   */
+  public build(): RequestObjectLMApiInterface {
     return this.requestObj;
   }
 }
 
 /**
- * This class generates the response object for the LogicMonitor API.
- * @status The status of the API call (success|failure).
- * @httpStatus The HTTP status code of the API call.
- * @message The message from the API call.
- * @payload The payload from the API call.
- * @returns A properly formatted response object for the LogicMonitor API call.
+ * Interface representing a default response object.
+ * @interface ResponseObjectDefaultInterface
+ * @property {string} status - The status of the response.
+ * @property {number} httpStatus - The HTTP status code of the response.
+ * @property {string} message - The message associated with the response.
+ * @property {any[any]} payload - The payload of the response.
  */
 
-export class ResponseObjectDefaultGenerator {
-  constructor(
-    public status: string = 'success',
-    public httpStatus: number = 200,
-    public message: string = 'success',
-    public payload: any[any] = [],
-  ) {}
+interface ResponseObjectDefaultInterface {
+  status: string;
+  httpStatus: number;
+  message: string;
+  payload: any[any];
+}
 
-  public Create(): ResponseObjectDefault {
-    return {
-      status: this.status,
-      httpStatus: this.httpStatus,
-      message: this.message,
+/**
+ * Builder class for creating a default response object.
+ * @class ResponseObjectDefaultBuilder
+ * @implements {ResponseObjectDefaultInterface}
+ */
+export class ResponseObjectDefaultBuilder {
+  private readonly responseObjectDefault: ResponseObjectDefaultInterface;
+
+  /**
+   * Creates an instance of ResponseObjectDefaultBuilder.
+   * Initializes the default response object with default values.
+   */
+  constructor() {
+    this.responseObjectDefault = {
+      status: 'success',
+      httpStatus: 200,
+      message: '',
       payload: [],
     };
+  }
+
+  /**
+   * Sets the status of the response object.
+   * @param {string} status - The status to set.
+   * @returns {ResponseObjectDefaultBuilder} The builder instance.
+   */
+  public setStatus(status: string): ResponseObjectDefaultBuilder {
+    this.responseObjectDefault.status = status;
+    return this;
+  }
+
+  /**
+   * Sets the HTTP status code of the response object.
+   * @param {number} httpStatus - The HTTP status code to set.
+   * @returns {ResponseObjectDefaultBuilder} The builder instance.
+   */
+  public setHttpStatus(httpStatus: number): ResponseObjectDefaultBuilder {
+    this.responseObjectDefault.httpStatus = httpStatus;
+    return this;
+  }
+
+  /**
+   * Sets the message of the response object.
+   * @param {string} message - The message to set.
+   * @returns {ResponseObjectDefaultBuilder} The builder instance.
+   */
+  public setMessage(message: string): ResponseObjectDefaultBuilder {
+    this.responseObjectDefault.message = message;
+    return this;
+  }
+
+  /**
+   * Sets the payload of the response object.
+   * @param {any[any]} payload - The payload to set.
+   * @returns {ResponseObjectDefaultBuilder} The builder instance.
+   */
+  public setPayload(payload: any[any]): ResponseObjectDefaultBuilder {
+    this.responseObjectDefault.payload = [...payload];
+    return this;
+  }
+
+  /**
+   * Builds and returns the response object.
+   * @returns {ResponseObjectDefaultInterface} The built response object.
+   */
+  public build(): ResponseObjectDefaultInterface {
+    return this.responseObjectDefault;
   }
 }
 
@@ -457,12 +515,17 @@ interface AxiosParametersInterface {
 }
 
 /**
- * This class builds the request object for the LogicMonitor API.
- * @returns A properly formatted request object for the Axios call to interact with the LogicMonitor API.
+ * Builder class for creating Axios request configuration objects.
+ * @class AxiosParametersBuilder
+ * @implements {AxiosParametersInterface}
  */
 export class AxiosParametersBuilder {
   private axiosRequestConfig: AxiosParametersInterface;
 
+  /**
+   * Creates an instance of AxiosParametersBuilder.
+   * Initializes the Axios request configuration with default values.
+   */
   constructor() {
     this.axiosRequestConfig = {
       url: '',
@@ -475,27 +538,51 @@ export class AxiosParametersBuilder {
     };
   }
 
-  setMethod(method: string): AxiosParametersBuilder {
+  /**
+   * Sets the HTTP method for the Axios request configuration.
+   * @param {string} method - The HTTP method to set.
+   * @returns {AxiosParametersBuilder} The builder instance.
+   */
+  public setMethod(method: string): AxiosParametersBuilder {
     this.axiosRequestConfig.method = method;
     return this;
   }
 
-  setUrl(url: string): AxiosParametersBuilder {
+  /**
+   * Sets the URL for the Axios request configuration.
+   * @param {string} url - The URL to set.
+   * @returns {AxiosParametersBuilder} The builder instance.
+   */
+  public setUrl(url: string): AxiosParametersBuilder {
     this.axiosRequestConfig.url = url;
     return this;
   }
 
-  setAuthString(authString: string): AxiosParametersBuilder {
+  /**
+   * Sets the authorization string for the Axios request configuration.
+   * @param {string} authString - The authorization string to set.
+   * @returns {AxiosParametersBuilder} The builder instance.
+   */
+  public setAuthString(authString: string): AxiosParametersBuilder {
     this.axiosRequestConfig.headers['Authorization'] = authString;
     return this;
   }
 
-  setData(requestData: any): AxiosParametersBuilder {
+  /**
+   * Sets the request data for the Axios request configuration.
+   * @param {any} requestData - The request data to set.
+   * @returns {AxiosParametersBuilder} The builder instance.
+   */
+  public setData(requestData: any): AxiosParametersBuilder {
     this.axiosRequestConfig.requestData = requestData ?? '';
     return this;
   }
 
-  build(): AxiosParametersInterface {
+  /**
+   * Builds and returns the Axios request configuration object.
+   * @returns {AxiosParametersInterface} The built Axios request configuration object.
+   */
+  public build(): AxiosParametersInterface {
     return this.axiosRequestConfig;
   }
 }

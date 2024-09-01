@@ -7,8 +7,8 @@ import {
   ResponseObjectDefault,
   RequestObjectLMApi,
   RequestObjectLMApiExtraRequestProperties,
-  RequestObjectLMApiGenerator,
-  ResponseObjectDefaultGenerator,
+  RequestObjectLMApiBuilder,
+  ResponseObjectDefaultBuilder,
 } from '../utils/utils.models';
 import { UtilsService } from '../utils/utils.service';
 import { StorageServiceMongoDB } from '../storage/storage-mongodb.service';
@@ -63,11 +63,11 @@ export class BackupServiceGeneral {
     response: any,
     directlyRespondToApiCall: boolean = true,
   ): Promise<void | ResponseObjectDefault> {
-    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
+    let returnObj: ResponseObjectDefault =
+      new ResponseObjectDefaultBuilder().build();
     // Get the backup type from the request URL.
     let backupType =
       request.originalUrl.split('/')[request.originalUrl.split('/').length - 1];
-    // Remove the letter 's' if it is at the end of the string.
     if (backupType.endsWith('s')) {
       backupType = backupType.slice(0, -1);
     }
@@ -84,15 +84,14 @@ export class BackupServiceGeneral {
         success: [],
         failure: [],
       };
-      const generalGetObj: RequestObjectLMApi = new RequestObjectLMApiGenerator(
-        'GET',
-        accessId,
-        accessKey,
-        company,
-        extraRequestProperties?.resourcePath,
-        extraRequestProperties?.queryParams,
-        extraRequestProperties?.requestData,
-      ).Create();
+      const generalGetObj: RequestObjectLMApi = new RequestObjectLMApiBuilder()
+        .setMethod('GET')
+        .setAccessId(accessId)
+        .setAccessKey(accessKey)
+        .setQueryParams(extraRequestProperties?.queryParams)
+        .setUrl(company, extraRequestProperties?.resourcePath)
+        .setRequestData(extraRequestProperties?.requestData)
+        .build();
 
       const resultList: ResponseObjectDefault =
         await this.utilsService.genericAPICall(generalGetObj);
@@ -142,7 +141,7 @@ export class BackupServiceGeneral {
             ),
           );
       } else {
-        return returnObj;
+        return this.utilsService.defaultErrorHandlerHttp(err);
       }
     }
   }
@@ -162,7 +161,8 @@ export class BackupServiceGeneral {
 
   async retrieveBackupsAll(company: string, response: any): Promise<void> {
     // This method will only return JSON object when there is an error.
-    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
+    let returnObj: ResponseObjectDefault =
+      new ResponseObjectDefaultBuilder().build();
     const outputFileBasePath = `./tmp`;
     const backupsListAll = [];
     try {

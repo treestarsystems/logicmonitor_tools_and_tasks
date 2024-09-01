@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import {
   ResponseObjectDefault,
   RequestObjectLMApi,
-  ResponseObjectDefaultGenerator,
+  // ResponseObjectDefaultGenerator,
+  ResponseObjectDefaultBuilder,
   AxiosParametersBuilder,
 } from './utils.models';
 import * as crypto from 'crypto';
@@ -252,11 +253,11 @@ export class UtilsService {
   ): ResponseObjectDefault {
     const statusCode: number = httpStatusCode == 200 ? 400 : httpStatusCode;
     const errorMessage: string = err?.message ? err.message : err;
-    const returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator(
-      'failure',
-      statusCode,
-      errorMessage,
-    ).Create();
+    const returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder()
+      .setStatus('failure')
+      .setHttpStatus(statusCode)
+      .setMessage(errorMessage)
+      .build();
     return returnObj;
   }
 
@@ -343,7 +344,8 @@ export class UtilsService {
   async genericAPICall(
     requestObjectLMApi: RequestObjectLMApi,
   ): Promise<ResponseObjectDefault> {
-    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
+    let returnObj: ResponseObjectDefault =
+      new ResponseObjectDefaultBuilder().build();
     try {
       const { method, queryParams, url } = requestObjectLMApi;
       const urlStringEncoded: string = this.encodeQueryParameters(

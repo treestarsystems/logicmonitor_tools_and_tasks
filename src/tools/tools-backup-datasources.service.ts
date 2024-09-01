@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import {
   RequestObjectLMApi,
   ResponseObjectDefault,
-  ResponseObjectDefaultGenerator,
+  ResponseObjectDefaultBuilder,
   RequestObjectLMApiBuilder,
 } from '../utils/utils.models';
 import { UtilsService } from '../utils/utils.service';
@@ -49,7 +49,8 @@ export class BackupServiceDatasources {
     response: any,
     directlyRespondToApiCall: boolean = true,
   ): Promise<void | ResponseObjectDefault> {
-    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
+    let returnObj: ResponseObjectDefault =
+      new ResponseObjectDefaultBuilder().build();
     try {
       const progressTracking = {
         success: [],
@@ -168,7 +169,7 @@ export class BackupServiceDatasources {
             ),
           );
       } else {
-        return returnObj;
+        return this.utilsService.defaultErrorHandlerHttp(err);
       }
     }
   }
