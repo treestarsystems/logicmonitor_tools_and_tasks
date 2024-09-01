@@ -1,18 +1,31 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 import { getModelToken } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Connection, connect, Model } from 'mongoose';
 import { BackupServiceDatasources } from '../src/tools/tools-backup-datasources.service';
 import { UtilsService } from '../src/utils/utils.service';
 import { StorageServiceMongoDB } from '../src/storage/storage-mongodb.service';
-import { BackupDocumentDatasource } from '../src/storage/schemas/storage-mongodb.schema';
+import {
+  BackupDocumentDatasource,
+  BackupSchemaDatasource,
+} from '../src/storage/schemas/storage-mongodb.schema';
 
 describe('BackupServiceDatasources', () => {
   let service: BackupServiceDatasources;
   let utilsService: UtilsService;
   let storageServiceMongoDb: StorageServiceMongoDB;
-  let backupDatasourceModel: Model<BackupDocumentDatasource>;
+  let backupDatasourceModel: Model<any>;
+  let mongod: MongoMemoryServer;
+  let mongoConnection: Connection;
 
   beforeEach(async () => {
+    mongod = await MongoMemoryServer.create();
+    const uri = mongod.getUri();
+    mongoConnection = (await connect(uri)).connection;
+    backupDatasourceModel = mongoConnection.model(
+      BackupDocumentDatasource.name,
+      BackupSchemaDatasource,
+    );
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BackupServiceDatasources,
@@ -31,7 +44,7 @@ describe('BackupServiceDatasources', () => {
         {
           provide: getModelToken(BackupDocumentDatasource.name),
           useValue: {
-            // Mock methods as needed
+            backupDatasourceModel,
           },
         },
       ],
