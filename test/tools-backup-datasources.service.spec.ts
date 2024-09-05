@@ -1,31 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import { getModelToken } from '@nestjs/mongoose';
-import { Connection, connect, Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { BackupServiceDatasources } from '../src/tools/tools-backup-datasources.service';
 import { UtilsService } from '../src/utils/utils.service';
 import { StorageServiceMongoDB } from '../src/storage/storage-mongodb.service';
 import {
   BackupDocumentDatasource,
-  BackupSchemaDatasource,
+  BackupLMDataDatasource,
 } from '../src/storage/schemas/storage-mongodb.schema';
 
 describe('BackupServiceDatasources', () => {
   let service: BackupServiceDatasources;
   let utilsService: UtilsService;
   let storageServiceMongoDb: StorageServiceMongoDB;
-  let backupDatasourceModel: Model<any>;
-  let mongod: MongoMemoryServer;
-  let mongoConnection: Connection;
+  let backupDatasourceModel: Model<BackupDocumentDatasource>;
 
   beforeEach(async () => {
-    mongod = await MongoMemoryServer.create();
-    const uri = mongod.getUri();
-    mongoConnection = (await connect(uri)).connection;
-    backupDatasourceModel = mongoConnection.model(
-      BackupDocumentDatasource.name,
-      BackupSchemaDatasource,
-    );
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BackupServiceDatasources,
@@ -42,9 +32,9 @@ describe('BackupServiceDatasources', () => {
           },
         },
         {
-          provide: getModelToken(BackupDocumentDatasource.name),
+          provide: getModelToken(BackupLMDataDatasource.name),
           useValue: {
-            backupDatasourceModel,
+            // Mock methods as needed
           },
         },
       ],
@@ -56,7 +46,7 @@ describe('BackupServiceDatasources', () => {
       StorageServiceMongoDB,
     );
     backupDatasourceModel = module.get<Model<BackupDocumentDatasource>>(
-      getModelToken(BackupDocumentDatasource.name),
+      getModelToken(BackupLMDataDatasource.name),
     );
   });
 
@@ -65,7 +55,7 @@ describe('BackupServiceDatasources', () => {
   });
 
   // Add more tests here
-  describe('handleDatasourceExport', () => {
+  describe('processXMLDataExport', () => {
     it('should handle datasource export successfully', async () => {
       const datasourceXMLExport = { payload: ['<xml>data</xml>'] };
       const dle = { name: 'test', group: 'group' };
@@ -73,12 +63,14 @@ describe('BackupServiceDatasources', () => {
       const company = 'company';
       const progressTracking = { success: [], failure: [] };
 
+      console.log(Object.getOwnPropertyNames(storageServiceMongoDb));
+
       jest.spyOn(storageServiceMongoDb, 'upsert').mockResolvedValueOnce(null);
       jest
         .spyOn(utilsService, 'defaultErrorHandlerString')
         .mockImplementation((msg) => msg);
 
-      await service['handleDatasourceExport'](
+      await service['processXMLDataExport'](
         datasourceXMLExport,
         dle,
         datasourceNameParsed,
@@ -104,7 +96,7 @@ describe('BackupServiceDatasources', () => {
         .mockImplementation((msg) => msg);
 
       await expect(
-        service['handleDatasourceExport'](
+        service['processXMLDataExport'](
           datasourceXMLExport,
           dle,
           datasourceNameParsed,
@@ -125,7 +117,7 @@ describe('BackupServiceDatasources', () => {
       const progressTracking = { success: [], failure: [] };
 
       await expect(
-        service['handleDatasourceExport'](
+        service['processXMLDataExport'](
           datasourceXMLExport,
           dle,
           datasourceNameParsed,

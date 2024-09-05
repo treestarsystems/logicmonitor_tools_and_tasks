@@ -460,7 +460,7 @@ export class ResponseObjectDefaultBuilder {
     this.responseObjectDefault = {
       status: 'success',
       httpStatus: 200,
-      message: '',
+      message: 'success',
       payload: [],
     };
   }
