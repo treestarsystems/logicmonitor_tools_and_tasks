@@ -81,7 +81,7 @@ export class BackupServiceDatasources {
       // Lets loop through the response and extract the items that match our filter into a new array.
       const payloadItems = JSON.parse(datasourcesList.payload).items;
       for (const dle of payloadItems) {
-        let datasourceNameParsed: string = `datasource_${dle.name.replace(/\W/g, '_')}`;
+        const datasourceNameParsed: string = `datasource_${dle.name.replace(/\W/g, '_')}`;
         try {
           const datasourcesGetXMLObj: RequestObjectLMApi =
             new RequestObjectLMApiBuilder()
@@ -104,37 +104,14 @@ export class BackupServiceDatasources {
             );
             throw new Error(errMsg);
           }
-          if (typeof datasourceXMLExport.payload[0] === 'string') {
-            // Store the XML string and JSON object to a file or in a database.
-            const dataXML: string = datasourceXMLExport.payload[0];
-            const dataJSON: object = dle;
-            const storageObj: BackupLMDataDatasource = {
-              type: 'datasource',
-              name: dle.name,
-              nameFormatted: datasourceNameParsed,
-              company: company,
-              group: dle.group,
-              dataXML: dataXML,
-              dataJSON: dataJSON,
-            };
-            // MongoDB storage call.
-            try {
-              this.storageServiceMongoDb.upsert(
-                this.backupDatasourceModel,
-                { nameFormatted: datasourceNameParsed },
-                storageObj,
-              );
-              progressTracking.success.push(`Success: ${datasourceNameParsed}`);
-            } catch (err) {
-              // I am not sure if this is the correct way to handle the error.
-              const errMsg = this.utilsService.defaultErrorHandlerString(err);
-              progressTracking.failure.push(
-                `Failure: ${datasourceNameParsed} - ${errMsg}`,
-              );
-            }
-          } else {
-            throw new Error('Payload is not a string');
-          }
+
+          await this.processXMLDataExport(
+            datasourceXMLExport,
+            dle,
+            datasourceNameParsed,
+            company,
+            progressTracking,
+          );
         } catch (err) {
           progressTracking.failure.push(
             `Failure: ${datasourceNameParsed} - ${err}`,
@@ -155,9 +132,9 @@ export class BackupServiceDatasources {
       returnObj.message = `Datasources backup completed: ${progressTracking.success.length} successful, ${progressTracking.failure.length} failed.`;
       if (directlyRespondToApiCall) {
         response.status(returnObj.httpStatus).send(returnObj);
-      } else {
-        return returnObj;
+        return;
       }
+      return returnObj;
     } catch (err) {
       if (directlyRespondToApiCall) {
         response
@@ -171,6 +148,55 @@ export class BackupServiceDatasources {
       } else {
         return this.utilsService.defaultErrorHandlerHttp(err);
       }
+    }
+  }
+
+  /**
+   * Handles the export of a datasource by storing it in the MongoDB and updating the progress tracking.
+   * @param {any} datasourceXMLExport - The export result containing the XML payload.
+   * @param {any} dle - The datasource object containing details about the datasource.
+   * @param {string} datasourceNameParsed - The parsed name of the datasource.
+   * @param {string} company - The company associated with the datasource.
+   * @param {any} progressTracking - The object used to track the progress of the export operation.
+   * @returns {Promise<void>} - A promise that resolves when the operation is complete.
+   * @throws {Error} - Throws an error if the payload is not a string or if there is an issue with the upsert operation.
+   */
+
+  private async processXMLDataExport(
+    datasourceXMLExport: any,
+    dle: any,
+    datasourceNameParsed: string,
+    company: string,
+    progressTracking: any,
+  ): Promise<void> {
+    if (typeof datasourceXMLExport.payload[0] !== 'string') {
+      throw new Error('Payload is not a string');
+    }
+
+    const dataXML: string = datasourceXMLExport.payload[0];
+    const dataJSON: object = dle;
+    const storageObj: BackupLMDataDatasource = {
+      type: 'datasource',
+      name: dle.name,
+      nameFormatted: datasourceNameParsed,
+      company: company,
+      group: dle.group,
+      dataXML: dataXML,
+      dataJSON: dataJSON,
+    };
+
+    try {
+      await this.storageServiceMongoDb.upsert(
+        this.backupDatasourceModel,
+        { nameFormatted: datasourceNameParsed },
+        storageObj,
+      );
+      progressTracking.success.push(`Success: ${datasourceNameParsed}`);
+    } catch (err) {
+      const errMsg = this.utilsService.defaultErrorHandlerString(err);
+      progressTracking.failure.push(
+        `Failure: ${datasourceNameParsed} - ${errMsg}`,
+      );
     }
   }
 }
