@@ -1,10 +1,6 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
-import {
-  ResponseObjectDefault,
-  GeneralRequest,
-  RequestObjectLMApi,
-} from '../utils/utils.models';
+import { ResponseObjectDefault, GeneralRequest } from '../utils/utils.models';
 import { AuditsService } from './audits.service';
 
 /**
@@ -30,7 +26,6 @@ export class AuditsController {
     @Body() body: GeneralRequest,
     @Res() response: Response,
   ): Promise<void> {
-    console.log('AuditsController.executeAuditCollectorVersion');
     await this.auditsService.auditCollectorVersion(
       body.company,
       body.accessId,
