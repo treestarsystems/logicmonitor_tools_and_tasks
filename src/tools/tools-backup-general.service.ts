@@ -1,4 +1,3 @@
-// import * as fs from 'fs';
 import { promises as fs } from 'fs';
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
@@ -7,8 +6,8 @@ import {
   ResponseObjectDefault,
   RequestObjectLMApi,
   RequestObjectLMApiExtraRequestProperties,
-  RequestObjectLMApiGenerator,
-  ResponseObjectDefaultGenerator,
+  RequestObjectLMApiBuilder,
+  ResponseObjectDefaultBuilder,
 } from '../utils/utils.models';
 import { UtilsService } from '../utils/utils.service';
 import { StorageServiceMongoDB } from '../storage/storage-mongodb.service';
@@ -63,12 +62,11 @@ export class BackupServiceGeneral {
     response: any,
     directlyRespondToApiCall: boolean = true,
   ): Promise<void | ResponseObjectDefault> {
-    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
+    let returnObj: ResponseObjectDefault =
+      new ResponseObjectDefaultBuilder().build();
     // Get the backup type from the request URL.
-    let backupType =
-      request.originalUrl.split('/')[request.originalUrl.split('/').length - 1];
-    // Remove the letter 's' if it is at the end of the string.
-    if (backupType.endsWith('s')) {
+    let backupType = request.originalUrl.split('/').pop();
+    if (backupType?.endsWith('s')) {
       backupType = backupType.slice(0, -1);
     }
     // Confirm the backup type matches the resource path.
@@ -84,27 +82,27 @@ export class BackupServiceGeneral {
         success: [],
         failure: [],
       };
-      const generalGetObj: RequestObjectLMApi = new RequestObjectLMApiGenerator(
-        'GET',
-        accessId,
-        accessKey,
-        company,
-        extraRequestProperties?.resourcePath,
-        extraRequestProperties?.queryParams,
-        extraRequestProperties?.requestData,
-      ).Create();
+      const generalGetObj: RequestObjectLMApi = new RequestObjectLMApiBuilder()
+        .setMethod('GET')
+        .setAccessId(accessId)
+        .setAccessKey(accessKey)
+        .setQueryParams(extraRequestProperties?.queryParams)
+        .setUrl(company, extraRequestProperties?.resourcePath)
+        .setRequestData(extraRequestProperties?.requestData)
+        .build();
 
       const resultList: ResponseObjectDefault =
         await this.utilsService.genericAPICall(generalGetObj);
       returnObj.httpStatus = resultList.httpStatus;
-      if (resultList.status == 'failure') {
-        progressTracking.failure.push(
-          `Failure: Retrieving ${backupType} list - ${resultList.message}`,
-        );
+
+      if (resultList.status === 'failure') {
+        const failureMessage = `Failure: Retrieving ${backupType} list - ${resultList.message}`;
+        progressTracking.failure.push(failureMessage);
         returnObj.payload.push(progressTracking);
-        throw new Error(
-          this.utilsService.defaultErrorHandlerString(resultList.message),
+        const errorMessage = this.utilsService.defaultErrorHandlerString(
+          resultList.message,
         );
+        throw new Error(errorMessage);
       }
       // Lets loop through the response and extract the items that match our filter into a new array.
       const payloadItems = JSON.parse(resultList.payload).items;
@@ -128,9 +126,9 @@ export class BackupServiceGeneral {
       returnObj.message = `${this.utilsService.capitalizeFirstLetter(backupType)} backup completed: ${progressTracking.success.length} successful, ${progressTracking.failure.length} failed.`;
       if (directlyRespondToApiCall) {
         response.status(returnObj.httpStatus).send(returnObj);
-      } else {
-        return returnObj;
+        return;
       }
+      return returnObj;
     } catch (err) {
       if (directlyRespondToApiCall) {
         response
@@ -142,7 +140,7 @@ export class BackupServiceGeneral {
             ),
           );
       } else {
-        return returnObj;
+        return this.utilsService.defaultErrorHandlerHttp(err);
       }
     }
   }
@@ -162,7 +160,8 @@ export class BackupServiceGeneral {
 
   async retrieveBackupsAll(company: string, response: any): Promise<void> {
     // This method will only return JSON object when there is an error.
-    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultGenerator();
+    let returnObj: ResponseObjectDefault =
+      new ResponseObjectDefaultBuilder().build();
     const outputFileBasePath = `./tmp`;
     const backupsListAll = [];
     try {
