@@ -27,18 +27,16 @@ export class AuditsController {
   })
   @ApiResponse({ type: ResponseObjectDefault })
   async executeAuditCollectorVersion(
-    @Body() body: RequestObjectLMApi,
+    @Body() body: GeneralRequest,
     @Res() response: Response,
   ): Promise<void> {
     console.log('AuditsController.executeAuditCollectorVersion');
-    // await this.backupServiceGeneral.backupGeneralGet(
-    //     body.company,
-    //     body.accessId,
-    //     body.accessKey,
-    //     body.extraRequestProperties,
-    //     request,
-    //     response,
-    //   );
+    await this.auditsService.auditCollectorVersion(
+      body.company,
+      body.accessId,
+      body.accessKey,
+      response,
+    );
   }
 
   @Post('sdts')

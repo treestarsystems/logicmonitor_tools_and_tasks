@@ -20,7 +20,71 @@ import {
 export class AuditsService {
   constructor(private utilsService: UtilsService) {}
 
-  async auditSDTs(
+  private async auditGetCollectorVersionList(
+    company: string,
+    accessId: string,
+    accessKey: string,
+  ): Promise<ResponseObjectDefault> {
+    const returnObj: ResponseObjectDefault =
+      new ResponseObjectDefaultBuilder().build();
+    try {
+      const collectorVersionListGetObj: RequestObjectLMApi =
+        new RequestObjectLMApiBuilder()
+          .setMethod('GET')
+          .setAccessId(accessId)
+          .setAccessKey(accessKey)
+          .setUrl(company, '/setting/collector/collectors/versions')
+          .build();
+
+      const collectorList: ResponseObjectDefault =
+        await this.utilsService.genericAPICall(collectorVersionListGetObj);
+      returnObj.httpStatus = collectorList.httpStatus;
+      if (collectorList.status == 'failure') {
+        const errMsg = this.utilsService.defaultErrorHandlerString(
+          collectorList.message,
+        );
+        throw new Error(errMsg);
+      }
+      returnObj.payload = [...(JSON.parse(collectorList.payload).items ?? [])];
+      return returnObj;
+    } catch (err) {
+      return this.utilsService.defaultErrorHandlerHttp(err);
+    }
+  }
+
+  private async auditGetCollectorList(
+    company: string,
+    accessId: string,
+    accessKey: string,
+  ): Promise<ResponseObjectDefault> {
+    const returnObj: ResponseObjectDefault =
+      new ResponseObjectDefaultBuilder().build();
+    try {
+      const collectorListGetObj: RequestObjectLMApi =
+        new RequestObjectLMApiBuilder()
+          .setMethod('GET')
+          .setAccessId(accessId)
+          .setAccessKey(accessKey)
+          .setUrl(company, '/setting/collector/collectors')
+          .build();
+
+      const collectorList: ResponseObjectDefault =
+        await this.utilsService.genericAPICall(collectorListGetObj);
+      returnObj.httpStatus = collectorList.httpStatus;
+      if (collectorList.status == 'failure') {
+        const errMsg = this.utilsService.defaultErrorHandlerString(
+          collectorList.message,
+        );
+        throw new Error(errMsg);
+      }
+      returnObj.payload = [...(JSON.parse(collectorList.payload).items ?? [])];
+      return returnObj;
+    } catch (err) {
+      return this.utilsService.defaultErrorHandlerHttp(err);
+    }
+  }
+
+  public async auditSDTs(
     company: string,
     accessId: string,
     accessKey: string,
@@ -57,6 +121,65 @@ export class AuditsService {
           const sdtExpireAuditMsg = `The SDT for ${sdtItem?.deviceDisplayName || sdtItem?.deviceId} has a expired but is still present.`;
           returnObj.payload.push(sdtExpireAuditMsg);
         }
+      }
+      if (directlyRespondToApiCall) {
+        response.status(returnObj.httpStatus).send(returnObj);
+        return;
+      }
+      return returnObj;
+    } catch (err) {
+      if (directlyRespondToApiCall) {
+        response
+          .status(returnObj.httpStatus)
+          .send(
+            this.utilsService.defaultErrorHandlerHttp(
+              err,
+              returnObj.httpStatus,
+            ),
+          );
+        return;
+      }
+      return this.utilsService.defaultErrorHandlerHttp(err);
+    }
+  }
+
+  public async auditCollectorVersion(
+    company: string,
+    accessId: string,
+    accessKey: string,
+    response: any,
+    directlyRespondToApiCall: boolean = true,
+  ): Promise<void | ResponseObjectDefault> {
+    const returnObj: ResponseObjectDefault =
+      new ResponseObjectDefaultBuilder().build();
+    try {
+      const collectorVersionList: ResponseObjectDefault =
+        await this.auditGetCollectorVersionList(company, accessId, accessKey);
+      const collectorList: ResponseObjectDefault =
+        await this.auditGetCollectorList(company, accessId, accessKey);
+
+      for (const collectorItem of collectorList.payload) {
+        const updatedVersionAvailable = [];
+        // Ignore build major versions that are less than the current build major version on the collector.
+        const collectorBuildMajor = collectorItem?.build.slice(0, 2);
+        const collectorBuildMinor = collectorItem?.build.slice(2);
+        const collectorBuildNumber = parseFloat(
+          `${collectorBuildMajor}.${collectorBuildMinor}`,
+        );
+        for (const collectorVersionItem of collectorVersionList.payload) {
+          const collectorVersionNumber = parseFloat(
+            `${collectorVersionItem.majorVersion}.${collectorVersionItem.minorVersion}`,
+          );
+          if (
+            collectorVersionItem.stable === true &&
+            collectorVersionNumber > collectorBuildNumber
+          ) {
+            updatedVersionAvailable.push(collectorVersionNumber);
+          }
+        }
+        returnObj.payload.push(
+          `${collectorItem?.hostname} (${collectorItem?.id}) Build: ${collectorBuildNumber} (Available Stable Updates: ${updatedVersionAvailable.reverse().join(',')} <--latest)`,
+        );
       }
       if (directlyRespondToApiCall) {
         response.status(returnObj.httpStatus).send(returnObj);
