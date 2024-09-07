@@ -1,6 +1,5 @@
 import * as sinon from 'sinon';
 import * as crypto from 'crypto';
-import { Logger } from '@nestjs/common';
 import { UtilsService } from '../src/utils/utils.service';
 import { Axios, AxiosResponse } from 'axios';
 import {
@@ -102,7 +101,6 @@ describe('UtilsService', () => {
       const result = utilsService.encodeQueryParameters(
         'www.foobar.com/?first="1 asdfas"&second=12&third=5',
       );
-      Logger.log(result);
       expect(result).toBe(
         'www.foobar.com/?first=%221%20asdfas%22&second=12&third=5',
       );
