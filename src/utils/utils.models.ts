@@ -256,10 +256,9 @@ export class RequestObjectLMApiExtraRequestProperties {
  * @company The company name for the LogicMonitor account.
  * @accessId The access ID for the LogicMonitor account.
  * @accessKey The access key for the LogicMonitor account.
- * @extraRequestProperties The extra request properties to send in the API call (resourcePath, queryParams, requestData).
  */
 
-export class ToolsBackupGeneralRequest extends BaseRequestObjectLM {
+export class GeneralRequest extends BaseRequestObjectLM {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -267,7 +266,17 @@ export class ToolsBackupGeneralRequest extends BaseRequestObjectLM {
     type: 'string',
   })
   company: string;
+}
 
+/**
+ * This class is used to store request data for LogicMonitor API calls.
+ * @company The company name for the LogicMonitor account.
+ * @accessId The access ID for the LogicMonitor account.
+ * @accessKey The access key for the LogicMonitor account.
+ * @extraRequestProperties The extra request properties to send in the API call (resourcePath, queryParams, requestData).
+ */
+
+export class ToolsBackupGeneralRequest extends GeneralRequest {
   @IsObject()
   @IsNotEmpty()
   @ApiProperty({

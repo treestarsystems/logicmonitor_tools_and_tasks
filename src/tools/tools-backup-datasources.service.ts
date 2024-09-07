@@ -79,7 +79,7 @@ export class BackupServiceDatasources {
         );
       }
       // Lets loop through the response and extract the items that match our filter into a new array.
-      const payloadItems = JSON.parse(datasourcesList.payload).items;
+      const payloadItems = JSON.parse(datasourcesList.payload).items ?? [];
       for (const dle of payloadItems) {
         const datasourceNameParsed: string = `datasource_${dle.name.replace(/\W/g, '_')}`;
         try {
@@ -145,9 +145,9 @@ export class BackupServiceDatasources {
               returnObj.httpStatus,
             ),
           );
-      } else {
-        return this.utilsService.defaultErrorHandlerHttp(err);
+        return;
       }
+      return this.utilsService.defaultErrorHandlerHttp(err);
     }
   }
 
