@@ -15,12 +15,12 @@ import {
 } from '../storage/schemas/storage-mongodb.schema';
 
 /**
- * BackupServiceDatasources class to handle all datasource related API calls.
+ * BackupServiceDatasources class to handle all datasource backup related API calls.
  * @class BackupServiceDatasources
  * @memberof module:tools
- * @implements {BackupServiceDatasources}
  * @injectable
- * @api
+ * @public
+ * @export
  */
 
 @Injectable()
@@ -38,9 +38,12 @@ export class BackupServiceDatasources {
    * @param {string} company  The company name for the LogicMonitor account.
    * @param {string} accessId  The access ID for the LogicMonitor account.
    * @param {string} accessKey  The access key for the LogicMonitor account.
-   * @param {string} searchString  The search string to filter the datasources.
+   * @param {string} groupName  The group name to filter the datasources.
    * @param {Response} response  The response object to send the response back to the client.
+   * @param {boolean} [directlyRespondToApiCall=true] - Whether to directly respond to the API call or return the returnObj.
+   * @returns {Promise<void | ResponseObjectDefault>} - A promise that resolves to void or a ResponseObjectDefault.
    */
+
   async backupDatasourcesByGroupName(
     company: string,
     accessId: string,
@@ -162,7 +165,6 @@ export class BackupServiceDatasources {
    * @param {string} company - The company associated with the datasource.
    * @param {any} progressTracking - The object used to track the progress of the export operation.
    * @returns {Promise<void>} - A promise that resolves when the operation is complete.
-   * @throws {Error} - Throws an error if the payload is not a string or if there is an issue with the upsert operation.
    */
 
   private async processXMLDataExport(

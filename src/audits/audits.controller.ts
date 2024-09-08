@@ -9,13 +9,20 @@ import { AuditsService } from './audits.service';
  * @endpoint audits
  * @memberof module:audits
  * @public
- * @api
  */
 
 @Controller('audits')
 @ApiTags('Audits')
 export class AuditsController {
   constructor(private readonly auditsService: AuditsService) {}
+
+  /**
+   * Endpoint to get the agent versions of the collectors in the account.
+   * @param {GeneralRequest} body - The request body containing company, accessId, and accessKey.
+   * @param {Response} response - The response object to send the result.
+   * @returns {Promise<void>} - A promise that resolves to void.
+   * @method POST
+   */
 
   @Post('collector/versions')
   @ApiOperation({
@@ -33,6 +40,14 @@ export class AuditsController {
       response,
     );
   }
+
+  /**
+   * Endpoint to get SDTs for the account that match the given criteria.
+   * @param {GeneralRequest} body - The request body containing company, accessId, and accessKey.
+   * @param {Response} response - The response object to send the result.
+   * @returns {Promise<void>} - A promise that resolves to void.
+   * @method POST
+   */
 
   @Post('sdts')
   @ApiOperation({

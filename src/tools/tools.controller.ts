@@ -13,10 +13,9 @@ import { Get, Query } from '@nestjs/common';
 /**
  * ToolsController class to handle all tools and tasks related API calls.
  * @class ToolsController
- * @endpoint tools
  * @memberof module:tools
+ * @endpoint tools
  * @public
- * @api
  */
 
 @Controller('tools')
@@ -28,16 +27,10 @@ export class ToolsController {
 
   /**
    * Retrieve all datasource, alert rule, and report backups as a .zip file containing XML and JSON files.
-   * @param  {string} company The company name.
+   * @param {string} company The company name.
    * @param {Response} response The response object.
    * @returns {Promise<void>} Promise object.
-   * @function retrieveBackupsAll
-   * @memberof module:tools
-   * @endpoint tools/backup
    * @method GET
-   * @api
-   * @example
-   * curl -X GET "http://localhost:3000/tools/backup?company=companyName"
    */
 
   @Get('backup')
@@ -59,13 +52,7 @@ export class ToolsController {
    * @param {ToolsBackupDatasourcesRequest} body - The request body.
    * @param {Response} response - The response object.
    * @returns {Promise<void>} Promise object.
-   * @function backupDatasourcesPost
-   * @memberof module:tools
-   * @endpoint tools/backup/datasources/bygroupname
    * @method POST
-   * @api
-   * @example
-   * curl -X POST "http://localhost:3000/tools/backup/datasources" -d '{"company":"companyName","accessId":"accessId","accessKey":"accessKey","groupName":"groupName"}' -H "Content-Type: application/json"
    */
 
   @Post('backup/datasources/bygroupname')
@@ -97,9 +84,6 @@ export class ToolsController {
    * @memberof module:tools
    * @endpoint tools/backup/alertrules
    * @method POST
-   * @api
-   * @example
-   * curl -X POST "http://localhost:3000/tools/backup/alertrules" -d '{"company":"companyName","accessId":"accessId","accessKey":"accessKey"}' -H "Content-Type: application/json"
    */
 
   @Post('backup/alertrules')
@@ -132,9 +116,6 @@ export class ToolsController {
    * @memberof module:tools
    * @endpoint tools/backup/reports
    * @method POST
-   * @api
-   * @example
-   * curl -X POST "http://localhost:3000/tools/backup/reports" -d '{"company":"companyName","accessId":"accessId","accessKey":"accessKey"}' -H "Content-Type: application/json"
    */
 
   @Post('backup/reports')

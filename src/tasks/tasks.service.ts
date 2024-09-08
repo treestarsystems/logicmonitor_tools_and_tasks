@@ -8,6 +8,15 @@ import {
 import { UtilsService } from '../utils/utils.service';
 import { AuditsService } from '../audits/audits.service';
 
+/**
+ * TasksService class to provide utility functions.
+ * @class TasksService
+ * @memberof module:tasks
+ * @injectable
+ * @public
+ * @export
+ */
+
 @Injectable()
 export class TasksService {
   constructor(
@@ -16,6 +25,17 @@ export class TasksService {
     private utilsService: UtilsService,
     private auditService: AuditsService,
   ) {}
+
+  /**
+   * Executes backup tasks for datasources, reports, and alert rules.
+   * @param {string} company - The company name.
+   * @param {string} accessId - The access ID for authentication.
+   * @param {string} accessKey - The access key for authentication.
+   * @param {string} groupName - The group name for which backups are to be executed.
+   * @param {Response} response - The response object to send the result.
+   * @param {boolean} [directlyRespondToApiCall=true] - Whether to directly respond to the API call or return the returnObj.
+   * @returns {Promise<void | ResponseObjectDefault>} - A promise that resolves to void or a ResponseObjectDefault.
+   */
 
   async executeTaskBackups(
     company: string,
@@ -113,6 +133,16 @@ export class TasksService {
       );
     }
   }
+
+  /**
+   * Executes audit tasks.
+   * @param {string} company - The company name.
+   * @param {string} accessId - The access ID for authentication.
+   * @param {string} accessKey - The access key for authentication.
+   * @param {Response} response - The response object to send the result.
+   * @param {boolean} [directlyRespondToApiCall=true] - Whether to directly respond to the API call or return the returnObj.
+   * @returns {Promise<void | ResponseObjectDefault>} - A promise that resolves to void or a ResponseObjectDefault.
+   */
 
   async executeTaskAudits(
     company: string,

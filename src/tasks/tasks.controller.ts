@@ -14,7 +14,6 @@ import { TasksService } from './tasks.service';
  * @memberof module:tasks
  * @endpoint tasks
  * @public
- * @api
  */
 
 @Controller('tasks')
@@ -27,14 +26,9 @@ export class TasksController {
    * @param {ToolsBackupDatasourcesRequest} body - The request body.
    * @param {Response} response - The response object.
    * @returns {Promise<void>} Promise object.
-   * @function backupDatasourcesPost
-   * @memberof module:tasks
-   * @endpoint tasks/backups
    * @method POST
-   * @api
-   * @example
-   * curl -X POST "http://localhost:3000/tasks/backups" -H "Content-Type: application/json" -d '{"company":"companyName","accessId":"accessId","accessKey":"accessKey","groupName":"groupName"}'
    */
+
   @Post('backups')
   @ApiOperation({
     summary:
@@ -59,13 +53,7 @@ export class TasksController {
    * @param {GeneralRequest} body - The request body.
    * @param {Response} response - The response object.
    * @returns {Promise<void>} Promise object.
-   * @function executeTaskAuditsPost
-   * @memberof module:tasks
-   * @endpoint tasks/audits
    * @method POST
-   * @api
-   * @example
-   * curl -X POST "http://localhost:3000/tasks/audits" -H "Content-Type: application/json" -d '{"company":"companyName","accessId":"accessId","accessKey":"accessKey"}'
    */
   @Post('audits')
   @ApiOperation({

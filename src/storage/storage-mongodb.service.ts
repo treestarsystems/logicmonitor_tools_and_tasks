@@ -7,7 +7,6 @@ import { Injectable } from '@nestjs/common';
  * @injectable
  * @public
  * @export
- * @api
  */
 @Injectable()
 export class StorageServiceMongoDB {
@@ -35,7 +34,6 @@ export class StorageServiceMongoDB {
     }
   }
 
-  // TODO: Define types and return types for the find method
   /**
    * Find the backup data from MongoDB.
    * @param mongooseModel  The Mongoose model object to use for the find.
