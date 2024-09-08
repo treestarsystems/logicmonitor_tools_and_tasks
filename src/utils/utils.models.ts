@@ -41,6 +41,31 @@ interface AxiosParametersInterface {
 }
 
 /**
+ * Interface representing a request object for LogicMonitor API.
+ * @interface RequestObjectLMApiInterface
+ * @property {string} method - The HTTP method (e.g., 'GET', 'POST').
+ * @property {string} accessId - The access ID for authentication.
+ * @property {string} accessKey - The access key for authentication.
+ * @property {number} epoch - The epoch timestamp for the request.
+ * @property {string} [queryParams] - The optional query parameters for the API request.
+ * @property {any} url - The URL for the API request.
+ * @property {Record<string, any>} [requestData] - The optional data to send with the request.
+ * @property {number} apiVersion - The version of the API being used.
+ */
+
+interface RequestObjectLMApiInterface {
+  method: string;
+  accessId: string;
+  accessKey: string;
+  epoch: number;
+  queryParams?: string;
+  url: any;
+  resourcePath: string;
+  requestData?: Record<string, any>;
+  apiVersion: number;
+}
+
+/**
  * This is a base class used to store request data for LogicMonitor API calls.
  * @class {class}
  * @accessId {string} The access ID for the LogicMonitor account.
@@ -327,30 +352,6 @@ export class ScheduleListCronJobsResponse {
   futureRun: string[];
 }
 
-/**
- * Interface representing a request object for LogicMonitor API.
- * @interface RequestObjectLMApiInterface
- * @property {string} method - The HTTP method (e.g., 'GET', 'POST').
- * @property {string} accessId - The access ID for authentication.
- * @property {string} accessKey - The access key for authentication.
- * @property {number} epoch - The epoch timestamp for the request.
- * @property {string} [queryParams] - The optional query parameters for the API request.
- * @property {any} url - The URL for the API request.
- * @property {Record<string, any>} [requestData] - The optional data to send with the request.
- * @property {number} apiVersion - The version of the API being used.
- */
-
-interface RequestObjectLMApiInterface {
-  method: string;
-  accessId: string;
-  accessKey: string;
-  epoch: number;
-  queryParams?: string;
-  url: any;
-  resourcePath: string;
-  requestData?: Record<string, any>;
-  apiVersion: number;
-}
 /**
  * Builder class for creating a request object for LogicMonitor API.
  * @class RequestObjectLMApiBuilder
