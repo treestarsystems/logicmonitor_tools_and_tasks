@@ -14,6 +14,8 @@ import {
   BackupSchemaDatasource,
   BackupSchemaGeneral,
 } from '../storage/schemas/storage-mongodb.schema';
+import { AuditsService } from 'src/audits/audits.service';
+import { AuditsModule } from 'src/audits/audits.module';
 @Module({
   providers: [
     TasksService,
@@ -22,6 +24,7 @@ import {
     UtilsService,
     StorageServiceMongoDB,
     StorageServiceZip,
+    AuditsService,
   ],
   controllers: [TasksController],
   imports: [
@@ -30,6 +33,7 @@ import {
       { name: BackupLMDataDatasource.name, schema: BackupSchemaDatasource },
       { name: BackupLMDataGeneral.name, schema: BackupSchemaGeneral },
     ]),
+    AuditsModule,
   ],
 })
 export class TasksModule {}

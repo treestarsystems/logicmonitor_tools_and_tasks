@@ -5,7 +5,6 @@ import {
   RequestObjectLMApi,
   RequestObjectLMApiBuilder,
   ResponseObjectDefaultBuilder,
-  RequestObjectLMApiExtraRequestProperties,
 } from '../utils/utils.models';
 
 /**
@@ -137,7 +136,7 @@ export class AuditsService {
         .setMethod('GET')
         .setAccessId(accessId)
         .setAccessKey(accessKey)
-        .setUrl(company, '/sdt/sdts')
+        .setUrl(company, '/sdt/sdtss')
         .build();
 
       const sdtList: ResponseObjectDefault =
@@ -181,7 +180,10 @@ export class AuditsService {
           );
         return;
       }
-      return this.utilsService.defaultErrorHandlerHttp(err);
+      return this.utilsService.defaultErrorHandlerHttp(
+        err,
+        returnObj.httpStatus,
+      );
     }
   }
 
@@ -218,7 +220,10 @@ export class AuditsService {
           );
         return;
       }
-      return this.utilsService.defaultErrorHandlerHttp(err);
+      return this.utilsService.defaultErrorHandlerHttp(
+        err,
+        returnObj.httpStatus,
+      );
     }
   }
 }

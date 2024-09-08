@@ -147,7 +147,10 @@ export class BackupServiceDatasources {
           );
         return;
       }
-      return this.utilsService.defaultErrorHandlerHttp(err);
+      return this.utilsService.defaultErrorHandlerHttp(
+        err,
+        returnObj.httpStatus,
+      );
     }
   }
 
