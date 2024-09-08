@@ -23,9 +23,9 @@ import {
  * BackupServiceGeneral class to handle all general backup related API calls.
  * @class BackupServiceGeneral
  * @memberof module:tools
- * @implements {BackupServiceGeneral}
  * @injectable
- * @api
+ * @public
+ * @export
  */
 
 @Injectable()
@@ -47,10 +47,10 @@ export class BackupServiceGeneral {
    * @param {string} accessId  The access ID for the LogicMonitor account.
    * @param {string} accessKey  The access key for the LogicMonitor account.
    * @param {RequestObjectLMApiExtraRequestProperties} extraRequestProperties  The extra request properties to send in the API call (resourcePath, queryParams, requestData).
+   * @param {any} request  The request object from the client.
    * @param {Response} response  The response object to send the response back to the client.
-   * @returns {Promise<void>} Promise object.
-   * @function backupDatasourcesGet
-   * @memberof module:tools
+   * @param {boolean} [directlyRespondToApiCall=true] - Whether to directly respond to the API call or return the returnObj.
+   * @returns {Promise<void | ResponseObjectDefault>} A promise that resolves to void or a ResponseObjectDefault.
    */
 
   async backupGeneralGet(
@@ -152,13 +152,7 @@ export class BackupServiceGeneral {
    * Retrieve datasources with a group name that matches the search string from MongoDB.
    * @param {string} company  The company name for the LogicMonitor account.
    * @param {Response} response  The response object to send the response back to the client.
-   * @returns {Promise<void>} Promise object.
-   * @function retrieveBackupsAll
-   * @memberof module:tools
-   * @method GET
-   * @api
-   * @example
-   * curl -X GET "http://localhost:3000/tools/backup?company=companyName"
+   * @returns {Promise<void>} A promise that resolves to void.
    */
 
   async retrieveBackupsAll(company: string, response: any): Promise<void> {
@@ -238,16 +232,10 @@ export class BackupServiceGeneral {
   /**
    * Process the payload items and store them in MongoDB.
    * @param {any} payloadItems  The payload items to process.
-   * @param {any} backupType  The type of backup.
+   * @param {string} backupType  The type of backup.
    * @param {string} company  The company name for the LogicMonitor account.
    * @param {object} progressTracking  The object to track the progress of the backup jobs.
    * @returns {void} Void.
-   * @function processPayloadItems
-   * @memberof module:tools
-   * @private
-   * @example
-   * processPayloadItems(payloadItems, backupType, company, progressTracking);
-   * @api
    */
 
   private processPayloadItems(

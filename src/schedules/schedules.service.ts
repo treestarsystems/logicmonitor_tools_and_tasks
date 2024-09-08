@@ -10,6 +10,16 @@ import {
   ResponseObjectDefaultBuilder,
   ScheduleListCronJobsResponse,
 } from '../utils/utils.models';
+
+/**
+ * SchedulesService class to provide utility functions.
+ * @class SchedulesService
+ * @memberof module:schedules
+ * @injectable
+ * @public
+ * @export
+ */
+
 @Injectable()
 export class SchedulesService {
   constructor(
@@ -22,6 +32,13 @@ export class SchedulesService {
     __dirname,
     `../../${process.env.SCHEDULES_CONF_FILE_NAME}`,
   );
+
+  /**
+   * Lists all scheduled cron jobs and their details.
+   * @param {Response} response - The response object to send the result.
+   * @param {boolean} [directlyRespondToApiCall=true] - Whether to directly respond to the API call or return the returnObj.
+   * @returns {ResponseObjectDefault} - The response object containing the list of cron jobs.
+   */
 
   scheduleListCronJobs(
     response,
@@ -77,6 +94,12 @@ export class SchedulesService {
     }
   }
 
+  /**
+   * Reads the schedule configuration from a file.
+   * @param {string} confFilePath - The path to the configuration file.
+   * @returns {Promise<ToolsBackupDatasourcesRequest[]>} - A promise that resolves to an array of ToolsBackupDatasourcesRequest objects.
+   */
+
   async scheduleReadConf(
     confFilePath,
   ): Promise<ToolsBackupDatasourcesRequest[]> {
@@ -90,7 +113,10 @@ export class SchedulesService {
     }
   }
 
-  // Schedule a task to run at 12:00 AM EST, 12:00 PM EST, and 6:00PM EST every day.
+  /**
+   * Schedules a daily backup task to run at 12:00 AM, 12:00 PM, and 6:00 PM in the 'America/New_York' time zone.
+   * @returns {Promise<void>} - A promise that resolves to void.
+   */
   @Cron('0 0,12,18 * * *', {
     name: 'schedules.task: daily backup',
     timeZone: 'America/New_York',
@@ -117,7 +143,10 @@ export class SchedulesService {
     }
   }
 
-  // Schedule a task to run the first of every month at 8:00 AM EST.
+  /**
+   * Schedules a monthly audit task to run on the first of every month at 8:00 AM EST.
+   * @returns {Promise<void>} - A promise that resolves to void.
+   */
   @Cron('0 8 1 * *', {
     name: 'schedules.task: monthly audit',
     timeZone: 'America/New_York',

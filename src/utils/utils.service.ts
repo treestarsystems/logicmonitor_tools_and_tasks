@@ -15,8 +15,8 @@ import { Axios, AxiosRequestConfig, AxiosResponse } from 'axios';
  * @injectable
  * @public
  * @export
- * @api
  */
+
 @Injectable()
 export class UtilsService {
   /**

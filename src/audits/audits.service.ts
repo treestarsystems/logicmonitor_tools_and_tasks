@@ -8,16 +8,25 @@ import {
 } from '../utils/utils.models';
 
 /**
- * BackupServiceGeneral class to handle all general backup related API calls.
- * @class BackupServiceGeneral
+ * AuditsService class to handle all audit related API calls.
+ * @class AuditsService
  * @memberof module:audits
  * @implements {AuditsService}
  * @injectable
- * @api
- *
- */ @Injectable()
+ * @public
+ * @export
+ */
+@Injectable()
 export class AuditsService {
   constructor(private utilsService: UtilsService) {}
+
+  /**
+   * Fetches the list of collector versions for a given company.
+   * @param {string} company - The company identifier.
+   * @param {string} accessId - The access ID for authentication.
+   * @param {string} accessKey - The access key for authentication.
+   * @returns {Promise<ResponseObjectDefault>} - A promise that resolves to a ResponseObjectDefault containing the collector version list.
+   */
 
   private async auditGetCollectorVersionList(
     company: string,
@@ -47,9 +56,20 @@ export class AuditsService {
       returnObj.payload = [...(JSON.parse(collectorList.payload).items ?? [])];
       return returnObj;
     } catch (err) {
-      return this.utilsService.defaultErrorHandlerHttp(err);
+      return this.utilsService.defaultErrorHandlerHttp(
+        err,
+        returnObj.httpStatus,
+      );
     }
   }
+
+  /**
+   * Fetches the list of collectors for a given company.
+   * @param {string} company - The company identifier.
+   * @param {string} accessId - The access ID for authentication.
+   * @param {string} accessKey - The access key for authentication.
+   * @returns {Promise<ResponseObjectDefault>} - A promise that resolves to a ResponseObjectDefault containing the collector list.
+   */
 
   private async auditGetCollectorList(
     company: string,
@@ -79,9 +99,20 @@ export class AuditsService {
       returnObj.payload = [...(JSON.parse(collectorList.payload).items ?? [])];
       return returnObj;
     } catch (err) {
-      return this.utilsService.defaultErrorHandlerHttp(err);
+      return this.utilsService.defaultErrorHandlerHttp(
+        err,
+        returnObj.httpStatus,
+      );
     }
   }
+
+  /**
+   * Processes a collector item to determine available stable updates and appends the result to the return object.
+   * @param {any} collectorItem - The collector item to process.
+   * @param {any[]} collectorVersionList - The list of collector versions.
+   * @param {ResponseObjectDefault} returnObj - The object to which the result will be appended.
+   * @returns {void}
+   */
 
   private processCollectorItem(
     collectorItem: any,
@@ -112,6 +143,14 @@ export class AuditsService {
     );
   }
 
+  /**
+   * Processes a list of collectors to determine available stable updates for each collector.
+   * @param {any[]} collectorList - The list of collectors to process.
+   * @param {any[]} collectorVersionList - The list of collector versions.
+   * @param {ResponseObjectDefault} returnObj - The object to which the results will be appended.
+   * @returns {void}
+   */
+
   private processCollectors(
     collectorList: any[any],
     collectorVersionList: any[any],
@@ -121,6 +160,16 @@ export class AuditsService {
       this.processCollectorItem(collectorItem, collectorVersionList, returnObj);
     }
   }
+
+  /**
+   * Audits Scheduled Downtime (SDT) entries for a given company.
+   * @param {string} company - The company identifier.
+   * @param {string} accessId - The access ID for authentication.
+   * @param {string} accessKey - The access key for authentication.
+   * @param {Response} response - The response object to send the result.
+   * @param {boolean} [directlyRespondToApiCall=true] - Whether to directly respond to the API call or return the returnObj.
+   * @returns {Promise<void | ResponseObjectDefault>} - A promise that resolves to void or a ResponseObjectDefault.
+   */
 
   public async auditSDTs(
     company: string,
@@ -186,6 +235,16 @@ export class AuditsService {
       );
     }
   }
+
+  /**
+   * Audits the collector versions for a given company.
+   * @param {string} company - The company identifier.
+   * @param {string} accessId - The access ID for authentication.
+   * @param {string} accessKey - The access key for authentication.
+   * @param {Response} response - The response object to send the result.
+   * @param {boolean} [directlyRespondToApiCall=true] - Whether to directly respond to the API call or return the returnObj.
+   * @returns {Promise<void | ResponseObjectDefault>} - A promise that resolves to void or a ResponseObjectDefault.
+   */
 
   public async auditCollectorVersion(
     company: string,

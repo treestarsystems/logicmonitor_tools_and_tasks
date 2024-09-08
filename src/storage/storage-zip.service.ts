@@ -6,10 +6,9 @@ import { createWriteStream } from 'fs';
  * StorageServiceZip class to handle all ZIP related operations.
  * @class StorageServiceZip
  * @memberof module:storage
- * @implements {StorageServiceZip}
  * @injectable
+ * @public
  * @export
- * @api
  */
 
 @Injectable()
