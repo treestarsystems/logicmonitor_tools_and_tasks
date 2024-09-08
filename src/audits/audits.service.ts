@@ -149,7 +149,6 @@ export class AuditsService {
         );
         throw new Error(errMsg);
       }
-      console.log('sdtList:', sdtList);
       const sdtItems = JSON.parse(sdtList.payload).items ?? [];
       for (const sdtItem of sdtItems) {
         if (!sdtItem?.comment) {
@@ -161,6 +160,10 @@ export class AuditsService {
           returnObj.payload.push(sdtExpireAuditMsg);
         }
       }
+      if (returnObj.payload.length !== 0) {
+        returnObj.message = 'There are SDTs that violate the audit criteria';
+      }
+      returnObj.message = 'No SDTs violate the audit criteria.';
       if (directlyRespondToApiCall) {
         response.status(returnObj.httpStatus).send(returnObj);
         return;
