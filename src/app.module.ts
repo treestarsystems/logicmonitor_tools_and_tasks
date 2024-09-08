@@ -8,6 +8,7 @@ import { ToolsModule } from './tools/tools.module';
 import { TasksModule } from './tasks/tasks.module';
 import { SchedulesModule } from './schedules/schedules.module';
 import { StorageModule } from './storage/storage.module';
+import { AuditsModule } from './audits/audits.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { StorageModule } from './storage/storage.module';
     TasksModule,
     SchedulesModule,
     StorageModule,
+    AuditsModule,
   ],
   controllers: [],
   providers: [],

@@ -6,6 +6,7 @@ import {
   ResponseObjectDefaultBuilder,
 } from '../utils/utils.models';
 import { UtilsService } from '../utils/utils.service';
+import { AuditsService } from '../audits/audits.service';
 
 @Injectable()
 export class TasksService {
@@ -13,6 +14,7 @@ export class TasksService {
     private backupServiceDatasources: BackupServiceDatasources,
     private backupServiceGeneral: BackupServiceGeneral,
     private utilsService: UtilsService,
+    private auditService: AuditsService,
   ) {}
 
   async executeTaskBackups(
@@ -90,9 +92,9 @@ export class TasksService {
       }
       if (directlyRespondToApiCall) {
         response.status(returnObj.httpStatus).send(returnObj);
-      } else {
-        return returnObj;
+        return;
       }
+      return returnObj;
     } catch (err) {
       if (directlyRespondToApiCall) {
         response
@@ -103,9 +105,93 @@ export class TasksService {
               returnObj.httpStatus,
             ),
           );
-      } else {
-        return this.utilsService.defaultErrorHandlerHttp(err);
+        return;
       }
+      return this.utilsService.defaultErrorHandlerHttp(
+        err,
+        returnObj.httpStatus,
+      );
+    }
+  }
+
+  async executeTaskAudits(
+    company: string,
+    accessId: string,
+    accessKey: string,
+    response: any,
+    directlyRespondToApiCall: boolean = true,
+  ): Promise<void | ResponseObjectDefault> {
+    let returnObj: ResponseObjectDefault =
+      new ResponseObjectDefaultBuilder().build();
+    // Create an object to store the progress of the backup jobs.
+    const progressTracking = {
+      success: [],
+      failure: [],
+    };
+    try {
+      // Audit SDTs.
+      const auditServiceAuditSDTResponse = (await this.auditService.auditSDTs(
+        company,
+        accessId,
+        accessKey,
+        response,
+        false,
+      )) as ResponseObjectDefault;
+      if (auditServiceAuditSDTResponse.status == 'failure') {
+        progressTracking.failure.push(
+          `SDT: Failed to audit SDTs - ${auditServiceAuditSDTResponse.httpStatus}|${auditServiceAuditSDTResponse.message}`,
+        );
+      }
+      // Audit collector versions.
+      const auditServiceAuditCollectorVersionResponse =
+        (await this.auditService.auditCollectorVersion(
+          company,
+          accessId,
+          accessKey,
+          response,
+          false,
+        )) as ResponseObjectDefault;
+      if (auditServiceAuditCollectorVersionResponse.status == 'failure') {
+        progressTracking.failure.push(
+          `Collector: Failed to audit Collectors - ${auditServiceAuditCollectorVersionResponse.httpStatus}|${auditServiceAuditCollectorVersionResponse.message}`,
+        );
+      }
+
+      progressTracking.success = [
+        ...(auditServiceAuditSDTResponse.payload.map(
+          (item) => `SDT: ${item}`,
+        ) ?? []),
+        ...(auditServiceAuditCollectorVersionResponse.payload.map(
+          (item) => `Collector: ${item}`,
+        ) ?? []),
+      ];
+      returnObj.payload = [progressTracking];
+      if (progressTracking.failure.length > 0) {
+        returnObj.status = 'failure';
+        returnObj.httpStatus = 400;
+        returnObj.message = 'An audit item has failed';
+      }
+      if (directlyRespondToApiCall) {
+        response.status(returnObj.httpStatus).send(returnObj);
+        return;
+      }
+      return returnObj;
+    } catch (err) {
+      if (directlyRespondToApiCall) {
+        response
+          .status(returnObj.httpStatus)
+          .send(
+            this.utilsService.defaultErrorHandlerHttp(
+              err,
+              returnObj.httpStatus,
+            ),
+          );
+        return;
+      }
+      return this.utilsService.defaultErrorHandlerHttp(
+        err,
+        returnObj.httpStatus,
+      );
     }
   }
 }

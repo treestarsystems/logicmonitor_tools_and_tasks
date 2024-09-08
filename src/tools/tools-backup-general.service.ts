@@ -105,7 +105,7 @@ export class BackupServiceGeneral {
         throw new Error(errorMessage);
       }
       // Lets loop through the response and extract the items that match our filter into a new array.
-      const payloadItems = JSON.parse(resultList.payload).items;
+      const payloadItems = JSON.parse(resultList.payload).items ?? [];
       this.processPayloadItems(
         payloadItems,
         backupType,
@@ -139,9 +139,12 @@ export class BackupServiceGeneral {
               returnObj.httpStatus,
             ),
           );
-      } else {
-        return this.utilsService.defaultErrorHandlerHttp(err);
+        return;
       }
+      return this.utilsService.defaultErrorHandlerHttp(
+        err,
+        returnObj.httpStatus,
+      );
     }
   }
 

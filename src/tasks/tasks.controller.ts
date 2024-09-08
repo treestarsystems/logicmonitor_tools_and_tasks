@@ -3,6 +3,7 @@ import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import {
   ResponseObjectDefault,
   ToolsBackupDatasourcesRequest,
+  GeneralRequest,
 } from '../utils/utils.models';
 
 import { TasksService } from './tasks.service';
@@ -28,11 +29,11 @@ export class TasksController {
    * @returns {Promise<void>} Promise object.
    * @function backupDatasourcesPost
    * @memberof module:tasks
-   * @endpoint tasks/backup
+   * @endpoint tasks/backups
    * @method POST
    * @api
    * @example
-   * curl -X POST "http://localhost:3000/tasks/backup" -H "Content-Type: application/json" -d '{"company":"companyName","accessId":"accessId","accessKey":"accessKey","groupName":"groupName"}'
+   * curl -X POST "http://localhost:3000/tasks/backups" -H "Content-Type: application/json" -d '{"company":"companyName","accessId":"accessId","accessKey":"accessKey","groupName":"groupName"}'
    */
   @Post('backups')
   @ApiOperation({
@@ -49,6 +50,36 @@ export class TasksController {
       body.accessId,
       body.accessKey,
       body.groupName,
+      response,
+    );
+  }
+
+  /**
+   * Execute all audit tasks (sdt, collector version).
+   * @param {GeneralRequest} body - The request body.
+   * @param {Response} response - The response object.
+   * @returns {Promise<void>} Promise object.
+   * @function executeTaskAuditsPost
+   * @memberof module:tasks
+   * @endpoint tasks/audits
+   * @method POST
+   * @api
+   * @example
+   * curl -X POST "http://localhost:3000/tasks/audits" -H "Content-Type: application/json" -d '{"company":"companyName","accessId":"accessId","accessKey":"accessKey"}'
+   */
+  @Post('audits')
+  @ApiOperation({
+    summary: 'Execute all audit tasks (sdt, collector version).',
+  })
+  @ApiResponse({ type: ResponseObjectDefault })
+  async executeTaskAuditsPost(
+    @Body() body: GeneralRequest,
+    @Res() response: Response,
+  ): Promise<void> {
+    await this.tasksService.executeTaskAudits(
+      body.company,
+      body.accessId,
+      body.accessKey,
       response,
     );
   }

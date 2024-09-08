@@ -14,6 +14,7 @@ import {
   BackupSchemaGeneral,
 } from '../storage/schemas/storage-mongodb.schema';
 import { SchedulesController } from './schedules.controller';
+import { AuditsService } from 'src/audits/audits.service';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { SchedulesController } from './schedules.controller';
     UtilsService,
     StorageServiceMongoDB,
     StorageServiceZip,
+    AuditsService,
   ],
   controllers: [SchedulesController],
 })
