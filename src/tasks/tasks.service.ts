@@ -151,11 +151,20 @@ export class TasksService {
           response,
           false,
         )) as ResponseObjectDefault;
-      console.log(auditServiceAuditSDTResponse);
-      console.log(auditServiceAuditCollectorVersionResponse);
-      // progressTracking.success = [
-      //   ...(auditServiceAuditSDTResponse.payload[0]?.success ?? []),
-      // ];
+      if (auditServiceAuditCollectorVersionResponse.status == 'failure') {
+        progressTracking.failure.push(
+          `Collector: Failed to audit Collectors - ${auditServiceAuditCollectorVersionResponse.httpStatus}|${auditServiceAuditCollectorVersionResponse.message}`,
+        );
+      }
+
+      progressTracking.success = [
+        ...(auditServiceAuditSDTResponse.payload.map(
+          (item) => `SDT: ${item}`,
+        ) ?? []),
+        ...(auditServiceAuditCollectorVersionResponse.payload.map(
+          (item) => `Collector: ${item}`,
+        ) ?? []),
+      ];
       returnObj.payload = [progressTracking];
       if (progressTracking.failure.length > 0) {
         returnObj.status = 'failure';

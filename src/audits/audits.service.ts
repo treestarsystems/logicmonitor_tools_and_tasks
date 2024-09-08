@@ -136,7 +136,7 @@ export class AuditsService {
         .setMethod('GET')
         .setAccessId(accessId)
         .setAccessKey(accessKey)
-        .setUrl(company, '/sdt/sdtss')
+        .setUrl(company, '/sdt/sdts')
         .build();
 
       const sdtList: ResponseObjectDefault =
