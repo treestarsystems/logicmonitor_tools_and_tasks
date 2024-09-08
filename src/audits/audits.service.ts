@@ -84,6 +84,45 @@ export class AuditsService {
     }
   }
 
+  private processCollectorItem(
+    collectorItem: any,
+    collectorVersionList: any[any],
+    returnObj: ResponseObjectDefault,
+  ): void {
+    const updatedVersionAvailable = [];
+    const collectorBuildMajor = collectorItem?.build.slice(0, 2);
+    const collectorBuildMinor = collectorItem?.build.slice(2);
+    const collectorBuildNumber = parseFloat(
+      `${collectorBuildMajor}.${collectorBuildMinor}`,
+    );
+
+    for (const collectorVersionItem of collectorVersionList.payload) {
+      const collectorVersionNumber = parseFloat(
+        `${collectorVersionItem.majorVersion}.${collectorVersionItem.minorVersion}`,
+      );
+      if (
+        collectorVersionItem.stable === true &&
+        collectorVersionNumber > collectorBuildNumber
+      ) {
+        updatedVersionAvailable.push(collectorVersionNumber);
+      }
+    }
+
+    returnObj.payload.push(
+      `${collectorItem?.hostname} (${collectorItem?.id}) Build: ${collectorBuildNumber} (Available Stable Updates: ${updatedVersionAvailable.reverse().join(',')} <--latest)`,
+    );
+  }
+
+  private processCollectors(
+    collectorList: any[any],
+    collectorVersionList: any[any],
+    returnObj: ResponseObjectDefault,
+  ): void {
+    for (const collectorItem of collectorList.payload) {
+      this.processCollectorItem(collectorItem, collectorVersionList, returnObj);
+    }
+  }
+
   public async auditSDTs(
     company: string,
     accessId: string,
@@ -157,30 +196,8 @@ export class AuditsService {
         await this.auditGetCollectorVersionList(company, accessId, accessKey);
       const collectorList: ResponseObjectDefault =
         await this.auditGetCollectorList(company, accessId, accessKey);
-
-      for (const collectorItem of collectorList.payload) {
-        const updatedVersionAvailable = [];
-        // Ignore build major versions that are less than the current build major version on the collector.
-        const collectorBuildMajor = collectorItem?.build.slice(0, 2);
-        const collectorBuildMinor = collectorItem?.build.slice(2);
-        const collectorBuildNumber = parseFloat(
-          `${collectorBuildMajor}.${collectorBuildMinor}`,
-        );
-        for (const collectorVersionItem of collectorVersionList.payload) {
-          const collectorVersionNumber = parseFloat(
-            `${collectorVersionItem.majorVersion}.${collectorVersionItem.minorVersion}`,
-          );
-          if (
-            collectorVersionItem.stable === true &&
-            collectorVersionNumber > collectorBuildNumber
-          ) {
-            updatedVersionAvailable.push(collectorVersionNumber);
-          }
-        }
-        returnObj.payload.push(
-          `${collectorItem?.hostname} (${collectorItem?.id}) Build: ${collectorBuildNumber} (Available Stable Updates: ${updatedVersionAvailable.reverse().join(',')} <--latest)`,
-        );
-      }
+      // Process the collector and collector version list. This will add the audit data to the returnObj directly.
+      this.processCollectors(collectorList, collectorVersionList, returnObj);
       if (directlyRespondToApiCall) {
         response.status(returnObj.httpStatus).send(returnObj);
         return;
