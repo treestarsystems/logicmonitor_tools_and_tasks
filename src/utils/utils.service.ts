@@ -95,6 +95,8 @@ export class UtilsService {
    * Capitalizes the first letter of a given string.
    * @param {string} str The string to capitalize.
    * @returns {string} The string with the first letter capitalized.
+   * @example
+   * capitalizeFirstLetter('hello') // returns 'Hello'
    */
 
   public capitalizeFirstLetter(str: string): string {
@@ -139,6 +141,8 @@ export class UtilsService {
    * @param {number} replacementIndex
    * @param {string} replacementString
    * @returns {string} The string with the character replaced
+   * @example
+   * replaceAt('hello', 1, 'a') // returns 'hallo'
    */
 
   public replaceAt(
@@ -187,12 +191,10 @@ export class UtilsService {
 
   /**
    * Encodes the query parameters of a given URL.
-   *
    * This function takes a URL with query parameters and returns a new URL
    * where the query parameters have been percent-encoded. This is particularly
    * useful for ensuring that special characters in query parameters are properly
    * encoded to conform to URL standards.
-   *
    * @param {string} url - The original URL with query parameters to encode.
    * @returns {string} The URL with encoded query parameters.
    * @example
@@ -264,7 +266,15 @@ export class UtilsService {
    * Generate an authentication string for LogicMonitor API calls
    * @param {RequestObjectLMApi} requestObject An object containing the method, epoch, requestData, resourcePath, accessId, and accessKey
    * @returns {string} The generated authorization string.
-   * @throws Will return the error if an exception occurs during the generation process.
+   * @example
+   * generateAuthString({
+   * method: 'get',
+   * epoch: 1627584000000,
+   * requestData: { ... },
+   * resourcePath: '/santaba/rest/report/reports',
+   * accessId: '123456789',
+   * accessKey: '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef'
+   * }) // returns 'LMv1 123456789:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef:1627584000000'
    */
 
   public generateAuthString(requestObjectLMApi: RequestObjectLMApi): string {
@@ -289,10 +299,8 @@ export class UtilsService {
    * @param {any} apiRequest - The API request object.
    * @param {AxiosRequestConfig} axiosParametersObj - The Axios request configuration object.
    * @returns {Promise<any>} - A promise that resolves to the API response object.
-   * @throws {Error} Throws an error if the authentication string is invalid.
    * @example
    * const response = await genericAPICallHandleRateLimit(apiResponse, apiRequest, axiosParametersObj);
-   * console.log(response);
    */
 
   private async genericAPICallHandleRateLimit(
