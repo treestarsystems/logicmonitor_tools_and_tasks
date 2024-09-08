@@ -116,4 +116,32 @@ export class SchedulesService {
       this.utilsService.defaultErrorHandlerString(err);
     }
   }
+
+  // Schedule a task to run the first of every month at 8:00 AM EST.
+  @Cron('0 8 1 * *', {
+    name: 'schedules.task: monthly audit',
+    timeZone: 'America/New_York',
+  })
+  async scheduleTaskMonthlyAudit() {
+    try {
+      const confData = await this.scheduleReadConf(this.scheduleConfFilePath);
+      for (const conf of confData) {
+        Logger.log(`Executing monthly audit for ${conf.company.toUpperCase()}`);
+        const scheduledTaskResult = (await this.tasksService.executeTaskAudits(
+          conf.company,
+          conf.accessId,
+          conf.accessKey,
+          {},
+          false,
+        )) as ResponseObjectDefault;
+        Logger.log(
+          `Finished monthly audit for ${conf.company.toUpperCase()} with result: ${this.utilsService.capitalizeFirstLetter(scheduledTaskResult.message)}`,
+        );
+        // The result needs to be formatted and sent as an email.
+        // console.log(JSON.stringify(scheduledTaskResult));
+      }
+    } catch (err) {
+      this.utilsService.defaultErrorHandlerString(err);
+    }
+  }
 }
