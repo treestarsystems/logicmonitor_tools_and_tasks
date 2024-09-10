@@ -27,9 +27,9 @@ export class SwaggerDocumentVersioned {
     private readonly description: string,
   ) {}
 
-  private readonly companyName: string = process.env.COMPANY_NAME;
-  private readonly companySite: string = process.env.COMPANY_SITE;
-  private readonly companyEmail: string = process.env.COMPANY_EMAIL;
+  private readonly companyName: string = process.env.SWAGGER_COMPANY_NAME;
+  private readonly companySite: string = process.env.SWAGGER_COMPANY_SITE;
+  private readonly companyEmail: string = process.env.SWAGGER_COMPANY_EMAIL;
 
   private SwaggerDocumentOptions: SwaggerDocumentOptions = {
     operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
