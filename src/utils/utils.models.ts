@@ -125,12 +125,12 @@ export class ResponseObjectDefault implements ResponseObjectDefaultInterface {
   message: string;
 
   @IsArray()
-  @ApiProperty({
-    description:
-      'The payload from the API call. This can be an array of any type',
-    type: [],
-    enum: ['any (string|number|object|array|boolean|error object)'],
-  })
+  // @ApiProperty({
+  //   description:
+  //     'The payload from the API call. This can be an array of any type',
+  //   type: [],
+  //   enum: ['any (string|number|object|array|boolean|error object)'],
+  // })
   payload: any[any];
 }
 
@@ -345,10 +345,10 @@ export class ScheduleListCronJobsResponse {
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({
-    description: 'The future run times of the job in EST',
-    type: 'enum',
-  })
+  // @ApiProperty({
+  //   description: 'The future run times of the job in EST',
+  //   type: 'enum',
+  // })
   futureRun: string[];
 }
 
