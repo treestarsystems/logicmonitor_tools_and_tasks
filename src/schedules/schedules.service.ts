@@ -120,7 +120,7 @@ export class SchedulesService {
    * Schedules a daily backup task to run at 12:00 AM, 12:00 PM, and 6:00 PM in the 'America/New_York' time zone.
    * @returns {Promise<void>} - A promise that resolves to void.
    */
-  @Cron('* * * * *', {
+  @Cron('0 0,12,18 * * *', {
     name: 'schedules.task: daily backup',
     timeZone: 'America/New_York',
   })
