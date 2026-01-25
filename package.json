@@ -37,8 +37,10 @@
     "crypto": "^1.0.1",
     "dotenv": "^17.2.3",
     "mongoose": "^9.1.5",
+    "nest-winston": "^1.10.2",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.2"
+    "rxjs": "^7.8.2",
+    "winston": "^3.19.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.16",

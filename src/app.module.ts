@@ -9,6 +9,8 @@ import { TasksModule } from './tasks/tasks.module';
 import { SchedulesModule } from './schedules/schedules.module';
 import { StorageModule } from './storage/storage.module';
 import { AuditsModule } from './audits/audits.module';
+import { WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
 
 @Module({
   imports: [
@@ -31,6 +33,15 @@ import { AuditsModule } from './audits/audits.module';
     SchedulesModule,
     StorageModule,
     AuditsModule,
+    WinstonModule.forRoot({
+      transports: [
+        new winston.transports.Console(),
+        new winston.transports.File({
+          filename: './lmtt-data/logs/lmtt-app.log',
+          level: 'info',
+        }),
+      ],
+    }),
   ],
   controllers: [],
   providers: [],

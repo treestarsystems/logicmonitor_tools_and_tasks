@@ -27,3 +27,6 @@ EXPOSE 3000
 
 # Define the command to run the application
 CMD ["npm", "run", "start:prod"]
+
+# Mount a local directory to the container
+VOLUME ["/opt/lmtt/lmtt-data:/usr/src/app/lmtt-data"]
