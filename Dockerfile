@@ -2,7 +2,7 @@
 FROM node:24.13.0-alpine
 
 # Create app directory
-WORKDIR /usr/src/app
+WORKDIR /usr/src/lmtt-app
 
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
@@ -29,4 +29,5 @@ EXPOSE 3000
 CMD ["npm", "run", "start:prod"]
 
 # Mount a local directory to the container
-VOLUME ["/opt/lmtt/lmtt-data:/usr/src/app/lmtt-data"]
+# VOLUME ["/opt/lmtt/lmtt-data:/usr/src/lmtt-app/lmtt-data"]
+VOLUME ["/opt/lmtt/lmtt-data:lmtt-data"]

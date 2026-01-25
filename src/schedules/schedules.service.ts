@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { promises as fs } from 'fs';
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Cron, SchedulerRegistry } from '@nestjs/schedule';
 import { TasksService } from '../tasks/tasks.service';
 import { ToolsBackupDatasourcesRequest } from '../utils/utils.models';
@@ -10,6 +10,8 @@ import {
   ResponseObjectDefaultBuilder,
   ScheduleListCronJobsResponse,
 } from '../utils/utils.models';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 /**
  * SchedulesService class to provide utility functions.
@@ -26,6 +28,7 @@ export class SchedulesService {
     private tasksService: TasksService,
     private utilsService: UtilsService,
     private schedulerRegistry: SchedulerRegistry,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {}
 
   private readonly scheduleConfFilePath: string = path.resolve(
@@ -108,7 +111,7 @@ export class SchedulesService {
       const confData: ToolsBackupDatasourcesRequest[] = JSON.parse(data);
       return confData;
     } catch (err) {
-      console.error('Error reading schedule configuration file:', err);
+      this.logger.error('Error reading schedule configuration file:', err);
       return [];
     }
   }
@@ -125,7 +128,7 @@ export class SchedulesService {
     try {
       const confData = await this.scheduleReadConf(this.scheduleConfFilePath);
       for (const conf of confData) {
-        Logger.log(`Executing backup for ${conf.company.toUpperCase()}`);
+        this.logger.info(`Executing backup for ${conf.company.toUpperCase()}`);
         const scheduledTaskResult = (await this.tasksService.executeTaskBackups(
           conf.company,
           conf.accessId,
@@ -134,7 +137,7 @@ export class SchedulesService {
           {},
           false,
         )) as ResponseObjectDefault;
-        Logger.log(
+        this.logger.info(
           `Finished backup for ${conf.company.toUpperCase()} with result: ${this.utilsService.capitalizeFirstLetter(scheduledTaskResult.message)}`,
         );
       }
@@ -155,7 +158,9 @@ export class SchedulesService {
     try {
       const confData = await this.scheduleReadConf(this.scheduleConfFilePath);
       for (const conf of confData) {
-        Logger.log(`Executing monthly audit for ${conf.company.toUpperCase()}`);
+        this.logger.info(
+          `Executing monthly audit for ${conf.company.toUpperCase()}`,
+        );
         const scheduledTaskResult = (await this.tasksService.executeTaskAudits(
           conf.company,
           conf.accessId,
@@ -163,7 +168,7 @@ export class SchedulesService {
           {},
           false,
         )) as ResponseObjectDefault;
-        Logger.log(
+        this.logger.info(
           `Finished monthly audit for ${conf.company.toUpperCase()} with result: ${this.utilsService.capitalizeFirstLetter(scheduledTaskResult.message)}`,
         );
         // The result needs to be formatted and sent as an email.
