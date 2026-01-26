@@ -1,0 +1,60 @@
+version: '3.8'
+services:
+  mongodb:
+    image: mongo:8.2.3-noble
+    container_name: lmtt-mongodb
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: lmtt
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongodb/logs:/var/log/mongodb
+    networks:
+      - lmtt-network
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  lmtt-app:
+    image: node:24.13.0-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile-app-lmtt
+    container_name: app-lmtt
+    restart: unless-stopped
+    ports:
+      - ${PORT}:${PORT}
+    env_file:
+      - ../.env
+    environment:
+      - PORT=${PORT}
+      - SWAGGER_COMPANY_NAME=${SWAGGER_COMPANY_NAME}
+      - SWAGGER_COMPANY_SITE=${SWAGGER_COMPANY_SITE}
+      - SWAGGER_COMPANY_EMAIL=${SWAGGER_COMPANY_EMAIL}
+      - MONGODB_URI=${MONGODB_URI}
+      - MONGODB_DB_NAME=${MONGODB_DB_NAME}
+      - SCHEDULES_CONF_FILE_NAME=${SCHEDULES_CONF_FILE_NAME}
+      - NODE_ENV=production
+    volumes:
+      - ./lmtt-data:/app/lmtt-data
+      # - ./schedules.json:/app/schedules.json
+    networks:
+      - lmtt-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    command: ['npm', 'run', 'start:prod']
+
+volumes:
+  mongodb_data:
+
+networks:
+  lmtt-network:
+    driver: bridge
