@@ -29,7 +29,7 @@ services:
     image: node:24.13.0-alpine
     build:
       context: .
-      dockerfile: Dockerfile-app-lmtt
+      dockerfile: Dockerfile-lmtt-app
     container_name: lmtt-app
     restart: unless-stopped
     ports:
