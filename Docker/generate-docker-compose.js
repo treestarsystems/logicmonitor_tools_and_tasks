@@ -1,5 +1,4 @@
 const fs = require('fs');
-const path = require('path');
 
 /**
  * @description Checks if a string contains special characters that require quoting
@@ -114,11 +113,12 @@ function generateDockerCompose() {
     const envVars = parseEnvFile(envPath);
 
     // Show which values were quoted
-    console.log('🔧 Processing environment variables:');
-    Object.entries(envVars).forEach(([key, value]) => {
-      const needsQuotes = needsQuoting(value.replace(/^'|'$/g, ''));
-      console.log(`  ${key}=${value} ${needsQuotes ? '(quoted)' : ''}`);
-    });
+    console.log('🔧 Processing environment variables');
+    // Commented out because it seems too verbose.
+//    Object.entries(envVars).forEach(([key, value]) => {
+//      const needsQuotes = needsQuoting(value.replace(/^'|'$/g, ''));
+//      console.log(`  ${key}=${value} ${needsQuotes ? '(quoted)' : ''}`);
+//    });
 
     // Replace variables in template
     const processedContent = replaceVariables(templateContent, envVars);
@@ -126,7 +126,7 @@ function generateDockerCompose() {
     // Write output file
     fs.writeFileSync(outputPath, processedContent, 'utf8');
 
-    console.log('\n✅ docker-compose.yml generated successfully!');
+    console.log('✅ docker-compose.yml generated successfully!');
     console.log(`📁 Output file: ${outputPath}`);
     console.log(`🔧 Variables replaced: ${Object.keys(envVars).length}`);
   } catch (error) {
