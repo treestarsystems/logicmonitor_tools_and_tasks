@@ -24,7 +24,6 @@ services:
       start_period: 40s
 
 #  lmtt-app:
-
 #    image: node:24.13.0-alpine
 #    build:
 #      context: .
@@ -34,18 +33,18 @@ services:
 #    ports:
 #      - $APP_PORT:$APP_PORT
 #    environment:
-#      - APP_PORT=$APP_PORT
-#      - MONGO_DB_HOSTNAME=$MONGO_DB_HOSTNAME
-#      - MONGO_DB_PORT=$MONGO_DB_PORT
-#      - MONGO_DB_NAME=$MONGO_DB_NAME
-#      - MONGO_DB_USERNAME=$MONGO_DB_USERNAME
-#      - MONGO_DB_PASSWORD=$MONGO_DB_PASSWORD
-#      - SWAGGER_COMPANY_NAME=$SWAGGER_COMPANY_NAME
-#      - SWAGGER_COMPANY_SITE=$SWAGGER_COMPANY_SITE
-#      - SWAGGER_COMPANY_EMAIL=$SWAGGER_COMPANY_EMAIL
-#      - MONGODB_DB_NAME=$MONGO_DB_NAME
-#      - SCHEDULES_CONF_FILE_NAME=$SCHEDULES_CONF_FILE_NAME
-#      - NODE_ENV=production
+#      APP_PORT: $APP_PORT
+#      MONGO_DB_HOSTNAME: $MONGO_DB_HOSTNAME
+#      MONGO_DB_PORT: $MONGO_DB_PORT
+#      MONGO_DB_NAME: $MONGO_DB_NAME
+#      MONGO_DB_USERNAME: $MONGO_DB_USERNAME
+#      MONGO_DB_PASSWORD: $MONGO_DB_PASSWORD
+#      SWAGGER_COMPANY_NAME: $SWAGGER_COMPANY_NAME
+#      SWAGGER_COMPANY_SITE: $SWAGGER_COMPANY_SITE
+#      SWAGGER_COMPANY_EMAIL: $SWAGGER_COMPANY_EMAIL
+#      MONGODB_DB_NAME: $MONGO_DB_NAME
+#      SCHEDULES_CONF_FILE_NAME: $SCHEDULES_CONF_FILE_NAME
+#      NODE_ENV: production
 #    volumes:
 #      - ./lmtt-data:/app/lmtt-data
 #      - ./schedules.json:/app/schedules.json

@@ -1,8 +1,41 @@
 const fs = require('fs');
-// const path = require('path');
+const path = require('path');
 
 /**
- * Parses a .env file and returns key-value pairs
+ * @description Checks if a string contains special characters that require quoting
+ * @param {string} value - The value to check
+ * @returns {boolean} - True if the value contains special characters
+ */
+function needsQuoting(value) {
+  // Check for special characters commonly found in URLs, emails, etc.
+  const specialChars = /[\/\:\@\.\-\s\#\$\&\?\=\%\+]/;
+  return specialChars.test(value);
+}
+
+/**
+ * @description Encapsulates a value with single quotes if it contains special characters
+ * @param {string} value - The value to potentially quote
+ * @returns {string} - The value, optionally wrapped in single quotes
+ */
+function encapsulateValue(value) {
+  // Skip if already quoted
+  if (
+    (value.startsWith("'") && value.endsWith("'")) ||
+    (value.startsWith('"') && value.endsWith('"'))
+  ) {
+    return value;
+  }
+
+  // Add single quotes if value contains special characters
+  if (needsQuoting(value)) {
+    return `'${value}'`;
+  }
+
+  return value;
+}
+
+/**
+ * @description Parses a .env file and returns key-value pairs
  * @param {string} envFilePath - Path to the .env file
  * @returns {Object} - Object containing environment variables
  */
@@ -25,7 +58,7 @@ function parseEnvFile(envFilePath) {
         const key = line.substring(0, equalIndex).trim();
         let value = line.substring(equalIndex + 1).trim();
 
-        // Remove quotes if present
+        // Remove existing quotes to normalize
         if (
           (value.startsWith("'") && value.endsWith("'")) ||
           (value.startsWith('"') && value.endsWith('"'))
@@ -33,7 +66,9 @@ function parseEnvFile(envFilePath) {
           value = value.slice(1, -1);
         }
 
-        envVars[key] = value;
+        // Encapsulate with single quotes if needed
+        const processedValue = encapsulateValue(value);
+        envVars[key] = processedValue;
       }
     });
 
@@ -45,7 +80,7 @@ function parseEnvFile(envFilePath) {
 }
 
 /**
- * Replaces $VARIABLE placeholders with actual values from environment variables
+ * @description Replaces $VARIABLE placeholders with actual values from environment variables
  * @param {string} content - Template content
  * @param {Object} envVars - Environment variables object
  * @returns {string} - Content with replaced variables
@@ -64,7 +99,7 @@ function replaceVariables(content, envVars) {
 }
 
 /**
- * Main function to generate docker-compose.yml from template
+ * @description Main function to generate docker-compose.yml from template
  */
 function generateDockerCompose() {
   const templatePath = './docker-compose.yml-template';
@@ -78,13 +113,20 @@ function generateDockerCompose() {
     // Parse .env file
     const envVars = parseEnvFile(envPath);
 
+    // Show which values were quoted
+    console.log('🔧 Processing environment variables:');
+    Object.entries(envVars).forEach(([key, value]) => {
+      const needsQuotes = needsQuoting(value.replace(/^'|'$/g, ''));
+      console.log(`  ${key}=${value} ${needsQuotes ? '(quoted)' : ''}`);
+    });
+
     // Replace variables in template
     const processedContent = replaceVariables(templateContent, envVars);
 
     // Write output file
     fs.writeFileSync(outputPath, processedContent, 'utf8');
 
-    console.log('✅ docker-compose.yml generated successfully!');
+    console.log('\n✅ docker-compose.yml generated successfully!');
     console.log(`📁 Output file: ${outputPath}`);
     console.log(`🔧 Variables replaced: ${Object.keys(envVars).length}`);
   } catch (error) {
@@ -98,4 +140,10 @@ if (require.main === module) {
   generateDockerCompose();
 }
 
-module.exports = { parseEnvFile, replaceVariables, generateDockerCompose };
+module.exports = {
+  parseEnvFile,
+  replaceVariables,
+  generateDockerCompose,
+  encapsulateValue,
+  needsQuoting,
+};
