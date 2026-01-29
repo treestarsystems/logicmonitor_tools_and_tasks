@@ -114,11 +114,6 @@ function generateDockerCompose() {
 
     // Show which values were quoted
     console.log('🔧 Processing environment variables');
-    // Commented out because it seems too verbose.
-//    Object.entries(envVars).forEach(([key, value]) => {
-//      const needsQuotes = needsQuoting(value.replace(/^'|'$/g, ''));
-//      console.log(`  ${key}=${value} ${needsQuotes ? '(quoted)' : ''}`);
-//    });
 
     // Replace variables in template
     const processedContent = replaceVariables(templateContent, envVars);

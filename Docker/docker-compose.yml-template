@@ -5,11 +5,11 @@ services:
     container_name: lmtt-db
     restart: unless-stopped
     ports:
-      - '$MONGO_DB_PORT:$MONGO_DB_PORT'
+      - '$MONGODB_PORT:$MONGODB_PORT'
     environment:
-      MONGODB_INITDB_ROOT_USERNAME: $MONGO_DB_USERNAME
-      MONGODB_INITDB_ROOT_PASSWORD: $MONGO_DB_PASSWORD
-      MONGODB_INITDB_DATABASE: $MONGO_DB_NAME
+      MONGODB_INITDB_ROOT_USERNAME: $MONGODB_USERNAME
+      MONGODB_INITDB_ROOT_PASSWORD: $MONGODB_PASSWORD
+      MONGODB_INITDB_DATABASE: $MONGODB_NAME
     volumes:
       - ./mongod.conf:/etc/mongod.conf:z
       - /opt/lmtt/db/logs:/var/log/mongodb:z
@@ -24,37 +24,37 @@ services:
       retries: 3
       start_period: 40s
 
-#  lmtt-app:
-#    image: node:24.13.0-alpine
-#    build:
-#      context: .
-#      dockerfile: Dockerfile-lmtt-app
-#    container_name: lmtt-app
-#    restart: unless-stopped
-#    ports:
-#      - $APP_PORT:$APP_PORT
-#    environment:
-#      APP_PORT: $APP_PORT
-#      MONGO_DB_HOSTNAME: $MONGO_DB_HOSTNAME
-#      MONGO_DB_PORT: $MONGO_DB_PORT
-#      MONGO_DB_NAME: $MONGO_DB_NAME
-#      MONGO_DB_USERNAME: $MONGO_DB_USERNAME
-#      MONGO_DB_PASSWORD: $MONGO_DB_PASSWORD
-#      SWAGGER_COMPANY_NAME: $SWAGGER_COMPANY_NAME
-#      SWAGGER_COMPANY_SITE: $SWAGGER_COMPANY_SITE
-#      SWAGGER_COMPANY_EMAIL: $SWAGGER_COMPANY_EMAIL
-#      MONGODB_DB_NAME: $MONGO_DB_NAME
-#      SCHEDULES_CONF_FILE_NAME: $SCHEDULES_CONF_FILE_NAME
-#      NODE_ENV: production
+  lmtt-app:
+    image: node:24.13.0-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile-lmtt-app
+    container_name: lmtt-app
+    restart: unless-stopped
+    ports:
+      - '$APP_PORT:$APP_PORT'
+    environment:
+      APP_PORT: $APP_PORT
+      MONGODB_HOSTNAME: lmtt-db
+      MONGODB_PORT: $MONGODB_PORT
+      MONGODB_NAME: $MONGODB_NAME
+      MONGODB_USERNAME: $MONGODB_USERNAME
+      MONGODB_PASSWORD: $MONGODB_PASSWORD
+      SWAGGER_COMPANY_NAME: $SWAGGER_COMPANY_NAME
+      SWAGGER_COMPANY_SITE: $SWAGGER_COMPANY_SITE
+      SWAGGER_COMPANY_EMAIL: $SWAGGER_COMPANY_EMAIL
+#      MONGODB_DB_NAME: $MONGODB_NAME
+      SCHEDULES_CONF_FILE_NAME: $SCHEDULES_CONF_FILE_NAME
+      NODE_ENV: production
 #    volumes:
 #      - ./lmtt-data:/app/lmtt-data
 #      - ./schedules.json:/app/schedules.json
-#    networks:
-#      - lmtt-network
-#    depends_on:
-#      mongodb:
-#        condition: service_healthy
-#    command: ['npm', 'run', 'start:prod']
+    networks:
+      - lmtt-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    command: ['npm', 'run', 'start:prod']
 
 volumes:
   mongodb_data:

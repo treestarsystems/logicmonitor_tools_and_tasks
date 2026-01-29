@@ -31,7 +31,7 @@ const logStringFormat = (info) =>
       wildcard: true,
     }),
     MongooseModule.forRoot(
-      `${process.env.MONGODB_URI}/${process.env.MONGODB_DB_NAME}`,
+      `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOSTNAME}:${process.env.MONGODB_PORT}/${process.env.MONGODB_NAME}`,
     ),
     UtilsModule,
     ToolsModule,
