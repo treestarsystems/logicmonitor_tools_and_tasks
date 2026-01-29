@@ -1,20 +1,22 @@
 version: '3.8'
 services:
   mongodb:
-    image: mongodb/mongodb-community-server:latest
+    image: mongodb/mongodb-community-server:4.4-ubuntu2204
     container_name: lmtt-db
     restart: unless-stopped
     ports:
-      - $MONGO_DB_PORT:$MONGO_DB_PORT
+      - '$MONGO_DB_PORT:$MONGO_DB_PORT'
     environment:
       MONGODB_INITDB_ROOT_USERNAME: $MONGO_DB_USERNAME
       MONGODB_INITDB_ROOT_PASSWORD: $MONGO_DB_PASSWORD
       MONGODB_INITDB_DATABASE: $MONGO_DB_NAME
     volumes:
-      - mongodb_data:/data/db
-      - ./mongodb/logs:/var/log/mongodb
+      - ./mongod.conf:/etc/mongod.conf:z
+      - /opt/lmtt/db/logs:/var/log/mongodb:z
+      - /opt/lmtt/db/data:/data/db:z
     networks:
       - lmtt-network
+    command: /bin/sh -c 'mongod --config /etc/mongod.conf'
     healthcheck:
       test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
       interval: 30s
