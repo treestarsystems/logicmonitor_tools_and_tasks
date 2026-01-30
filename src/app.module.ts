@@ -52,7 +52,7 @@ const logStringFormat = (info) =>
         }),
         // Daily rotating file transport for info level logs
         new DailyRotateFile({
-          dirname: './lmtt-data/logs',
+          dirname: './lmtt-app-logs',
           filename: 'lmtt-app-%DATE%.log',
           datePattern: 'YYYY-MM-DD',
           zippedArchive: true,

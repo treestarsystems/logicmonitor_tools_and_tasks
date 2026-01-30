@@ -25,10 +25,9 @@ services:
       start_period: 40s
 
   lmtt-app:
-    image: node:24.13.0-alpine
     build:
       context: .
-      dockerfile: Dockerfile-lmtt-app
+      dockerfile: Docker/Dockerfile-lmtt-app
     container_name: lmtt-app
     restart: unless-stopped
     ports:
@@ -43,18 +42,15 @@ services:
       SWAGGER_COMPANY_NAME: $SWAGGER_COMPANY_NAME
       SWAGGER_COMPANY_SITE: $SWAGGER_COMPANY_SITE
       SWAGGER_COMPANY_EMAIL: $SWAGGER_COMPANY_EMAIL
-#      MONGODB_DB_NAME: $MONGODB_NAME
       SCHEDULES_CONF_FILE_NAME: $SCHEDULES_CONF_FILE_NAME
       NODE_ENV: production
-#    volumes:
-#      - ./lmtt-data:/app/lmtt-data
-#      - ./schedules.json:/app/schedules.json
+    volumes:
+      - /opt/lmtt/app/logs:/usr/src/app/lmtt-app-logs:z
     networks:
       - lmtt-network
     depends_on:
       mongodb:
         condition: service_healthy
-    command: ['npm', 'run', 'start:prod']
 
 volumes:
   mongodb_data:
