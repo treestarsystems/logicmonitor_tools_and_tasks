@@ -143,6 +143,9 @@ class PodmanBuilder {
   async deployContainers() {
     this.log('Building containers with podman-compose...');
 
+    // Start containers in detached mode
+    this.executeCommand('podman-compose down');
+
     // Build the containers
     this.executeCommand('podman-compose build');
 

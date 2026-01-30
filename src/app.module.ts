@@ -18,9 +18,9 @@ const timeStampFormat = 'YYYY-MM-DD HH:mm:ss';
 const logStringFormat = (info) =>
   `${info.timestamp} [${info.level.toUpperCase()}]: ${info.message}`;
 // const mongodbUri = `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOSTNAME}:${process.env.MONGODB_PORT}/${process.env.MONGODB_NAME}?replicaSet=rs0`;
-const mongodbUri = `mongodb://${process.env.MONGODB_HOSTNAME}:${process.env.MONGODB_PORT}/${process.env.MONGODB_NAME}?replicaSet=rs0`;
+const mongodbUri = `mongodb://${process.env.MONGODB_HOSTNAME}:${process.env.MONGODB_PORT}/${process.env.MONGODB_NAME}`;
 
-Logger.log(mongodbUri);
+// Logger.log(mongodbUri);
 
 @Module({
   imports: [
