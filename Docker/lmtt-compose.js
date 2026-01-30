@@ -27,7 +27,7 @@ class PodmanBuilder {
    * Logs messages with timestamps
    */
   log(message, type = 'INFO') {
-    const timestamp = new Date().toISOString();
+    const timestamp = new Date().toLocaleString();
     const emoji = type === 'ERROR' ? '❌' : type === 'SUCCESS' ? '✅' : '📝';
     console.log(`${emoji} [${timestamp}] ${message}`);
   }

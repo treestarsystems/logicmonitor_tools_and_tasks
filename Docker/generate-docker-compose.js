@@ -1,6 +1,16 @@
 const fs = require('fs');
 
 /**
+ * @description Logs messages with timestamps
+ */
+function log(message, type = 'INFO') {
+  // const timestamp = new Date().toISOString();
+  const timestamp = new Date().toLocaleString();
+  const emoji = type === 'ERROR' ? '❌' : type === 'SUCCESS' ? '✅' : '📝';
+  console.log(`${emoji} [${timestamp}] ${message}`);
+}
+
+/**
  * @description Checks if a string contains special characters that require quoting
  * @param {string} value - The value to check
  * @returns {boolean} - True if the value contains special characters
@@ -113,7 +123,7 @@ function generateDockerCompose() {
     const envVars = parseEnvFile(envPath);
 
     // Show which values were quoted
-    console.log('🔧 Processing environment variables');
+    log('🔧 Processing environment variables');
 
     // Replace variables in template
     const processedContent = replaceVariables(templateContent, envVars);
@@ -121,9 +131,9 @@ function generateDockerCompose() {
     // Write output file
     fs.writeFileSync(outputPath, processedContent, 'utf8');
 
-    console.log('✅ docker-compose.yml generated successfully!');
-    console.log(`📁 Output file: ${outputPath}`);
-    console.log(`🔧 Variables replaced: ${Object.keys(envVars).length}`);
+    log('✅ docker-compose.yml generated successfully!');
+    log(`📁 Output file: ${outputPath}`);
+    log(`🔧 Variables replaced: ${Object.keys(envVars).length}`);
   } catch (error) {
     console.error('❌ Error generating docker-compose.yml:', error.message);
     process.exit(1);
