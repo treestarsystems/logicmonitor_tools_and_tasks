@@ -62,3 +62,6 @@ docker-compose.yml
 
 # Tem Files
 *.swp
+
+#Log files
+lmtt-app-logs
