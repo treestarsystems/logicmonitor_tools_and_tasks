@@ -19,9 +19,9 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "gen-compose": "cd Docker && node generate-docker-compose.js",
-    "deploy": "cd Docker && node generate-docker-compose.js && node build-and-deploy.js deploy",
-    "deploy:stop": "cd Docker && node build-and-deploy.js stop",
-    "deploy:status": "cd Docker && node build-and-deploy.js status"
+    "deploy": "cd Docker && node generate-docker-compose.js && node lmtt-compose.js deploy",
+    "deploy:stop": "cd Docker && node lmtt-compose.js stop",
+    "deploy:status": "cd Docker && node lmtt-compose.js status"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.1",
