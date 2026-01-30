@@ -27,7 +27,7 @@ services:
   lmtt-app:
     build:
       context: .
-      dockerfile: Docker/Dockerfile-lmtt-app
+      dockerfile: Dockerfile-lmtt-app
     container_name: lmtt-app
     restart: unless-stopped
     ports:

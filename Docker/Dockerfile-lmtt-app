@@ -1,8 +1,8 @@
 FROM node:24.13.0-alpine
 WORKDIR /usr/src/app
-COPY ../package*.json ./
-COPY ../schedule-conf.json ./
+COPY package*.json ./
+COPY schedule-conf.json ./
 RUN npm install
-COPY ../. .
+COPY . .
 RUN npm run build
 CMD ["npm", "run", "start:prod"]
