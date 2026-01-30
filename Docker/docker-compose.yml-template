@@ -8,6 +8,7 @@ services:
     ports:
       - '$MONGODB_PORT:$MONGODB_PORT'
     environment:
+      TZ: America/New_York
 #      MONGODB_INITDB_ROOT_USERNAME: $MONGODB_USERNAME
 #      MONGODB_INITDB_ROOT_PASSWORD: $MONGODB_PASSWORD
       MONGODB_INITDB_DATABASE: $MONGODB_NAME
@@ -35,6 +36,7 @@ services:
     ports:
       - '$APP_PORT:$APP_PORT'
     environment:
+      TZ: America/New_York
       APP_PORT: $APP_PORT
       MONGODB_HOSTNAME: lmtt-db
       MONGODB_PORT: $MONGODB_PORT
