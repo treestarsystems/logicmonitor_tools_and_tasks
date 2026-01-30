@@ -123,7 +123,7 @@ function generateDockerCompose() {
     const envVars = parseEnvFile(envPath);
 
     // Show which values were quoted
-    log('🔧 Processing environment variables');
+    log('Processing environment variables');
 
     // Replace variables in template
     const processedContent = replaceVariables(templateContent, envVars);
@@ -131,11 +131,11 @@ function generateDockerCompose() {
     // Write output file
     fs.writeFileSync(outputPath, processedContent, 'utf8');
 
-    log('✅ docker-compose.yml generated successfully!');
-    log(`📁 Output file: ${outputPath}`);
-    log(`🔧 Variables replaced: ${Object.keys(envVars).length}`);
+    log('docker-compose.yml generated successfully!');
+    log(`Output file: ${outputPath}`);
+    log(`Variables replaced: ${Object.keys(envVars).length}`);
   } catch (error) {
-    console.error('❌ Error generating docker-compose.yml:', error.message);
+    console.error('Error generating docker-compose.yml:', error.message);
     process.exit(1);
   }
 }

@@ -1,6 +1,7 @@
 version: '3.8'
 services:
   mongodb:
+    hostname: lmtt-db
     image: mongodb/mongodb-community-server:4.4-ubuntu2204
     container_name: lmtt-db
     restart: unless-stopped
@@ -25,6 +26,7 @@ services:
       start_period: 40s
 
   lmtt-app:
+    hostname: lmtt-app
     build:
       context: .
       dockerfile: Dockerfile-lmtt-app

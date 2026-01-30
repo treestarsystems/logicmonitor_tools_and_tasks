@@ -164,7 +164,7 @@ class PodmanBuilder {
   async waitForContainers(maxAttempts = 30, delay = 5000) {
     for (let i = 0; i < maxAttempts; i++) {
       try {
-        const result = execSync('podman-compose ps --format json', {
+        const result = execSync('podman ps --format=json', {
           cwd: this.buildDir,
           stdio: 'pipe',
           encoding: 'utf8',
@@ -215,7 +215,7 @@ class PodmanBuilder {
   showStatus() {
     this.log('Container status:');
     try {
-      this.executeCommand('podman-compose ps', { cwd: this.dockerDir });
+      this.executeCommand('podman ps', { cwd: this.dockerDir });
     } catch (error) {
       this.log('Failed to show container status', 'ERROR');
     }
