@@ -17,7 +17,11 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "deploy": "cd Docker && ./compose-deploy.sh deploy",
+    "deploy:gen": "cd Docker && ./compose-generate.sh",
+    "deploy:stop": "cd Docker && ./compose-deploy.sh stop",
+    "deploy:status": "cd Docker && ./compose-deploy.sh status"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.1",
@@ -37,8 +41,11 @@
     "crypto": "^1.0.1",
     "dotenv": "^17.2.3",
     "mongoose": "^9.1.5",
+    "nest-winston": "^1.10.2",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.2"
+    "rxjs": "^7.8.2",
+    "winston": "^3.19.0",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.16",

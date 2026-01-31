@@ -1,0 +1,64 @@
+version: '3.8'
+services:
+  mongodb:
+    image: mongodb/mongodb-community-server:4.4-ubuntu2204
+    hostname: lmtt-db
+    container_name: lmtt-db
+    restart: unless-stopped
+    ports:
+      - '$MONGODB_PORT:$MONGODB_PORT'
+    environment:
+      TZ: America/New_York
+#      MONGODB_INITDB_ROOT_USERNAME: $MONGODB_USERNAME
+#      MONGODB_INITDB_ROOT_PASSWORD: $MONGODB_PASSWORD
+      MONGODB_INITDB_DATABASE: $MONGODB_NAME
+    volumes:
+      - ./mongod.conf:/etc/mongod.conf:z
+      - /opt/lmtt/db/logs:/var/log/mongodb:z
+      - /opt/lmtt/db/data:/data/db:z
+    networks:
+      - lmtt-network
+    command: /bin/sh -c 'mongod --config /etc/mongod.conf'
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  lmtt-app:
+    build:
+      context: .
+      dockerfile: Dockerfile-lmtt-app
+    hostname: lmtt-app
+    container_name: lmtt-app
+    restart: unless-stopped
+    ports:
+      - '$APP_PORT:$APP_PORT'
+    environment:
+      TZ: America/New_York
+      APP_PORT: $APP_PORT
+      MONGODB_HOSTNAME: lmtt-db
+      MONGODB_PORT: $MONGODB_PORT
+      MONGODB_NAME: $MONGODB_NAME
+#      MONGODB_USERNAME: $MONGODB_USERNAME
+#      MONGODB_PASSWORD: $MONGODB_PASSWORD
+      SWAGGER_COMPANY_NAME: $SWAGGER_COMPANY_NAME
+      SWAGGER_COMPANY_SITE: $SWAGGER_COMPANY_SITE
+      SWAGGER_COMPANY_EMAIL: $SWAGGER_COMPANY_EMAIL
+      SCHEDULES_CONF_FILE_NAME: $SCHEDULES_CONF_FILE_NAME
+      NODE_ENV: production
+    volumes:
+      - /opt/lmtt/app/logs:/usr/src/app/lmtt-app-logs:z
+    networks:
+      - lmtt-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+volumes:
+  mongodb_data:
+
+networks:
+  lmtt-network:
+    driver: bridge
