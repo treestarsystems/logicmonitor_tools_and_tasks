@@ -13,6 +13,8 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "lint:fix": "eslint . --config eslint.config.mjs \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "lint:check": "eslint . --config eslint.config.mjs \"{src,apps,libs,test}/**/*.ts\"",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -21,7 +23,8 @@
     "deploy": "cd Docker && ./compose-deploy.sh deploy",
     "deploy:gen": "cd Docker && ./compose-generate.sh",
     "deploy:stop": "cd Docker && ./compose-deploy.sh stop",
-    "deploy:status": "cd Docker && ./compose-deploy.sh status"
+    "deploy:status": "cd Docker && ./compose-deploy.sh status",
+    "docs": "typedoc --plugin typedoc-plugin-markdown --out ./docs ./src/**/*.ts --logLevel Verbose && git add ./docs"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.1",
