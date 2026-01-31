@@ -16,6 +16,12 @@ import {
 import { SchedulesController } from './schedules.controller';
 import { AuditsService } from 'src/audits/audits.service';
 
+/**
+ * SchedulesModule to handle all scheduling related tasks.
+ * @class SchedulesModule
+ * @memberof module:schedules
+ * @public
+ */
 @Module({
   imports: [
     MongooseModule.forFeature([

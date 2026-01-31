@@ -15,16 +15,25 @@ import {
  * @param {string} description The description of the API.
  * @returns {SwaggerDocumentVersioned} SwaggerDocumentVersioned object.
  * @memberof SwaggerDocumentVersioned
- * @access public
  * @public
  */
 export class SwaggerDocumentVersioned {
+  /**
+   * Creates an instance of SwaggerDocumentVersioned.
+   * @param {INestApplication<unknown>} appObject The NestJS application object.
+   * @param {string} apiPrefix The API prefix for the application.
+   * @param {string} version The version of the API.
+   * @param {string} title The title of the API.
+   * @param {string} description The description of the API.
+   * @memberof SwaggerDocumentVersioned
+   * @public
+   */
   constructor(
-    private readonly appObject: INestApplication<any>,
+    private readonly appObject: INestApplication<unknown>,
     private readonly apiPrefix: string,
     private readonly version: string,
     private readonly title: string,
-    private readonly description: string,
+    private readonly description: string
   ) {}
 
   private readonly companyName: string = process.env.SWAGGER_COMPANY_NAME;
@@ -39,9 +48,8 @@ export class SwaggerDocumentVersioned {
    * API document options for SwaggerModule.setup.
    * @property {string} jsonDocumentUrl The URL for the JSON document.
    * @property {string} yamlDocumentUrl The URL for the YAML document.
-   * @returns API document options object.
+   * @returns {{jsonDocumentUrl: string, yamlDocumentUrl: string}} API document options object.
    * @memberof SwaggerDocumentVersioned
-   * @access private
    * @private
    */
   private apiDocumentOptions = {
@@ -51,13 +59,11 @@ export class SwaggerDocumentVersioned {
 
   /**
    * Create a new Swagger document.
-   * @returns DocumentBuilder object.
+   * @returns {Omit<OpenAPIObject, 'paths'>} DocumentBuilder object.
    * @memberof SwaggerDocumentVersioned
-   * @access private
    * @private
    */
-
-  private createDocument() {
+  private createDocument(): Omit<OpenAPIObject, 'paths'> {
     return new DocumentBuilder()
       .setTitle(this.title)
       .setDescription(this.description)
@@ -68,34 +74,31 @@ export class SwaggerDocumentVersioned {
 
   /**
    * API document object for SwaggerModule.createDocument.
-   * @param {INestApplication<any>} appObject The NestJS application object.
-   * @param createDocument The document builder object.
-   * @param SwaggerDocumentOptions The Swagger document options object.
-   * @returns API document object.
+   * @param {INestApplication<unknown>} appObject The NestJS application object.
+   * @param {any} createDocument The document builder object.
+   * @param {any} SwaggerDocumentOptions The Swagger document options object.
+   * @returns {OpenAPIObject} API document object.
    * @memberof SwaggerDocumentVersioned
-   * @access private
    * @private
    */
   private apiDocument: OpenAPIObject = SwaggerModule.createDocument(
     this.appObject,
     this.createDocument(),
-    this.SwaggerDocumentOptions,
+    this.SwaggerDocumentOptions
   );
 
   /**
-   * Setup the Swagger module.
-   * @returns SwaggerModule.setup object.
+   * Configures and initializes the Swagger documentation UI at the specified endpoint path.
+   * @returns {void}
    * @memberof SwaggerDocumentVersioned
-   * @access public
    * @public
    */
-
-  public SwaggerModuleSetup() {
+  public SwaggerModuleSetup(): void {
     return SwaggerModule.setup(
       `${this.apiPrefix}/${this.version}/docs`,
       this.appObject,
       this.apiDocument,
-      this.apiDocumentOptions,
+      this.apiDocumentOptions
     );
   }
 }

@@ -16,6 +16,13 @@ import {
 } from '../storage/schemas/storage-mongodb.schema';
 import { AuditsService } from 'src/audits/audits.service';
 import { AuditsModule } from 'src/audits/audits.module';
+
+/**
+ * TasksModule to handle all tasks related operations.
+ * @class TasksModule
+ * @memberof module:tasks
+ * @public
+ */
 @Module({
   providers: [
     TasksService,

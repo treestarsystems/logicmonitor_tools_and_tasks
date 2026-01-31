@@ -6,14 +6,18 @@ import { AuditsService } from './audits.service';
 /**
  * AuditsController class to handle all audit related API calls.
  * @class AuditsController
- * @endpoint audits
  * @memberof module:audits
  * @public
  */
-
 @Controller('audits')
 @ApiTags('Audits')
 export class AuditsController {
+  /**
+   * Creates an instance of AuditsController.
+   * @param {AuditsService} auditsService The audits service instance.
+   * @memberof AuditsController
+   * @public
+   */
   constructor(private readonly auditsService: AuditsService) {}
 
   /**
@@ -21,9 +25,8 @@ export class AuditsController {
    * @param {GeneralRequest} body - The request body containing company, accessId, and accessKey.
    * @param {Response} response - The response object to send the result.
    * @returns {Promise<void>} - A promise that resolves to void.
-   * @method POST
+   * @function POST
    */
-
   @Post('collector/versions')
   @ApiOperation({
     summary: 'Get the agent versions of the collectors in the account.',
@@ -31,13 +34,13 @@ export class AuditsController {
   @ApiResponse({ type: ResponseObjectDefault })
   async executeAuditCollectorVersion(
     @Body() body: GeneralRequest,
-    @Res() response: Response,
+    @Res() response: Response
   ): Promise<void> {
     await this.auditsService.auditCollectorVersion(
       body.company,
       body.accessId,
       body.accessKey,
-      response,
+      response
     );
   }
 
@@ -46,23 +49,14 @@ export class AuditsController {
    * @param {GeneralRequest} body - The request body containing company, accessId, and accessKey.
    * @param {Response} response - The response object to send the result.
    * @returns {Promise<void>} - A promise that resolves to void.
-   * @method POST
+   * @function POST
    */
-
   @Post('sdts')
   @ApiOperation({
     summary: 'Get SDTs for account that match the given criteria.',
   })
   @ApiResponse({ type: ResponseObjectDefault })
-  async executeAuditSDT(
-    @Body() body: GeneralRequest,
-    @Res() response: Response,
-  ): Promise<void> {
-    await this.auditsService.auditSDTs(
-      body.company,
-      body.accessId,
-      body.accessKey,
-      response,
-    );
+  async executeAuditSDT(@Body() body: GeneralRequest, @Res() response: Response): Promise<void> {
+    await this.auditsService.auditSDTs(body.company, body.accessId, body.accessKey, response);
   }
 }

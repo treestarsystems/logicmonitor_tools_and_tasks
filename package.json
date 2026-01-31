@@ -6,13 +6,15 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build": "nest build",
+    "build": "typedoc --out ./docs ./src/**/*.ts && nest build && cp -r ./docs ./dist/docs",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
+    "start:dev": "typedoc --out ./docs ./src/**/*.ts && nest start --watch",
+    "start:debug": "typedoc --out ./docs ./src/**/*.ts && nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "lint:fix": "eslint . --config eslint.config.mjs \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "lint:check": "eslint . --config eslint.config.mjs \"{src,apps,libs,test}/**/*.ts\"",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -21,7 +23,9 @@
     "deploy": "cd Docker && ./compose-deploy.sh deploy",
     "deploy:gen": "cd Docker && ./compose-generate.sh",
     "deploy:stop": "cd Docker && ./compose-deploy.sh stop",
-    "deploy:status": "cd Docker && ./compose-deploy.sh status"
+    "deploy:status": "cd Docker && ./compose-deploy.sh status",
+    "docs": "typedoc --out ./docs ./src/**/*.ts",
+    "docs:md": "typedoc --plugin typedoc-plugin-markdown --out ./docs_md ./src/**/*.ts --logLevel Verbose"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.1",
@@ -32,6 +36,7 @@
     "@nestjs/mongoose": "^11.0.4",
     "@nestjs/platform-express": "^11.1.12",
     "@nestjs/schedule": "^6.1.0",
+    "@nestjs/serve-static": "^5.0.4",
     "@nestjs/swagger": "^11.2.5",
     "archiver": "^7.0.1",
     "axios": "^1.13.3",
@@ -48,6 +53,8 @@
     "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^9.39.2",
     "@nestjs/cli": "^11.0.16",
     "@nestjs/schematics": "^11.0.9",
     "@nestjs/testing": "^11.1.12",
@@ -60,10 +67,12 @@
     "@typescript-eslint/parser": "^8.53.1",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsdoc": "^61.7.1",
     "eslint-plugin-prettier": "^5.5.5",
     "jest": "^30.2.0",
     "mongodb-memory-server": "^11.0.1",
     "prettier": "^3.8.1",
+    "prettier-eslint": "^16.4.2",
     "sinon": "^21.0.1",
     "source-map-support": "^0.5.21",
     "supertest": "^7.2.2",
@@ -71,7 +80,10 @@
     "ts-loader": "^9.5.4",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.9.3"
+    "typedoc": "^0.28.16",
+    "typedoc-plugin-markdown": "^4.9.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.54.0"
   },
   "jest": {
     "moduleFileExtensions": [

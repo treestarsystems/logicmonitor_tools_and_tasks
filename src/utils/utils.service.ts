@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@nestjs/common';
 import {
   ResponseObjectDefault,
@@ -12,11 +17,8 @@ import { Axios, AxiosRequestConfig, AxiosResponse } from 'axios';
  * UtilsService class to provide utility functions.
  * @class UtilsService
  * @memberof module:utils
- * @injectable
  * @public
- * @export
  */
-
 @Injectable()
 export class UtilsService {
   /**
@@ -26,15 +28,11 @@ export class UtilsService {
    * @example
    * genRandomString(10) // returns 'aBcDeFgHiJ'
    */
-
   public genRegular(stringLength: number): string {
-    const regularchar: string =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const regularchar: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let text: string = '';
     for (let i = 0; i < stringLength; i++) {
-      text += regularchar.charAt(
-        Math.floor(Math.random() * regularchar.length),
-      );
+      text += regularchar.charAt(Math.floor(Math.random() * regularchar.length));
     }
     return text;
   }
@@ -46,15 +44,12 @@ export class UtilsService {
    * @example
    * genSpecial(10) // returns 'aBcDeFgHiJ!@#$%'
    */
-
   public genSpecial(stringLength: number): string {
     const specialchar: string =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%_-(),;:.*';
     let text: string = '';
     for (let i = 0; i < stringLength; i++) {
-      text += specialchar.charAt(
-        Math.floor(Math.random() * specialchar.length),
-      );
+      text += specialchar.charAt(Math.floor(Math.random() * specialchar.length));
     }
     return text;
   }
@@ -66,14 +61,11 @@ export class UtilsService {
    * @example
    * genSpecialOnly(10) // returns '!@#$%_-(),'
    */
-
   public genSpecialOnly(stringLength: number): string {
     const specialchar: string = '!@#$%_-(),;:.*';
     let text: string = '';
     for (let i = 0; i < stringLength; i++) {
-      text += specialchar.charAt(
-        Math.floor(Math.random() * specialchar.length),
-      );
+      text += specialchar.charAt(Math.floor(Math.random() * specialchar.length));
     }
     return text;
   }
@@ -86,7 +78,6 @@ export class UtilsService {
    * @example
    * getRandomInt(1, 10) // returns 5
    */
-
   public getRandomInt(min: number, max: number): number {
     return Math.round(Math.random() * (max - min) + min);
   }
@@ -98,7 +89,6 @@ export class UtilsService {
    * @example
    * capitalizeFirstLetter('hello') // returns 'Hello'
    */
-
   public capitalizeFirstLetter(str: string): string {
     if (!str) return str;
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -111,7 +101,6 @@ export class UtilsService {
    * @example
    * randomCaps('hello') // returns 'heLlo'
    */
-
   public randomCaps(word: string): string {
     const position: number = this.getRandomInt(0, word.length);
     return `${this.replaceAt(word, position, word.charAt(position).toUpperCase())}`;
@@ -124,31 +113,27 @@ export class UtilsService {
    * @example
    * insertSpecialChars('hello') // returns 'hel!lo'
    */
-
   public insertSpecialChars(word: string): string {
     const specialchar: string = '!@#$%_-(),;:.*';
-    let index: number = this.getRandomInt(1, word.length);
-    let text: string = specialchar.charAt(
-      Math.floor(Math.random() * specialchar.length),
-    );
+    const index: number = this.getRandomInt(1, word.length);
+    const text: string = specialchar.charAt(Math.floor(Math.random() * specialchar.length));
     return word.substring(0, index) + text + word.substring(index);
   }
 
   /**
    * Replace a character at a specific index in a string
    * Source: https://gist.github.com/efenacigiray/9367920
-   * @param {string} originalString
-   * @param {number} replacementIndex
-   * @param {string} replacementString
+   * @param {string} originalString The original passed string
+   * @param {number} replacementIndex The index of the character to replace
+   * @param {string} replacementString The string to replace the character with
    * @returns {string} The string with the character replaced
    * @example
    * replaceAt('hello', 1, 'a') // returns 'hallo'
    */
-
   public replaceAt(
     originalString: string,
     replacementIndex: number,
-    replacementString: string,
+    replacementString: string
   ): string {
     return `${originalString.substring(0, replacementIndex)}${replacementString}${originalString.substring(replacementIndex + 1)}`;
   }
@@ -160,10 +145,9 @@ export class UtilsService {
    * @example
    * uuidv4() // returns 'bee5063a-4711-45eb-8a44-d84cc4925b8b'
    */
-
   public uuidv4(): string {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-      let r = (Math.random() * 16) | 0,
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      const r = (Math.random() * 16) | 0,
         v = c == 'x' ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     });
@@ -172,18 +156,17 @@ export class UtilsService {
   /**
    * Validate a JSON object. This is an old method that is pointless in TypeScript. I may remove it later.
    * Source: https://learnersbucket.com/examples/javascript/how-to-validate-json-in-javascript/
-   * @param {Object} obj The object to validate
+   * @param {object} obj The object to validate
    * @returns {boolean} A boolean indicating if the object is valid JSON
    * @example
    * validateJSON({ "name": "John", "age": 30, "city": "New York" }) // returns true
    */
-
   public validateJSON(obj: any): boolean {
     if (typeof obj === 'string') return false;
-    let o = JSON.stringify(obj);
+    const o = JSON.stringify(obj);
     try {
       JSON.parse(o);
-    } catch (e) {
+    } catch {
       return false;
     }
     return true;
@@ -200,7 +183,6 @@ export class UtilsService {
    * @example
    * encodeQueryParameters('www.foobar.com/?first=1&second=12&third=5') // returns 'www.foobar.com/?first=1&amp;second=12&amp;third=5'
    */
-
   public encodeQueryParameters(url: string): string {
     // Split the URL into the base URL and query parameters
     const [baseUrl, queryParamsString] = url.split('?');
@@ -215,7 +197,7 @@ export class UtilsService {
 
     // Encode each query parameter
     const encodedQueryParams = queryParams
-      .map((param) => {
+      .map(param => {
         // Split each parameter into key and value
         const [key, value] = param.split('=');
         // Return the encoded key-value pair, joined by '='
@@ -228,32 +210,33 @@ export class UtilsService {
   }
 
   /**
-   * Error handler for API calls
-   * @param {any} error The error string or object
+   * Error handler for API calls that returns a string
+   * @param {any} err The error string or object
    * @returns {string} An object with status, message, and payload properties
    * @example
    * defaultErrorHandlerString('Error: Something went wrong') // returns 'Error: Error: Something went wrong'
    */
-
-  public defaultErrorHandlerString(err): string {
-    return err?.message ? err.message : err;
+  public defaultErrorHandlerString(err: unknown): string {
+    if (err instanceof Error) {
+      return err.message;
+    }
+    if (typeof err === 'object' && err !== null) {
+      return JSON.stringify(err);
+    }
+    return typeof err === 'string' ? err : JSON.stringify(err);
   }
 
   /**
    * Error handler for API calls
-   * @param {any} error The error string or object
-   * @param {number} httpStatusCode The HTTP status code
+   * @param {any} err The error string or object
+   * @param {number} httpStatusCode The HTTP status code to return (default: 400)
    * @returns {ResponseObjectDefault} An object with status, message, and payload properties
    * @example
    * defaultErrorHandler('Error: Something went wrong') // returns { status: 'failure', httpStatusCode: 400, message: 'Error: Error: Something went wrong', payload: [] }
    */
-
-  public defaultErrorHandlerHttp(
-    err,
-    httpStatusCode: number = 400,
-  ): ResponseObjectDefault {
+  public defaultErrorHandlerHttp(err: any, httpStatusCode: number = 400): ResponseObjectDefault {
     const statusCode: number = httpStatusCode == 200 ? 400 : httpStatusCode;
-    const errorMessage: string = err?.message ? err.message : err;
+    const errorMessage: string = this.defaultErrorHandlerString(err);
     const returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder()
       .setStatus('failure')
       .setHttpStatus(statusCode)
@@ -264,7 +247,7 @@ export class UtilsService {
 
   /**
    * Generate an authentication string for LogicMonitor API calls
-   * @param {RequestObjectLMApi} requestObject An object containing the method, epoch, requestData, resourcePath, accessId, and accessKey
+   * @param {RequestObjectLMApi} requestObjectLMApi An object containing the method, epoch, requestData, resourcePath, accessId, and accessKey
    * @returns {string} The generated authorization string.
    * @example
    * generateAuthString({
@@ -276,20 +259,15 @@ export class UtilsService {
    * accessKey: '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef'
    * }) // returns 'LMv1 123456789:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef:1627584000000'
    */
-
   public generateAuthString(requestObjectLMApi: RequestObjectLMApi): string {
     try {
-      const { method, epoch, resourcePath, accessId, accessKey, requestData } =
-        requestObjectLMApi;
+      const { method, epoch, resourcePath, accessId, accessKey, requestData } = requestObjectLMApi;
       const requestVars: string = `${method}${epoch}${requestData ? JSON.stringify(requestData) : ''}${resourcePath}`;
-      const hex: string = crypto
-        .createHmac('sha256', accessKey)
-        .update(requestVars)
-        .digest('hex');
+      const hex: string = crypto.createHmac('sha256', accessKey).update(requestVars).digest('hex');
       const signature: string = Buffer.from(hex, 'utf-8').toString('base64');
       return `LMv1 ${accessId}:${signature}:${epoch}`;
     } catch (err) {
-      return err;
+      return this.defaultErrorHandlerString(err);
     }
   }
 
@@ -302,20 +280,18 @@ export class UtilsService {
    * @example
    * const response = await genericAPICallHandleRateLimit(apiResponse, apiRequest, axiosParametersObj);
    */
-
   private async genericAPICallHandleRateLimit(
     apiResponse: AxiosResponse,
     apiRequest: any,
-    axiosParametersObj: AxiosRequestConfig,
+    axiosParametersObj: AxiosRequestConfig
   ): Promise<any> {
     const { data, status, headers } = apiResponse;
-    let rateLimitRemaining: number = headers['x-rate-limit-remaining'];
-    let rateLimitWindow: number = headers['x-rate-limit-window'] * 1000 + 1;
-    let returnObj: any = {};
+    const rateLimitRemaining: number = headers['x-rate-limit-remaining'];
+    const rateLimitWindow: number = headers['x-rate-limit-window'] * 1000 + 1;
+    const returnObj: any = {};
     if (rateLimitRemaining == 0) {
-      await new Promise((resolve) => setTimeout(resolve, rateLimitWindow));
-      const apiResponse: AxiosResponse =
-        await apiRequest.request(axiosParametersObj);
+      await new Promise(resolve => setTimeout(resolve, rateLimitWindow));
+      const apiResponse: AxiosResponse = await apiRequest.request(axiosParametersObj);
       const { data, status } = apiResponse;
       returnObj.httpStatus = status;
       returnObj.payload = [data];
@@ -339,48 +315,44 @@ export class UtilsService {
    * url: 'https://companynme.logicmonitor.com/santaba/rest/report/reports'
    * }) // returns { status: 'success', httpStatus: 200, message: 'success', payload: [{ name: 'John', age: 30, city: 'New York' }] }
    */
-
   public async genericAPICall(
-    requestObjectLMApi: RequestObjectLMApi,
+    requestObjectLMApi: RequestObjectLMApi
   ): Promise<ResponseObjectDefault> {
-    let returnObj: ResponseObjectDefault =
-      new ResponseObjectDefaultBuilder().build();
+    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder().build();
     try {
       const { method, queryParams, url } = requestObjectLMApi;
       const urlStringEncoded: string = this.encodeQueryParameters(
-        `${url}?size=1000&${queryParams ?? ''}`,
+        `${url}?size=1000&${queryParams ?? ''}`
       );
       // Remove requestData from the request object if the method is 'get' or 'delete'
-      let methodRegEx = /^get$|^delete$/gi;
+      const methodRegEx = /^get$|^delete$/gi;
       if (methodRegEx.test(method)) {
         delete requestObjectLMApi.requestData;
       }
-      let authString: string = this.generateAuthString(requestObjectLMApi);
+      const authString: string = this.generateAuthString(requestObjectLMApi);
       if (!authString.toLowerCase().includes('lmv1')) {
         throw new Error('Invalid authString');
       }
-      const axiosParametersObj: AxiosRequestConfig =
-        new AxiosParametersBuilder()
-          .setMethod(method)
-          .setUrl(urlStringEncoded)
-          .setAuthString(authString)
-          .build();
+      const axiosParametersObj: AxiosRequestConfig = new AxiosParametersBuilder()
+        .setMethod(method)
+        .setUrl(urlStringEncoded)
+        .setAuthString(authString)
+        .build();
       const apiRequest = new Axios(axiosParametersObj);
-      const apiResponse: AxiosResponse =
-        await apiRequest.request(axiosParametersObj);
+      const apiResponse: AxiosResponse = await apiRequest.request(axiosParametersObj);
       const { data, status, headers } = apiResponse;
       returnObj.httpStatus = status;
       if (status > 299) {
         const errorMessage: string = `(${status}) - ${JSON.parse(data)?.errorMessage}`;
-        throw errorMessage;
+        throw new Error(errorMessage);
       }
-      let rateLimitRemaining: number = headers['x-rate-limit-remaining'];
+      const rateLimitRemaining: number = headers['x-rate-limit-remaining'];
       // If zero we need to delay the API call and retry.
       if (rateLimitRemaining == 0) {
         returnObj = await this.genericAPICallHandleRateLimit(
           apiResponse,
           apiRequest,
-          axiosParametersObj,
+          axiosParametersObj
         );
       } else {
         returnObj.payload = [data];

@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
 import { UtilsService } from '../utils/utils.service';
 import {
@@ -12,12 +17,14 @@ import {
  * @class AuditsService
  * @memberof module:audits
  * @implements {AuditsService}
- * @injectable
  * @public
- * @export
  */
 @Injectable()
 export class AuditsService {
+  /**
+   * Creates an instance of AuditsService.
+   * @param {UtilsService} utilsService - The UtilsService instance.
+   */
   constructor(private utilsService: UtilsService) {}
 
   /**
@@ -27,39 +34,32 @@ export class AuditsService {
    * @param {string} accessKey - The access key for authentication.
    * @returns {Promise<ResponseObjectDefault>} - A promise that resolves to a ResponseObjectDefault containing the collector version list.
    */
-
   private async auditGetCollectorVersionList(
     company: string,
     accessId: string,
-    accessKey: string,
+    accessKey: string
   ): Promise<ResponseObjectDefault> {
-    const returnObj: ResponseObjectDefault =
-      new ResponseObjectDefaultBuilder().build();
+    const returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder().build();
     try {
-      const collectorVersionListGetObj: RequestObjectLMApi =
-        new RequestObjectLMApiBuilder()
-          .setMethod('GET')
-          .setAccessId(accessId)
-          .setAccessKey(accessKey)
-          .setUrl(company, '/setting/collector/collectors/versions')
-          .build();
+      const collectorVersionListGetObj: RequestObjectLMApi = new RequestObjectLMApiBuilder()
+        .setMethod('GET')
+        .setAccessId(accessId)
+        .setAccessKey(accessKey)
+        .setUrl(company, '/setting/collector/collectors/versions')
+        .build();
 
-      const collectorList: ResponseObjectDefault =
-        await this.utilsService.genericAPICall(collectorVersionListGetObj);
+      const collectorList: ResponseObjectDefault = await this.utilsService.genericAPICall(
+        collectorVersionListGetObj
+      );
       returnObj.httpStatus = collectorList.httpStatus;
       if (collectorList.status == 'failure') {
-        const errMsg = this.utilsService.defaultErrorHandlerString(
-          collectorList.message,
-        );
+        const errMsg = this.utilsService.defaultErrorHandlerString(collectorList.message);
         throw new Error(errMsg);
       }
       returnObj.payload = [...(JSON.parse(collectorList.payload).items ?? [])];
       return returnObj;
     } catch (err) {
-      return this.utilsService.defaultErrorHandlerHttp(
-        err,
-        returnObj.httpStatus,
-      );
+      return this.utilsService.defaultErrorHandlerHttp(err, returnObj.httpStatus);
     }
   }
 
@@ -70,39 +70,31 @@ export class AuditsService {
    * @param {string} accessKey - The access key for authentication.
    * @returns {Promise<ResponseObjectDefault>} - A promise that resolves to a ResponseObjectDefault containing the collector list.
    */
-
   private async auditGetCollectorList(
     company: string,
     accessId: string,
-    accessKey: string,
+    accessKey: string
   ): Promise<ResponseObjectDefault> {
-    const returnObj: ResponseObjectDefault =
-      new ResponseObjectDefaultBuilder().build();
+    const returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder().build();
     try {
-      const collectorListGetObj: RequestObjectLMApi =
-        new RequestObjectLMApiBuilder()
-          .setMethod('GET')
-          .setAccessId(accessId)
-          .setAccessKey(accessKey)
-          .setUrl(company, '/setting/collector/collectors')
-          .build();
+      const collectorListGetObj: RequestObjectLMApi = new RequestObjectLMApiBuilder()
+        .setMethod('GET')
+        .setAccessId(accessId)
+        .setAccessKey(accessKey)
+        .setUrl(company, '/setting/collector/collectors')
+        .build();
 
       const collectorList: ResponseObjectDefault =
         await this.utilsService.genericAPICall(collectorListGetObj);
       returnObj.httpStatus = collectorList.httpStatus;
       if (collectorList.status == 'failure') {
-        const errMsg = this.utilsService.defaultErrorHandlerString(
-          collectorList.message,
-        );
+        const errMsg = this.utilsService.defaultErrorHandlerString(collectorList.message);
         throw new Error(errMsg);
       }
       returnObj.payload = [...(JSON.parse(collectorList.payload).items ?? [])];
       return returnObj;
     } catch (err) {
-      return this.utilsService.defaultErrorHandlerHttp(
-        err,
-        returnObj.httpStatus,
-      );
+      return this.utilsService.defaultErrorHandlerHttp(err, returnObj.httpStatus);
     }
   }
 
@@ -113,33 +105,27 @@ export class AuditsService {
    * @param {ResponseObjectDefault} returnObj - The object to which the result will be appended.
    * @returns {void}
    */
-
   private processCollectorItem(
     collectorItem: any,
     collectorVersionList: any[any],
-    returnObj: ResponseObjectDefault,
+    returnObj: ResponseObjectDefault
   ): void {
     const updatedVersionAvailable = [];
     const collectorBuildMajor = collectorItem?.build.slice(0, 2);
     const collectorBuildMinor = collectorItem?.build.slice(2);
-    const collectorBuildNumber = parseFloat(
-      `${collectorBuildMajor}.${collectorBuildMinor}`,
-    );
+    const collectorBuildNumber = parseFloat(`${collectorBuildMajor}.${collectorBuildMinor}`);
 
     for (const collectorVersionItem of collectorVersionList.payload) {
       const collectorVersionNumber = parseFloat(
-        `${collectorVersionItem.majorVersion}.${collectorVersionItem.minorVersion}`,
+        `${collectorVersionItem.majorVersion}.${collectorVersionItem.minorVersion}`
       );
-      if (
-        collectorVersionItem.stable === true &&
-        collectorVersionNumber > collectorBuildNumber
-      ) {
+      if (collectorVersionItem.stable === true && collectorVersionNumber > collectorBuildNumber) {
         updatedVersionAvailable.push(collectorVersionNumber);
       }
     }
 
     returnObj.payload.push(
-      `${collectorItem?.hostname} (${collectorItem?.id}) Build: ${collectorBuildNumber} (Available Stable Updates: ${updatedVersionAvailable.reverse().join(',')} <--latest)`,
+      `${collectorItem?.hostname} (${collectorItem?.id}) Build: ${collectorBuildNumber} (Available Stable Updates: ${updatedVersionAvailable.reverse().join(',')} <--latest)`
     );
   }
 
@@ -150,11 +136,10 @@ export class AuditsService {
    * @param {ResponseObjectDefault} returnObj - The object to which the results will be appended.
    * @returns {void}
    */
-
   private processCollectors(
     collectorList: any[any],
     collectorVersionList: any[any],
-    returnObj: ResponseObjectDefault,
+    returnObj: ResponseObjectDefault
   ): void {
     for (const collectorItem of collectorList.payload) {
       this.processCollectorItem(collectorItem, collectorVersionList, returnObj);
@@ -170,16 +155,14 @@ export class AuditsService {
    * @param {boolean} [directlyRespondToApiCall=true] - Whether to directly respond to the API call or return the returnObj.
    * @returns {Promise<void | ResponseObjectDefault>} - A promise that resolves to void or a ResponseObjectDefault.
    */
-
   public async auditSDTs(
     company: string,
     accessId: string,
     accessKey: string,
     response: any,
-    directlyRespondToApiCall: boolean = true,
+    directlyRespondToApiCall: boolean = true
   ): Promise<void | ResponseObjectDefault> {
-    const returnObj: ResponseObjectDefault =
-      new ResponseObjectDefaultBuilder().build();
+    const returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder().build();
     try {
       const sdtGetObj: RequestObjectLMApi = new RequestObjectLMApiBuilder()
         .setMethod('GET')
@@ -188,13 +171,10 @@ export class AuditsService {
         .setUrl(company, '/sdt/sdts')
         .build();
 
-      const sdtList: ResponseObjectDefault =
-        await this.utilsService.genericAPICall(sdtGetObj);
+      const sdtList: ResponseObjectDefault = await this.utilsService.genericAPICall(sdtGetObj);
       returnObj.httpStatus = sdtList.httpStatus;
       if (sdtList.status == 'failure') {
-        const errMsg = this.utilsService.defaultErrorHandlerString(
-          sdtList.message,
-        );
+        const errMsg = this.utilsService.defaultErrorHandlerString(sdtList.message);
         throw new Error(errMsg);
       }
       const sdtItems = JSON.parse(sdtList.payload).items ?? [];
@@ -221,18 +201,10 @@ export class AuditsService {
       if (directlyRespondToApiCall) {
         response
           .status(returnObj.httpStatus)
-          .send(
-            this.utilsService.defaultErrorHandlerHttp(
-              err,
-              returnObj.httpStatus,
-            ),
-          );
+          .send(this.utilsService.defaultErrorHandlerHttp(err, returnObj.httpStatus));
         return;
       }
-      return this.utilsService.defaultErrorHandlerHttp(
-        err,
-        returnObj.httpStatus,
-      );
+      return this.utilsService.defaultErrorHandlerHttp(err, returnObj.httpStatus);
     }
   }
 
@@ -245,21 +217,25 @@ export class AuditsService {
    * @param {boolean} [directlyRespondToApiCall=true] - Whether to directly respond to the API call or return the returnObj.
    * @returns {Promise<void | ResponseObjectDefault>} - A promise that resolves to void or a ResponseObjectDefault.
    */
-
   public async auditCollectorVersion(
     company: string,
     accessId: string,
     accessKey: string,
     response: any,
-    directlyRespondToApiCall: boolean = true,
+    directlyRespondToApiCall: boolean = true
   ): Promise<void | ResponseObjectDefault> {
-    const returnObj: ResponseObjectDefault =
-      new ResponseObjectDefaultBuilder().build();
+    const returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder().build();
     try {
-      const collectorVersionList: ResponseObjectDefault =
-        await this.auditGetCollectorVersionList(company, accessId, accessKey);
-      const collectorList: ResponseObjectDefault =
-        await this.auditGetCollectorList(company, accessId, accessKey);
+      const collectorVersionList: ResponseObjectDefault = await this.auditGetCollectorVersionList(
+        company,
+        accessId,
+        accessKey
+      );
+      const collectorList: ResponseObjectDefault = await this.auditGetCollectorList(
+        company,
+        accessId,
+        accessKey
+      );
       // Process the collector and collector version list. This will add the audit data to the returnObj directly.
       this.processCollectors(collectorList, collectorVersionList, returnObj);
       if (directlyRespondToApiCall) {
@@ -271,18 +247,10 @@ export class AuditsService {
       if (directlyRespondToApiCall) {
         response
           .status(returnObj.httpStatus)
-          .send(
-            this.utilsService.defaultErrorHandlerHttp(
-              err,
-              returnObj.httpStatus,
-            ),
-          );
+          .send(this.utilsService.defaultErrorHandlerHttp(err, returnObj.httpStatus));
         return;
       }
-      return this.utilsService.defaultErrorHandlerHttp(
-        err,
-        returnObj.httpStatus,
-      );
+      return this.utilsService.defaultErrorHandlerHttp(err, returnObj.httpStatus);
     }
   }
 }
