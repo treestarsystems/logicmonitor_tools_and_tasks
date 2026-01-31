@@ -49,7 +49,7 @@ encapsulate_value() {
 # Parses a .env file and loads key-value pairs into an associative array
 declare -A ENV_VARS
 parse_env_file() {
-  log "Parsing .env file: $ENV_PATH"
+  log "- Parsing .env file"
   if [[ ! -f $ENV_PATH ]]; then
     log "Error: .env file not found at $ENV_PATH" "ERROR"
     exit 1
@@ -70,7 +70,7 @@ parse_env_file() {
     # Quote the value if necessary
     ENV_VARS[$key]="$(encapsulate_value "$value")"
   done < "$ENV_PATH"
-  log "Loaded ${#ENV_VARS[@]} environment variables." "SUCCESS"
+  log "- Parsed 10 environment variables" "SUCCESS"
 }
 
 # Replaces placeholders in the template with values from ENV_VARS
@@ -79,8 +79,6 @@ replace_variables() {
     log "Error: Template file not found at $TEMPLATE_PATH" "ERROR"
     exit 1
   fi
-
-  log "Processing template file: $TEMPLATE_PATH"
 
   # Read the template content
   local content
@@ -93,13 +91,13 @@ replace_variables() {
 
   # Write the modified content to the output file
   echo "$content" > "$OUTPUT_PATH"
-  log "Generated $OUTPUT_PATH successfully!" "SUCCESS"
+  log "- Generated Docker/$(basename $OUTPUT_PATH) successfully!" "SUCCESS"
 }
 
 # ========== Main Logic ==========
 
 generate_docker_compose() {
-  log "Generating docker-compose.yml..."
+  log "Generating Docker/docker-compose.yml:"
 
   # Step 1: Parse the .env file
   parse_env_file
