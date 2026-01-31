@@ -57,7 +57,7 @@ check_compose_tool() {
 # Parses the .env file into a bash-associative array
 parse_env_file() {
   declare -gA ENV_VARS
-  log "Parsing .env file..."
+  log "Parsing .env file"
   while IFS='=' read -r key value; do
     [[ "$key" =~ ^#.*$ ]] && continue  # Skip comments
     [[ -z "$key" ]] && continue        # Skip empty lines
@@ -66,26 +66,25 @@ parse_env_file() {
     value="${value#\"}"
     ENV_VARS["$key"]="$value"
   done < "$ENV_FILE"
-  log "Parsed ${#ENV_VARS[@]} environment variables."
+  log "Parsed ${#ENV_VARS[@]} environment variables" "SUCCESS"
 }
 
 # Replaces variables in the template and generates docker-compose.yml
 generate_docker_compose() {
-  log "Generating docker-compose.yml..."
   local content
   content=$(<"$COMPOSE_TEMPLATE")
-  
+
   for key in "${!ENV_VARS[@]}"; do
     content="${content//\$$key/${ENV_VARS[$key]}}"
   done
 
   echo "$content" > "$OUTPUT_COMPOSE"
-  log "docker-compose.yml generated successfully at $OUTPUT_COMPOSE" "SUCCESS"
+  log "Generated Docker/docker-compose.yml successfully" "SUCCESS"
 }
 
 # Creates build directory and copies necessary files
 prepare_build_dir() {
-  log "Preparing build directory: $BUILD_DIR..."
+  log "Preparing build directory:"
   rm -rf "$BUILD_DIR"
   mkdir -p "$BUILD_DIR"
 
@@ -93,64 +92,62 @@ prepare_build_dir() {
     if [ -e "$file" ]; then
       dest="$BUILD_DIR/$(basename "$file")"
       cp -r "$file" "$dest"
-      log "Copied: $file -> $dest"
+      log "- Copied: $(basename "$file") -> Docker/build/$(basename "$file")"
     else
       log "Error: Required file $file not found." "ERROR"
       exit 1
     fi
   done
-  log "Build directory is ready." "SUCCESS"
 }
 
 # Deploys containers using podman-compose or docker-compose
 deploy_containers() {
   local compose_tool
   compose_tool=$(check_compose_tool)
-  
-  log "Deploying containers using $compose_tool..."
-  
+
+  log "Deploying containers using $compose_tool:"
+
   (
-    cd "$DOCKER_DIR" || exit
-    
+    cd "$BUILD_DIR" || exit
+
     # Stop any running containers
-    log "Stopping existing containers..."
+    log "- Stopping existing containers"
     $compose_tool down || true
 
     # Build the containers
-    log "Building containers..."
+    log "- Building containers"
     $compose_tool build
 
     # Start the containers in detached mode
-    log "Starting containers..."
+    log "- Starting containers"
     $compose_tool up -d
   )
-  log "Containers deployed successfully." "SUCCESS"
+  log "- Containers deployed successfully" "SUCCESS"
 }
 
 # Stops and removes containers
 stop_containers() {
   local compose_tool
   compose_tool=$(check_compose_tool)
-  
-  log "Stopping containers with $compose_tool..."
+
+  log "Stopping containers with $compose_tool:"
   (
-    cd "$DOCKER_DIR" || exit
+    cd "$BUILD_DIR" || exit
     $compose_tool down
   )
-  log "Containers stopped successfully." "SUCCESS"
+  log "Containers stopped successfully" "SUCCESS"
 }
 
 # Shows container status
 show_status() {
-  log "Showing container status..."
+  log "Showing container status"
   podman ps -a || docker ps -a
 }
 
 # Cleans up the build directory
 cleanup() {
-  log "Cleaning up build directory..."
   rm -rf "$BUILD_DIR"
-  log "Build directory cleaned up." "SUCCESS"
+  log "Build directory cleaned up" "SUCCESS"
 }
 
 # ========== Script Execution ==========
