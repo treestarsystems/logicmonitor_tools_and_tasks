@@ -18,9 +18,9 @@ services:
       - /opt/lmtt/db/data:/data/db:z
     networks:
       - lmtt-network
-    command: /bin/sh -c 'mongod --config /etc/mongod.conf'
+    command: /bin/bash -c 'mongod --config /etc/mongod.conf'
     healthcheck:
-      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      test: ["CMD-SHELL", "mongo --eval 'db.runCommand({ ping: 1 })' || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3

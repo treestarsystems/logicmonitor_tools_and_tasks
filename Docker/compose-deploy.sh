@@ -16,6 +16,7 @@ REQUIRED_FILES=(
   "$PROJECT_ROOT/package-lock.json"
   "$PROJECT_ROOT/schedule-conf.json"
   "$PROJECT_ROOT/src"
+  "$PROJECT_ROOT/typedoc.json"
   "$PROJECT_ROOT/tsconfig.json"
   "$PROJECT_ROOT/tsconfig.build.json"
   "$PROJECT_ROOT/nest-cli.json"
