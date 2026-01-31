@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Optional } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsNumber, IsObject, IsString, IsNotEmpty } from 'class-validator';
@@ -5,17 +6,16 @@ import { IsArray, IsNumber, IsObject, IsString, IsNotEmpty } from 'class-validat
 /**
  * Interface representing a default response object.
  * @interface ResponseObjectDefaultInterface
- * @property {string} status - The status of the response.
+ * @property {string} status - The status of the response (success|failure).
  * @property {number} httpStatus - The HTTP status code of the response.
  * @property {string} message - The message associated with the response.
- * @property {any[any]} payload - The payload of the response.
+ * @property {any[]} payload - The payload of the response (array of any type).
  */
-
 interface ResponseObjectDefaultInterface {
   status: string;
   httpStatus: number;
   message: string;
-  payload: any[any];
+  payload: any[];
 }
 
 /**
@@ -65,7 +65,6 @@ interface RequestObjectLMApiInterface {
  * @property {string} accessId The access ID for the LogicMonitor account.
  * @property {string} accessKey The access key for the LogicMonitor account.
  */
-
 export class BaseRequestObjectLM {
   @IsString()
   @IsNotEmpty()
@@ -92,9 +91,8 @@ export class BaseRequestObjectLM {
  * @property {string} status The status of the API call (success|failure).
  * @property {number} httpStatus The HTTP status code of the API call.
  * @property {string} message The message from the API call.
- * @property {any[any]} payload The payload from the API call.
+ * @property {any[]} payload The payload from the API call.
  */
-
 export class ResponseObjectDefault implements ResponseObjectDefaultInterface {
   @IsString()
   @ApiProperty({
@@ -134,11 +132,10 @@ export class ResponseObjectDefault implements ResponseObjectDefaultInterface {
  * @property {number} epoch The current epoch time.
  * @property {string} resourcePath The path to the resource that the API call is being made to.
  * @property {string} queryParams The query parameters for the API call.
- * @property {Object} requestData The data to send in the API call.
+ * @property {object} requestData The data to send in the API call.
  * @property {string} url The URL for the API call.
  * @property {number} apiVersion The version of the API to use.
  */
-
 export class RequestObjectLMApi extends BaseRequestObjectLM {
   @IsString()
   @IsNotEmpty()
@@ -179,7 +176,7 @@ export class RequestObjectLMApi extends BaseRequestObjectLM {
       'The data to send in the API call. This is used to create or update data in LogicMonitor.',
     type: 'string',
   })
-  requestData?: Object;
+  requestData?: object;
 
   @IsNotEmpty()
   @ApiProperty({
@@ -205,7 +202,6 @@ export class RequestObjectLMApi extends BaseRequestObjectLM {
  * @property {string} accessKey The access key for the LogicMonitor account.
  * @property {string} groupName The search string to filter the datasources by group name.
  */
-
 export class ToolsBackupDatasourcesRequest extends BaseRequestObjectLM {
   @IsString()
   @IsNotEmpty()
@@ -228,9 +224,8 @@ export class ToolsBackupDatasourcesRequest extends BaseRequestObjectLM {
  * Extra request properties to send in the API call (resourcePath, queryParams, requestData).
  * @property {string} resourcePath The path to the resource that the underlying API call is being made to.
  * @property {string} queryParams The query parameters for the API call. This is used to filter the data being returned in some cases.
- * @property {Object} requestData The data to send in the API call. This is used to create or update data in LogicMonitor.
+ * @property {object} requestData The data to send in the API call. This is used to create or update data in LogicMonitor.
  */
-
 export class RequestObjectLMApiExtraRequestProperties {
   @IsString()
   @IsNotEmpty()
@@ -246,7 +241,7 @@ export class RequestObjectLMApiExtraRequestProperties {
     description:
       'The query parameters for the API call. This is used to filter the data being returned in some cases.',
     type: 'string',
-    required: false,
+    additionalProperties: true,
   })
   queryParams: string;
 
@@ -255,10 +250,10 @@ export class RequestObjectLMApiExtraRequestProperties {
   @ApiProperty({
     description:
       'The data to send in the API call. This is used to create or update data in LogicMonitor.',
-    type: 'string',
-    required: false,
+    type: 'object',
+    additionalProperties: true,
   })
-  requestData: Object;
+  requestData: object;
 }
 
 /**
@@ -267,7 +262,6 @@ export class RequestObjectLMApiExtraRequestProperties {
  * @property {string} accessId The access ID for the LogicMonitor account.
  * @property {string} accessKey The access key for the LogicMonitor account.
  */
-
 export class GeneralRequest extends BaseRequestObjectLM {
   @IsString()
   @IsNotEmpty()
@@ -283,9 +277,8 @@ export class GeneralRequest extends BaseRequestObjectLM {
  * @property {string} company The company name for the LogicMonitor account.
  * @property {string} accessId The access ID for the LogicMonitor account.
  * @property {string} accessKey The access key for the LogicMonitor account.
- * @property {Object} extraRequestProperties The extra request properties to send in the API call (resourcePath, queryParams, requestData).
+ * @property {object } extraRequestProperties The extra request properties to send in the API call (resourcePath, queryParams, requestData).
  */
-
 export class ToolsBackupGeneralRequest extends GeneralRequest {
   @IsObject()
   @IsNotEmpty()
@@ -298,7 +291,7 @@ export class ToolsBackupGeneralRequest extends GeneralRequest {
 
 /**
  * Job cron data for the scheduleListCronJobs API call.
- * @property {string} jobName The name of the job.
+ * @property {string} jobName The name of the job that is scheduled.
  * @property {string} nextRun The next run time of the job in EST.
  * @property {string} lastRun The last run time of the job in EST.
  * @property {string} futureRun The future run times of the job in EST.
@@ -488,11 +481,12 @@ export class ResponseObjectDefaultBuilder {
 
   /**
    * Sets the payload of the response object.
-   * @param {any[any]} payload - The payload to set.
+   * @param {any[]} payload - The payload to set.
    * @returns {ResponseObjectDefaultBuilder} The builder instance.
    */
-  public setPayload(payload: any[any]): ResponseObjectDefaultBuilder {
-    this.responseObjectDefault.payload = [...payload];
+  public setPayload(payload: any[]): ResponseObjectDefaultBuilder {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    this.responseObjectDefault.payload = Array.isArray(payload) ? (payload as any[]) : [payload];
     return this;
   }
 
@@ -561,11 +555,11 @@ export class AxiosParametersBuilder {
 
   /**
    * Sets the request data for the Axios request configuration.
-   * @param {any} requestData - The request data to set.
+   * @param {Record<string, string | number>} requestData - The request data to set.
    * @returns {AxiosParametersBuilder} The builder instance.
    */
-  public setData(requestData: any): AxiosParametersBuilder {
-    this.axiosRequestConfig.requestData = requestData ?? '';
+  public setData(requestData: Record<string, string | number> | undefined): AxiosParametersBuilder {
+    this.axiosRequestConfig.requestData = requestData;
     return this;
   }
 

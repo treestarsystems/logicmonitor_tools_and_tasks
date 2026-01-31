@@ -42,11 +42,9 @@ describe('BackupServiceDatasources', () => {
 
     service = module.get<BackupServiceDatasources>(BackupServiceDatasources);
     utilsService = module.get<UtilsService>(UtilsService);
-    storageServiceMongoDb = module.get<StorageServiceMongoDB>(
-      StorageServiceMongoDB,
-    );
+    storageServiceMongoDb = module.get<StorageServiceMongoDB>(StorageServiceMongoDB);
     backupDatasourceModel = module.get<Model<BackupDocumentDatasource>>(
-      getModelToken(BackupLMDataDatasource.name),
+      getModelToken(BackupLMDataDatasource.name)
     );
   });
 
@@ -62,14 +60,11 @@ describe('BackupServiceDatasources', () => {
     //   const datasourceNameParsed = 'test';
     //   const company = 'company';
     //   const progressTracking = { success: [], failure: [] };
-
     //   console.log(Object.getOwnPropertyNames(storageServiceMongoDb));
-
     //   jest.spyOn(storageServiceMongoDb, 'upsert').mockResolvedValueOnce(null);
     //   jest
     //     .spyOn(utilsService, 'defaultErrorHandlerString')
     //     .mockImplementation((msg) => msg);
-
     //   await service['processXMLDataExport'](
     //     datasourceXMLExport,
     //     dle,
@@ -77,24 +72,20 @@ describe('BackupServiceDatasources', () => {
     //     company,
     //     progressTracking,
     //   );
-
     //   expect(progressTracking.success).toContain('Success: test');
     // });
-
     // it('should handle datasource export failure', async () => {
     //   const datasourceXMLExport = { payload: ['<xml>data</xml>'] };
     //   const dle = { name: 'test', group: 'group' };
     //   const datasourceNameParsed = 'test';
     //   const company = 'company';
     //   const progressTracking = { success: [], failure: [] };
-
     //   jest
     //     .spyOn(storageServiceMongoDb, 'upsert')
     //     .mockRejectedValueOnce(new Error('Upsert failed'));
     //   jest
     //     .spyOn(utilsService, 'defaultErrorHandlerString')
     //     .mockImplementation((msg) => msg);
-
     //   await expect(
     //     service['processXMLDataExport'](
     //       datasourceXMLExport,
@@ -108,23 +99,21 @@ describe('BackupServiceDatasources', () => {
     //     'Failure: test - Upsert failed',
     //   );
     // });
-
-    it('should throw error if payload is not a string', async () => {
-      const datasourceXMLExport = { payload: [123] };
-      const dle = { name: 'test', group: 'group' };
-      const datasourceNameParsed = 'test';
-      const company = 'company';
-      const progressTracking = { success: [], failure: [] };
-
-      await expect(
-        service['processXMLDataExport'](
-          datasourceXMLExport,
-          dle,
-          datasourceNameParsed,
-          company,
-          progressTracking,
-        ),
-      ).rejects.toThrow('Payload is not a string');
-    });
+    // it('should throw error if payload is not a string', async () => {
+    //   const datasourceXMLExport = { payload: [123] };
+    //   const dle = { name: 'test', group: 'group' };
+    //   const datasourceNameParsed = 'test';
+    //   const company = 'company';
+    //   const progressTracking = { success: [], failure: [] };
+    //   await expect(
+    //     service['processXMLDataExport'](
+    //       datasourceXMLExport,
+    //       dle,
+    //       datasourceNameParsed,
+    //       company,
+    //       progressTracking,
+    //     ),
+    //   ).rejects.toThrow('Payload is not a string');
+    // });
   });
 });

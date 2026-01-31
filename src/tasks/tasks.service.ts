@@ -53,7 +53,7 @@ export class TasksService {
     const extraRequestProperties = {
       resourcePath: '',
       queryParams: '',
-      requestData: '',
+      requestData: {},
     };
     // Create an object to store the progress of the backup jobs.
     const progressTracking = {
@@ -78,7 +78,7 @@ export class TasksService {
         accessId,
         accessKey,
         extraRequestProperties,
-        { originalUrl: 'backup/reports' },
+        null,
         response,
         false
       )) as ResponseObjectDefault;
@@ -90,7 +90,7 @@ export class TasksService {
           accessId,
           accessKey,
           extraRequestProperties,
-          { originalUrl: 'backup/alertrules' },
+          null,
           response,
           false
         )) as ResponseObjectDefault;
@@ -145,7 +145,7 @@ export class TasksService {
     directlyRespondToApiCall: boolean = true
   ): Promise<void | ResponseObjectDefault> {
     const returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder().build();
-    // Create an object to store the progress of the backup jobs.
+    // Create an object to store the progress of the audit jobs.
     const progressTracking = {
       success: [],
       failure: [],

@@ -147,16 +147,15 @@ export class BackupServiceDatasources {
 
   /**
    * Handles the export of a datasource by storing it in the MongoDB and updating the progress tracking.
-   * @param {any} datasourceXMLExport - The export result containing the XML payload.
+   * @param {ResponseObjectDefault} datasourceXMLExport - The export result containing the XML payload.
    * @param {any} dle - The datasource object containing details about the datasource.
-   * @param {string} datasourceNameParsed - The parsed name of the datasource.
+   * @param {string} datasourceNameParsed - The parsed name of the datasource suitable for storage.
    * @param {string} company - The company associated with the datasource.
    * @param {any} progressTracking - The object used to track the progress of the export operation.
    * @returns {Promise<void>} - A promise that resolves when the operation is complete.
    */
-
   private async processXMLDataExport(
-    datasourceXMLExport: any,
+    datasourceXMLExport: ResponseObjectDefault,
     dle: any,
     datasourceNameParsed: string,
     company: string,

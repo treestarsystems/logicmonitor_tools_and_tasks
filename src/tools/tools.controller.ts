@@ -1,5 +1,5 @@
 import { Body, Controller, Post, Res, Req } from '@nestjs/common';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { BackupServiceDatasources } from './tools-backup-datasources.service';
 import { BackupServiceGeneral } from './tools-backup-general.service';
@@ -14,16 +14,14 @@ import { Get, Query } from '@nestjs/common';
  * ToolsController class to handle all tools and tasks related API calls.
  * @class ToolsController
  * @memberof module:tools
- * @endpoint tools
  * @public
  */
-
 @Controller('tools')
 export class ToolsController {
   /**
-   * ToolsController constructor.
-   * @param {BackupServiceDatasources} backupServiceDatasources - The BackupServiceDatasources instance.
-   * @param {BackupServiceGeneral} backupServiceGeneral - The BackupServiceGeneral instance.
+   * ToolsController constructor to instantiate services.
+   * @param {BackupServiceDatasources} backupServiceDatasources - Service for handling datasource backup operations.
+   * @param {BackupServiceGeneral} backupServiceGeneral - Service for handling general backup operations like alert rules and reports.
    */
   constructor(
     private readonly backupServiceDatasources: BackupServiceDatasources,
@@ -35,9 +33,8 @@ export class ToolsController {
    * @param {string} company The company name.
    * @param {Response} response The response object.
    * @returns {Promise<void>} Promise object.
-   * @method GET
+   * @function GET
    */
-
   @Get('backup')
   @ApiOperation({
     summary:
@@ -57,9 +54,8 @@ export class ToolsController {
    * @param {ToolsBackupDatasourcesRequest} body - The request body.
    * @param {Response} response - The response object.
    * @returns {Promise<void>} Promise object.
-   * @method POST
+   * @function POST
    */
-
   @Post('backup/datasources/bygroupname')
   @ApiOperation({
     summary: 'Backup datasources where the group name contain the groupName provided.',
@@ -80,16 +76,15 @@ export class ToolsController {
   }
 
   /**
-   * Backup alert rules.
+   * Backup alert rules endpoint
    * @param {ToolsBackupGeneralRequest} body - The request body.
+   * @param {Request} request - The request object.
    * @param {Response} response - The response object.
    * @returns {Promise<void>} Promise object.
    * @function backupGeneralGetAlertRules
    * @memberof module:tools
-   * @endpoint tools/backup/alertrules
-   * @method POST
+   * @function POST
    */
-
   @Post('backup/alertrules')
   @ApiOperation({
     summary: 'Backup alert rules',
@@ -112,16 +107,15 @@ export class ToolsController {
   }
 
   /**
-   * Backup reports.
+   * Backup reports endpoint.
    * @param {ToolsBackupGeneralRequest} body - The request body.
+   * @param {Request} request - The request object.
    * @param {Response} response - The response object.
    * @returns {Promise<void>} Promise object.
    * @function backupGeneralGetReports
    * @memberof module:tools
-   * @endpoint tools/backup/reports
-   * @method POST
+   * @function POST
    */
-
   @Post('backup/reports')
   @ApiOperation({
     summary: 'Backup reports',

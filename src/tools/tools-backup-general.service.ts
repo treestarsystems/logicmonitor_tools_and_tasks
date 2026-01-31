@@ -1,7 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { promises as fs } from 'fs';
 import { Model } from 'mongoose';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Request, Response } from 'express';
 import {
   ResponseObjectDefault,
   RequestObjectLMApi,
@@ -18,18 +24,26 @@ import {
   BackupDocumentDatasource,
   BackupDocumentGeneral,
 } from '../storage/schemas/storage-mongodb.schema';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 /**
  * BackupServiceGeneral class to handle all general backup related API calls.
  * @class BackupServiceGeneral
  * @memberof module:tools
- * @injectable
  * @public
- * @export
  */
-
 @Injectable()
 export class BackupServiceGeneral {
+  /**
+   * Creates an instance of BackupServiceGeneral.
+   * @param {UtilsService} utilsService The UtilsService instance.
+   * @param {StorageServiceMongoDB} storageServiceMongoDb The StorageServiceMongoDB instance.
+   * @param {StorageServiceZip} storageServiceZip The StorageServiceZip instance.
+   * @param {Model<BackupDocumentDatasource>} backupDatasourceModel The Mongoose model for BackupDocumentDatasource.
+   * @param {Model<BackupDocumentGeneral>} backupGeneralModel The Mongoose model for BackupDocumentGeneral.
+   * @param {Logger} logger The Winston logger instance.
+   */
   constructor(
     private readonly utilsService: UtilsService,
     private readonly storageServiceMongoDb: StorageServiceMongoDB,
@@ -37,32 +51,32 @@ export class BackupServiceGeneral {
     @InjectModel(BackupLMDataDatasource.name)
     private readonly backupDatasourceModel: Model<BackupDocumentDatasource>,
     @InjectModel(BackupLMDataGeneral.name)
-    private readonly backupGeneralModel: Model<BackupDocumentGeneral>
+    private readonly backupGeneralModel: Model<BackupDocumentGeneral>,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
 
   /**
    * Backup datasources with a group name that matches the search string to MongoDB.
    * Documentation: https://www.logicmonitor.com/support/rest-api-developers-guide/v1/datasources/get-datasources
-   * @param {string} company  The company name for the LogicMonitor account.
-   * @param {string} accessId  The access ID for the LogicMonitor account.
-   * @param {string} accessKey  The access key for the LogicMonitor account.
-   * @param {RequestObjectLMApiExtraRequestProperties} extraRequestProperties  The extra request properties to send in the API call (resourcePath, queryParams, requestData).
-   * @param {any} request  The request object from the client.
-   * @param {Response} response  The response object to send the response back to the client.
+   * @param {string} company The company name for the LogicMonitor account.
+   * @param {string} accessId The access ID for the LogicMonitor account.
+   * @param {string} accessKey The access key for the LogicMonitor account.
+   * @param {RequestObjectLMApiExtraRequestProperties} extraRequestProperties The extra request properties to send in the API call (resourcePath, queryParams, requestData).
+   * @param {any} request The request object from the client.
+   * @param {Response} response The response object to send the response back to the client.
    * @param {boolean} [directlyRespondToApiCall=true] - Whether to directly respond to the API call or return the returnObj.
    * @returns {Promise<void | ResponseObjectDefault>} A promise that resolves to void or a ResponseObjectDefault.
    */
-
   async backupGeneralGet(
     company: string,
     accessId: string,
     accessKey: string,
     extraRequestProperties: RequestObjectLMApiExtraRequestProperties,
-    request: any,
-    response: any,
+    request: Request,
+    response: Response,
     directlyRespondToApiCall: boolean = true
   ): Promise<void | ResponseObjectDefault> {
-    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder().build();
+    const returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder().build();
     // Get the backup type from the request URL.
     let backupType = request.originalUrl.split('/').pop();
     if (backupType?.endsWith('s')) {
@@ -103,7 +117,7 @@ export class BackupServiceGeneral {
       }
       // Lets loop through the response and extract the items that match our filter into a new array.
       const payloadItems = JSON.parse(resultList.payload).items ?? [];
-      this.processPayloadItems(payloadItems, backupType, company, progressTracking);
+      await this.processPayloadItems(payloadItems, backupType, company, progressTracking);
       returnObj.payload.push(progressTracking);
       if (progressTracking.failure.length > 0) {
         returnObj.httpStatus = 500;
@@ -132,14 +146,13 @@ export class BackupServiceGeneral {
 
   /**
    * Retrieve datasources with a group name that matches the search string from MongoDB.
-   * @param {string} company  The company name for the LogicMonitor account.
-   * @param {Response} response  The response object to send the response back to the client.
+   * @param {string} company The company name for the LogicMonitor account.
+   * @param {Response} response The response object to send the response back to the client.
    * @returns {Promise<void>} A promise that resolves to void.
    */
-
-  async retrieveBackupsAll(company: string, response: any): Promise<void> {
+  async retrieveBackupsAll(company: string, response: Response): Promise<void> {
     // This method will only return JSON object when there is an error.
-    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder().build();
+    const returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder().build();
     const outputFileBasePath = `./tmp`;
     const backupsListAll = [];
     try {
@@ -161,7 +174,7 @@ export class BackupServiceGeneral {
         );
       } else {
         returnObj.message = `Backups found: ${backupsListAll.length}`;
-        let fileContents = {};
+        const fileContents = {};
         // Loop through the backups and add them to the fileContents object.
         for (const dbi of backupsListAll) {
           const fileName = `${company}_${dbi.nameFormatted}`;
@@ -177,14 +190,14 @@ export class BackupServiceGeneral {
         const outputFileName = `${company}_backups.zip`;
         const outputFilePath = `${outputFileBasePath}/${outputFileName}`;
         // Create the output directory if it doesn't exist.
-        fs.mkdir(outputFileBasePath, { recursive: true });
+        await fs.mkdir(outputFileBasePath, { recursive: true });
         await this.storageServiceZip.createZipWithTextFiles(fileContents, outputFilePath);
         returnObj.message = `Backups found: ${backupsListAll.length}. ZIP file created successfully with ${returnObj.payload.length} files.`;
         response.download(outputFilePath, outputFileName, err => {
           if (err) {
             returnObj.httpStatus = 500;
             const errMsg = this.utilsService.defaultErrorHandlerString(err);
-            console.error(`Error downloading the file - ${errMsg}`);
+            this.logger.error(`Error downloading the file - ${errMsg}`);
             throw new Error(`Creating download file - ${errMsg}`);
           }
         });
@@ -207,21 +220,22 @@ export class BackupServiceGeneral {
 
   /**
    * Process the payload items and store them in MongoDB.
-   * @param {any} payloadItems  The payload items to process.
-   * @param {string} backupType  The type of backup.
-   * @param {string} company  The company name for the LogicMonitor account.
-   * @param {object} progressTracking  The object to track the progress of the backup jobs.
-   * @returns {void} Void.
+   * @param {any} payloadItems The payload items to process.
+   * @param {string} backupType The category of backup being processed (e.g., 'datasource', 'alert', 'report').
+   * @param {string} company The company name for the LogicMonitor account.
+   * @param {{ success: string[]; failure: string[] }} progressTracking The object to track the progress of the backup jobs.
+   * @param {string[]} progressTracking.success Array to store successful backup operation messages.
+   * @param {string[]} progressTracking.failure Array to store failed backup operation messages.
+   * @returns {Promise<void>} Promise that resolves when processing is complete.
    */
-
-  private processPayloadItems(
-    payloadItems: any,
+  private async processPayloadItems(
+    payloadItems: any[],
     backupType: string,
     company: string,
     progressTracking: { success: string[]; failure: string[] }
-  ) {
+  ): Promise<void> {
     for (const pli of payloadItems) {
-      let backupNameParsed = `${backupType}_${pli.name.replace(/\W/g, '_')}`;
+      const backupNameParsed = `${backupType}_${pli.name.replace(/\W/g, '_')}`;
       const dataJSON: object = pli;
       const storageObj: BackupLMDataGeneral = {
         type: backupType,
@@ -232,7 +246,7 @@ export class BackupServiceGeneral {
       };
       // MongoDB storage call.
       try {
-        this.storageServiceMongoDb.upsert(
+        await this.storageServiceMongoDb.upsert(
           this.backupGeneralModel,
           { nameFormatted: backupNameParsed },
           storageObj
