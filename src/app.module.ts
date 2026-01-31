@@ -15,7 +15,8 @@ import * as DailyRotateFile from 'winston-daily-rotate-file';
 
 // Define log format constants
 const timeStampFormat = 'YYYY-MM-DD HH:mm:ss';
-const logStringFormat = info => `${info.timestamp} [${info.level.toUpperCase()}]: ${info.message}`;
+const logStringFormat = (info: winston.Logform.TransformableInfo): string =>
+  `${info.timestamp as string} [${info.level.toUpperCase()}]: ${info.message as string}`;
 
 /**
  * AppModule is the root module of the application.

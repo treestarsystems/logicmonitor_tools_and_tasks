@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
 import { UtilsService } from '../utils/utils.service';
 import {
@@ -12,9 +17,7 @@ import {
  * @class AuditsService
  * @memberof module:audits
  * @implements {AuditsService}
- * @injectable
  * @public
- * @export
  */
 @Injectable()
 export class AuditsService {
@@ -31,7 +34,6 @@ export class AuditsService {
    * @param {string} accessKey - The access key for authentication.
    * @returns {Promise<ResponseObjectDefault>} - A promise that resolves to a ResponseObjectDefault containing the collector version list.
    */
-
   private async auditGetCollectorVersionList(
     company: string,
     accessId: string,
@@ -68,7 +70,6 @@ export class AuditsService {
    * @param {string} accessKey - The access key for authentication.
    * @returns {Promise<ResponseObjectDefault>} - A promise that resolves to a ResponseObjectDefault containing the collector list.
    */
-
   private async auditGetCollectorList(
     company: string,
     accessId: string,
@@ -104,7 +105,6 @@ export class AuditsService {
    * @param {ResponseObjectDefault} returnObj - The object to which the result will be appended.
    * @returns {void}
    */
-
   private processCollectorItem(
     collectorItem: any,
     collectorVersionList: any[any],
@@ -136,7 +136,6 @@ export class AuditsService {
    * @param {ResponseObjectDefault} returnObj - The object to which the results will be appended.
    * @returns {void}
    */
-
   private processCollectors(
     collectorList: any[any],
     collectorVersionList: any[any],
@@ -156,7 +155,6 @@ export class AuditsService {
    * @param {boolean} [directlyRespondToApiCall=true] - Whether to directly respond to the API call or return the returnObj.
    * @returns {Promise<void | ResponseObjectDefault>} - A promise that resolves to void or a ResponseObjectDefault.
    */
-
   public async auditSDTs(
     company: string,
     accessId: string,
@@ -219,7 +217,6 @@ export class AuditsService {
    * @param {boolean} [directlyRespondToApiCall=true] - Whether to directly respond to the API call or return the returnObj.
    * @returns {Promise<void | ResponseObjectDefault>} - A promise that resolves to void or a ResponseObjectDefault.
    */
-
   public async auditCollectorVersion(
     company: string,
     accessId: string,
