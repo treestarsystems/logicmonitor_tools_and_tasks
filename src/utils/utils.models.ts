@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Optional } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
@@ -485,7 +486,6 @@ export class ResponseObjectDefaultBuilder {
    * @returns {ResponseObjectDefaultBuilder} The builder instance.
    */
   public setPayload(payload: any[]): ResponseObjectDefaultBuilder {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     this.responseObjectDefault.payload = Array.isArray(payload) ? (payload as any[]) : [payload];
     return this;
   }

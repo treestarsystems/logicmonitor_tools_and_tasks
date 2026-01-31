@@ -39,7 +39,7 @@ export class StorageServiceMongoDB {
    * @param {any} filter The filter object to use for the find.
    * @returns {Promise<any>} The found backup data.
    */
-  find(mongooseModel: any, filter: any = {}): any {
-    return mongooseModel.find(filter).exec();
+  async find(mongooseModel: any, filter: any = {}): Promise<any> {
+    return await mongooseModel.find(filter).exec();
   }
 }
