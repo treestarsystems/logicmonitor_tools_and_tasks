@@ -293,7 +293,7 @@ if (require.main === module) {
       break;
     default:
       console.log(`
-Usage: node build-and-deploy.js [command]
+Usage: node compose-deploy.js [command]
 
 Commands:
   deploy (default) - Build and deploy containers
