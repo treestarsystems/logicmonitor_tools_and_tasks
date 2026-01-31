@@ -18,10 +18,14 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "gen-compose": "cd Docker && node generate-docker-compose.js",
-    "deploy": "cd Docker && node generate-docker-compose.js && node lmtt-compose.js deploy",
-    "deploy:stop": "cd Docker && node lmtt-compose.js stop",
-    "deploy:status": "cd Docker && node lmtt-compose.js status"
+    "deploy": "cd Docker && ./compose-deploy.sh",
+    "deploy:gen": "cd Docker && ./compose-generate.sh",
+    "deploy:stop": "cd Docker && ./manage-deployment.sh stop",
+    "deploy:status": "cd Docker && ./manage-deployment.sh status",
+    "deploy:js": "cd Docker && ./compose-deploy.js",
+    "deploy:gen:js": "cd Docker && ./compose-generate.js",
+    "deploy:stop:js": "cd Docker && ./manage-deployment.js stop",
+    "deploy:status:js": "cd Docker && ./manage-deployment.js status"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.1",
