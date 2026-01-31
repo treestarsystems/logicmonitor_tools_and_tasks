@@ -24,7 +24,7 @@
     "deploy:gen": "cd Docker && ./compose-generate.sh",
     "deploy:stop": "cd Docker && ./compose-deploy.sh stop",
     "deploy:status": "cd Docker && ./compose-deploy.sh status",
-    "docs": "typedoc --plugin typedoc-plugin-markdown --out ./docs ./src/**/*.ts --logLevel Verbose && git add ./docs"
+    "docs": "typedoc --plugin typedoc-plugin-markdown --out ./docs ./src/**/*.ts --logLevel Verbose"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.1",

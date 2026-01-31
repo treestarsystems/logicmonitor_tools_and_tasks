@@ -65,3 +65,6 @@ docker-compose.yml
 
 #Log files
 lmtt-app-logs
+
+#Docs
+/docs
