@@ -132,7 +132,6 @@ stop_containers() {
 
   log "Stopping containers with $compose_tool:"
   (
-    cd "$BUILD_DIR" || exit
     $compose_tool down
   )
   log "Containers stopped successfully" "SUCCESS"

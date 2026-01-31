@@ -128,8 +128,6 @@ export class ResponseObjectDefault implements ResponseObjectDefaultInterface {
   @ApiProperty({
     description:
       'The payload from the API call. This can be an array of any type',
-    // type: any[any],
-    type: 'array',
     enum: ['any (string|number|object|array|boolean|error object)'],
   })
   payload: any[any];
