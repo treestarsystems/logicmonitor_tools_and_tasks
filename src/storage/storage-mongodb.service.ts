@@ -1,3 +1,5 @@
+/* eslint-disable jsdoc/require-returns-description */
+/* eslint-disable jsdoc/check-line-alignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
@@ -20,9 +22,9 @@ export class StorageServiceMongoDB {
    * Upsert the backup data to MongoDB.
    * The types should be defined when the method is called.
    * @param {any} mongooseModel The Mongoose model object to use for the upsert.
-   * @param {any} filter  The filter object to use for the upsert.
+   * @param {any} filter The filter object to use for the upsert.
    * @param {any} upsertBackupLMData  The backup data to upsert.
-   * @returns
+   * @returns {Promise<any>} The upserted backup data.
    */
   async upsert(mongooseModel: any, filter: any, upsertBackupLMData: any): Promise<any> {
     const upsertBackup = await mongooseModel.updateOne(
@@ -40,7 +42,7 @@ export class StorageServiceMongoDB {
   /**
    * Find the backup data from MongoDB.
    * @param {any} mongooseModel The Mongoose model object to use for the find.
-   * @param {any} filter  The filter object to use for the find.
+   * @param {any} filter The filter object to use for the find.
    * @returns
    */
   find(mongooseModel: any, filter: any = {}): any {
