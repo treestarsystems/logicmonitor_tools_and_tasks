@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@nestjs/common';
 
 /**
@@ -15,13 +19,12 @@ export class StorageServiceMongoDB {
   /**
    * Upsert the backup data to MongoDB.
    * The types should be defined when the method is called.
-   * @param mongooseModel  The Mongoose model object to use for the upsert.
-   * @param filter  The filter object to use for the upsert.
-   * @param upsertBackupLMData  The backup data to upsert.
+   * @param {any} mongooseModel The Mongoose model object to use for the upsert.
+   * @param {any} filter  The filter object to use for the upsert.
+   * @param {any} upsertBackupLMData  The backup data to upsert.
    * @returns
    */
-
-  async upsert(mongooseModel, filter, upsertBackupLMData): Promise<any> {
+  async upsert(mongooseModel: any, filter: any, upsertBackupLMData: any): Promise<any> {
     const upsertBackup = await mongooseModel.updateOne(
       filter,
       { $set: upsertBackupLMData },
@@ -36,12 +39,11 @@ export class StorageServiceMongoDB {
 
   /**
    * Find the backup data from MongoDB.
-   * @param mongooseModel  The Mongoose model object to use for the find.
-   * @param filter  The filter object to use for the find.
+   * @param {any} mongooseModel The Mongoose model object to use for the find.
+   * @param {any} filter  The filter object to use for the find.
    * @returns
    */
-
-  async find(mongooseModel, filter = {}): Promise<any> {
+  find(mongooseModel: any, filter: any = {}): any {
     return mongooseModel.find(filter).exec();
   }
 }
