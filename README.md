@@ -189,21 +189,20 @@ This will display a list of running and stopped containers, along with their det
 
 ---
 
-## **Contributing**
+## **Contributors**
 
-Contributions to this project are welcome! To contribute:
+Author - [Michael of Tree Star Systems](mailto:aoe4eva@gmail.com)
 
-1. Fork the repository.
-2. Create a new feature branch:
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-3. Push your changes and create a pull request.
+---
+
+## **Support**
+
+...what is that?
 
 ---
 
 ## **License**
 
-This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute this software following the terms of the license.
+NestJS is licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute this software following the terms of the license.
 
 ---
