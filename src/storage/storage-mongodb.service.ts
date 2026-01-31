@@ -12,8 +12,6 @@ import { Injectable } from '@nestjs/common';
  */
 @Injectable()
 export class StorageServiceMongoDB {
-  // constructor() {}
-
   /**
    * Upsert the backup data to MongoDB.
    * The types should be defined when the method is called.

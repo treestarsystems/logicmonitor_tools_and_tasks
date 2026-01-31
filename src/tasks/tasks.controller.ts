@@ -1,5 +1,6 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { Response } from 'express';
 import {
   ResponseObjectDefault,
   ToolsBackupDatasourcesRequest,
@@ -12,16 +13,14 @@ import { TasksService } from './tasks.service';
  * TasksController class to handle all tasks related API calls.
  * @class TasksController
  * @memberof module:tasks
- * @endpoint tasks
  * @public
  */
-
 @Controller('tasks')
 @ApiTags('Tasks')
 export class TasksController {
   /**
-   * TasksController constructor.
-   * @param {TasksService} tasksService - The TasksService instance.
+   * Initializes the TasksController with the required TasksService dependency.
+   * @param {TasksService} tasksService - The TasksService instance injected.
    */
   constructor(private readonly tasksService: TasksService) {}
 
@@ -30,9 +29,8 @@ export class TasksController {
    * @param {ToolsBackupDatasourcesRequest} body - The request body.
    * @param {Response} response - The response object.
    * @returns {Promise<void>} Promise object.
-   * @method POST
+   * @function POST
    */
-
   @Post('backups')
   @ApiOperation({
     summary: 'Execute all backups (datasources by group name, alert rules, and report).',
@@ -56,7 +54,7 @@ export class TasksController {
    * @param {GeneralRequest} body - The request body.
    * @param {Response} response - The response object.
    * @returns {Promise<void>} Promise object.
-   * @method POST
+   * @function POST
    */
   @Post('audits')
   @ApiOperation({

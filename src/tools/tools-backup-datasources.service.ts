@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -13,18 +17,22 @@ import {
   BackupLMDataDatasource,
   BackupDocumentDatasource,
 } from '../storage/schemas/storage-mongodb.schema';
+import { Response } from 'express';
 
 /**
  * BackupServiceDatasources class to handle all datasource backup related API calls.
  * @class BackupServiceDatasources
  * @memberof module:tools
- * @injectable
  * @public
- * @export
  */
-
 @Injectable()
 export class BackupServiceDatasources {
+  /**
+   * Creates an instance of BackupServiceDatasources.
+   * @param {UtilsService} utilsService - The UtilsService instance.
+   * @param {StorageServiceMongoDB} storageServiceMongoDb - The StorageServiceMongoDB instance.
+   * @param {Model<BackupDocumentDatasource>} backupDatasourceModel - The Mongoose model for BackupDocumentDatasource.
+   */
   constructor(
     private readonly utilsService: UtilsService,
     private readonly storageServiceMongoDb: StorageServiceMongoDB,
@@ -35,24 +43,23 @@ export class BackupServiceDatasources {
   /**
    * Backup datasources with a group name that matches the search string to MongoDB.
    * Documentation: https://www.logicmonitor.com/support/rest-api-developers-guide/v1/datasources/get-datasources
-   * @param {string} company  The company name for the LogicMonitor account.
-   * @param {string} accessId  The access ID for the LogicMonitor account.
-   * @param {string} accessKey  The access key for the LogicMonitor account.
-   * @param {string} groupName  The group name to filter the datasources.
-   * @param {Response} response  The response object to send the response back to the client.
+   * @param {string} company The company name for the LogicMonitor account.
+   * @param {string} accessId The access ID for the LogicMonitor account.
+   * @param {string} accessKey The access key for the LogicMonitor account.
+   * @param {string} groupName The group name to filter the datasources.
+   * @param {Response} response The response object to send the response back to the client.
    * @param {boolean} [directlyRespondToApiCall=true] - Whether to directly respond to the API call or return the returnObj.
    * @returns {Promise<void | ResponseObjectDefault>} - A promise that resolves to void or a ResponseObjectDefault.
    */
-
   async backupDatasourcesByGroupName(
     company: string,
     accessId: string,
     accessKey: string,
     groupName: string,
-    response: any,
+    response: Response,
     directlyRespondToApiCall: boolean = true
   ): Promise<void | ResponseObjectDefault> {
-    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder().build();
+    const returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder().build();
     try {
       const progressTracking = {
         success: [],
@@ -107,7 +114,9 @@ export class BackupServiceDatasources {
             progressTracking
           );
         } catch (err) {
-          progressTracking.failure.push(`Failure: ${datasourceNameParsed} - ${err}`);
+          progressTracking.failure.push(
+            `Failure: ${datasourceNameParsed} - ${this.utilsService.defaultErrorHandlerString(err)}`
+          );
         }
       }
       returnObj.payload.push(progressTracking);

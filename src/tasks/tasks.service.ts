@@ -1,4 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
+import { Response } from 'express';
 import { BackupServiceDatasources } from '../tools/tools-backup-datasources.service';
 import { BackupServiceGeneral } from '../tools/tools-backup-general.service';
 import { ResponseObjectDefault, ResponseObjectDefaultBuilder } from '../utils/utils.models';
@@ -9,11 +13,8 @@ import { AuditsService } from '../audits/audits.service';
  * TasksService class to provide utility functions.
  * @class TasksService
  * @memberof module:tasks
- * @injectable
  * @public
- * @export
  */
-
 @Injectable()
 export class TasksService {
   /**
@@ -40,16 +41,15 @@ export class TasksService {
    * @param {boolean} [directlyRespondToApiCall=true] - Whether to directly respond to the API call or return the returnObj.
    * @returns {Promise<void | ResponseObjectDefault>} - A promise that resolves to void or a ResponseObjectDefault.
    */
-
   async executeTaskBackups(
     company: string,
     accessId: string,
     accessKey: string,
     groupName: string,
-    response: any,
+    response: Response,
     directlyRespondToApiCall: boolean = true
   ): Promise<void | ResponseObjectDefault> {
-    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder().build();
+    const returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder().build();
     const extraRequestProperties = {
       resourcePath: '',
       queryParams: '',
@@ -137,15 +137,14 @@ export class TasksService {
    * @param {boolean} [directlyRespondToApiCall=true] - Whether to directly respond to the API call or return the returnObj.
    * @returns {Promise<void | ResponseObjectDefault>} - A promise that resolves to void or a ResponseObjectDefault.
    */
-
   async executeTaskAudits(
     company: string,
     accessId: string,
     accessKey: string,
-    response: any,
+    response: Response,
     directlyRespondToApiCall: boolean = true
   ): Promise<void | ResponseObjectDefault> {
-    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder().build();
+    const returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder().build();
     // Create an object to store the progress of the backup jobs.
     const progressTracking = {
       success: [],

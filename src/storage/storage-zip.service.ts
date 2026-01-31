@@ -6,17 +6,14 @@ import { createWriteStream } from 'fs';
  * StorageServiceZip class to handle all ZIP related operations.
  * @class StorageServiceZip
  * @memberof module:storage
- * @injectable
  * @public
- * @export
  */
-
 @Injectable()
 export class StorageServiceZip {
   /**
    * Create a ZIP file with text files.
-   * @param fileContents  The file contents to write to the ZIP file.
-   * @param outputFilePath  The output file path for the ZIP file.
+   * @param {{[key: string]: string}} fileContents The file contents to write to the ZIP file.
+   * @param {string} outputFilePath The output file path for the ZIP file.
    * @returns {Promise<void>} Promise object.
    */
   async createZipWithTextFiles(
@@ -43,7 +40,7 @@ export class StorageServiceZip {
         archive.append(content, { name: fileName });
       }
 
-      archive.finalize();
+      void archive.finalize();
     });
   }
 }
