@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@nestjs/common';
 import {
@@ -282,9 +286,9 @@ export class UtilsService {
     axiosParametersObj: AxiosRequestConfig
   ): Promise<any> {
     const { data, status, headers } = apiResponse;
-    let rateLimitRemaining: number = headers['x-rate-limit-remaining'];
-    let rateLimitWindow: number = headers['x-rate-limit-window'] * 1000 + 1;
-    let returnObj: any = {};
+    const rateLimitRemaining: number = headers['x-rate-limit-remaining'];
+    const rateLimitWindow: number = headers['x-rate-limit-window'] * 1000 + 1;
+    const returnObj: any = {};
     if (rateLimitRemaining == 0) {
       await new Promise(resolve => setTimeout(resolve, rateLimitWindow));
       const apiResponse: AxiosResponse = await apiRequest.request(axiosParametersObj);
@@ -311,7 +315,6 @@ export class UtilsService {
    * url: 'https://companynme.logicmonitor.com/santaba/rest/report/reports'
    * }) // returns { status: 'success', httpStatus: 200, message: 'success', payload: [{ name: 'John', age: 30, city: 'New York' }] }
    */
-
   public async genericAPICall(
     requestObjectLMApi: RequestObjectLMApi
   ): Promise<ResponseObjectDefault> {
@@ -322,11 +325,11 @@ export class UtilsService {
         `${url}?size=1000&${queryParams ?? ''}`
       );
       // Remove requestData from the request object if the method is 'get' or 'delete'
-      let methodRegEx = /^get$|^delete$/gi;
+      const methodRegEx = /^get$|^delete$/gi;
       if (methodRegEx.test(method)) {
         delete requestObjectLMApi.requestData;
       }
-      let authString: string = this.generateAuthString(requestObjectLMApi);
+      const authString: string = this.generateAuthString(requestObjectLMApi);
       if (!authString.toLowerCase().includes('lmv1')) {
         throw new Error('Invalid authString');
       }
@@ -341,9 +344,9 @@ export class UtilsService {
       returnObj.httpStatus = status;
       if (status > 299) {
         const errorMessage: string = `(${status}) - ${JSON.parse(data)?.errorMessage}`;
-        throw errorMessage;
+        throw new Error(errorMessage);
       }
-      let rateLimitRemaining: number = headers['x-rate-limit-remaining'];
+      const rateLimitRemaining: number = headers['x-rate-limit-remaining'];
       // If zero we need to delay the API call and retry.
       if (rateLimitRemaining == 0) {
         returnObj = await this.genericAPICallHandleRateLimit(
