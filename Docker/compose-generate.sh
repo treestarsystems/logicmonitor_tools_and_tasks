@@ -49,7 +49,6 @@ encapsulate_value() {
 # Parses a .env file and loads key-value pairs into an associative array
 declare -A ENV_VARS
 parse_env_file() {
-  log "- Parsing .env file"
   if [[ ! -f $ENV_PATH ]]; then
     log "Error: .env file not found at $ENV_PATH" "ERROR"
     exit 1
