@@ -21,11 +21,7 @@
     "deploy": "cd Docker && ./compose-deploy.sh",
     "deploy:gen": "cd Docker && ./compose-generate.sh",
     "deploy:stop": "cd Docker && ./compose-deploy.sh stop",
-    "deploy:status": "cd Docker && ./compose-deploy.sh status",
-    "deploy:js": "cd Docker && node ./compose-deploy.js",
-    "deploy:gen:js": "cd Docker && node ./compose-generate.js",
-    "deploy:stop:js": "cd Docker && node ./compose-deploy.js stop",
-    "deploy:status:js": "cd Docker && node ./compose-deploy.js status"
+    "deploy:status": "cd Docker && ./compose-deploy.sh status"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.1",
