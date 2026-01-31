@@ -28,13 +28,10 @@ export class UtilsService {
    */
 
   public genRegular(stringLength: number): string {
-    const regularchar: string =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const regularchar: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let text: string = '';
     for (let i = 0; i < stringLength; i++) {
-      text += regularchar.charAt(
-        Math.floor(Math.random() * regularchar.length),
-      );
+      text += regularchar.charAt(Math.floor(Math.random() * regularchar.length));
     }
     return text;
   }
@@ -52,9 +49,7 @@ export class UtilsService {
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%_-(),;:.*';
     let text: string = '';
     for (let i = 0; i < stringLength; i++) {
-      text += specialchar.charAt(
-        Math.floor(Math.random() * specialchar.length),
-      );
+      text += specialchar.charAt(Math.floor(Math.random() * specialchar.length));
     }
     return text;
   }
@@ -71,9 +66,7 @@ export class UtilsService {
     const specialchar: string = '!@#$%_-(),;:.*';
     let text: string = '';
     for (let i = 0; i < stringLength; i++) {
-      text += specialchar.charAt(
-        Math.floor(Math.random() * specialchar.length),
-      );
+      text += specialchar.charAt(Math.floor(Math.random() * specialchar.length));
     }
     return text;
   }
@@ -128,9 +121,7 @@ export class UtilsService {
   public insertSpecialChars(word: string): string {
     const specialchar: string = '!@#$%_-(),;:.*';
     let index: number = this.getRandomInt(1, word.length);
-    let text: string = specialchar.charAt(
-      Math.floor(Math.random() * specialchar.length),
-    );
+    let text: string = specialchar.charAt(Math.floor(Math.random() * specialchar.length));
     return word.substring(0, index) + text + word.substring(index);
   }
 
@@ -148,7 +139,7 @@ export class UtilsService {
   public replaceAt(
     originalString: string,
     replacementIndex: number,
-    replacementString: string,
+    replacementString: string
   ): string {
     return `${originalString.substring(0, replacementIndex)}${replacementString}${originalString.substring(replacementIndex + 1)}`;
   }
@@ -162,7 +153,7 @@ export class UtilsService {
    */
 
   public uuidv4(): string {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
       let r = (Math.random() * 16) | 0,
         v = c == 'x' ? r : (r & 0x3) | 0x8;
       return v.toString(16);
@@ -215,7 +206,7 @@ export class UtilsService {
 
     // Encode each query parameter
     const encodedQueryParams = queryParams
-      .map((param) => {
+      .map(param => {
         // Split each parameter into key and value
         const [key, value] = param.split('=');
         // Return the encoded key-value pair, joined by '='
@@ -248,10 +239,7 @@ export class UtilsService {
    * defaultErrorHandler('Error: Something went wrong') // returns { status: 'failure', httpStatusCode: 400, message: 'Error: Error: Something went wrong', payload: [] }
    */
 
-  public defaultErrorHandlerHttp(
-    err,
-    httpStatusCode: number = 400,
-  ): ResponseObjectDefault {
+  public defaultErrorHandlerHttp(err, httpStatusCode: number = 400): ResponseObjectDefault {
     const statusCode: number = httpStatusCode == 200 ? 400 : httpStatusCode;
     const errorMessage: string = err?.message ? err.message : err;
     const returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder()
@@ -279,13 +267,9 @@ export class UtilsService {
 
   public generateAuthString(requestObjectLMApi: RequestObjectLMApi): string {
     try {
-      const { method, epoch, resourcePath, accessId, accessKey, requestData } =
-        requestObjectLMApi;
+      const { method, epoch, resourcePath, accessId, accessKey, requestData } = requestObjectLMApi;
       const requestVars: string = `${method}${epoch}${requestData ? JSON.stringify(requestData) : ''}${resourcePath}`;
-      const hex: string = crypto
-        .createHmac('sha256', accessKey)
-        .update(requestVars)
-        .digest('hex');
+      const hex: string = crypto.createHmac('sha256', accessKey).update(requestVars).digest('hex');
       const signature: string = Buffer.from(hex, 'utf-8').toString('base64');
       return `LMv1 ${accessId}:${signature}:${epoch}`;
     } catch (err) {
@@ -306,16 +290,15 @@ export class UtilsService {
   private async genericAPICallHandleRateLimit(
     apiResponse: AxiosResponse,
     apiRequest: any,
-    axiosParametersObj: AxiosRequestConfig,
+    axiosParametersObj: AxiosRequestConfig
   ): Promise<any> {
     const { data, status, headers } = apiResponse;
     let rateLimitRemaining: number = headers['x-rate-limit-remaining'];
     let rateLimitWindow: number = headers['x-rate-limit-window'] * 1000 + 1;
     let returnObj: any = {};
     if (rateLimitRemaining == 0) {
-      await new Promise((resolve) => setTimeout(resolve, rateLimitWindow));
-      const apiResponse: AxiosResponse =
-        await apiRequest.request(axiosParametersObj);
+      await new Promise(resolve => setTimeout(resolve, rateLimitWindow));
+      const apiResponse: AxiosResponse = await apiRequest.request(axiosParametersObj);
       const { data, status } = apiResponse;
       returnObj.httpStatus = status;
       returnObj.payload = [data];
@@ -341,14 +324,13 @@ export class UtilsService {
    */
 
   public async genericAPICall(
-    requestObjectLMApi: RequestObjectLMApi,
+    requestObjectLMApi: RequestObjectLMApi
   ): Promise<ResponseObjectDefault> {
-    let returnObj: ResponseObjectDefault =
-      new ResponseObjectDefaultBuilder().build();
+    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder().build();
     try {
       const { method, queryParams, url } = requestObjectLMApi;
       const urlStringEncoded: string = this.encodeQueryParameters(
-        `${url}?size=1000&${queryParams ?? ''}`,
+        `${url}?size=1000&${queryParams ?? ''}`
       );
       // Remove requestData from the request object if the method is 'get' or 'delete'
       let methodRegEx = /^get$|^delete$/gi;
@@ -359,15 +341,13 @@ export class UtilsService {
       if (!authString.toLowerCase().includes('lmv1')) {
         throw new Error('Invalid authString');
       }
-      const axiosParametersObj: AxiosRequestConfig =
-        new AxiosParametersBuilder()
-          .setMethod(method)
-          .setUrl(urlStringEncoded)
-          .setAuthString(authString)
-          .build();
+      const axiosParametersObj: AxiosRequestConfig = new AxiosParametersBuilder()
+        .setMethod(method)
+        .setUrl(urlStringEncoded)
+        .setAuthString(authString)
+        .build();
       const apiRequest = new Axios(axiosParametersObj);
-      const apiResponse: AxiosResponse =
-        await apiRequest.request(axiosParametersObj);
+      const apiResponse: AxiosResponse = await apiRequest.request(axiosParametersObj);
       const { data, status, headers } = apiResponse;
       returnObj.httpStatus = status;
       if (status > 299) {
@@ -380,7 +360,7 @@ export class UtilsService {
         returnObj = await this.genericAPICallHandleRateLimit(
           apiResponse,
           apiRequest,
-          axiosParametersObj,
+          axiosParametersObj
         );
       } else {
         returnObj.payload = [data];

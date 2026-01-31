@@ -31,13 +31,13 @@ export class AuditsController {
   @ApiResponse({ type: ResponseObjectDefault })
   async executeAuditCollectorVersion(
     @Body() body: GeneralRequest,
-    @Res() response: Response,
+    @Res() response: Response
   ): Promise<void> {
     await this.auditsService.auditCollectorVersion(
       body.company,
       body.accessId,
       body.accessKey,
-      response,
+      response
     );
   }
 
@@ -54,15 +54,7 @@ export class AuditsController {
     summary: 'Get SDTs for account that match the given criteria.',
   })
   @ApiResponse({ type: ResponseObjectDefault })
-  async executeAuditSDT(
-    @Body() body: GeneralRequest,
-    @Res() response: Response,
-  ): Promise<void> {
-    await this.auditsService.auditSDTs(
-      body.company,
-      body.accessId,
-      body.accessKey,
-      response,
-    );
+  async executeAuditSDT(@Body() body: GeneralRequest, @Res() response: Response): Promise<void> {
+    await this.auditsService.auditSDTs(body.company, body.accessId, body.accessKey, response);
   }
 }

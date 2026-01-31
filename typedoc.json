@@ -1,0 +1,20 @@
+{
+  "blockTags": [
+    "@endpoint",
+    "@memberof",
+    "@implements",
+    "@export",
+    "@injectable",
+    "@method",
+    "@function",
+    "@class",
+    "@interface",
+    "@description",
+    "@public",
+    "@private",
+    "@param",
+    "@returns",
+    "@example",
+    "@property"
+  ]
+}

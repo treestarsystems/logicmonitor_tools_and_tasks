@@ -21,7 +21,7 @@ export class StorageServiceZip {
    */
   async createZipWithTextFiles(
     fileContents: { [fileName: string]: string },
-    outputFilePath: string,
+    outputFilePath: string
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       const output = createWriteStream(outputFilePath);
@@ -33,7 +33,7 @@ export class StorageServiceZip {
         resolve();
       });
 
-      archive.on('error', (err) => {
+      archive.on('error', err => {
         reject(err);
       });
 

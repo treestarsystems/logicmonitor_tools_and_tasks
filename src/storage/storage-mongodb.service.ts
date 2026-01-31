@@ -25,7 +25,7 @@ export class StorageServiceMongoDB {
     const upsertBackup = await mongooseModel.updateOne(
       filter,
       { $set: upsertBackupLMData },
-      { upsert: true },
+      { upsert: true }
     );
     if (upsertBackup.upsertedId) {
       return mongooseModel.findById(upsertBackup.upsertedId).exec();

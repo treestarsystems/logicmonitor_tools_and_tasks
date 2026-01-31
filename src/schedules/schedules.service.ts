@@ -6,10 +6,7 @@ import { TasksService } from '../tasks/tasks.service';
 import { ToolsBackupDatasourcesRequest } from '../utils/utils.models';
 import { ResponseObjectDefault } from '../utils/utils.models';
 import { UtilsService } from '../utils/utils.service';
-import {
-  ResponseObjectDefaultBuilder,
-  ScheduleListCronJobsResponse,
-} from '../utils/utils.models';
+import { ResponseObjectDefaultBuilder, ScheduleListCronJobsResponse } from '../utils/utils.models';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 
@@ -24,16 +21,23 @@ import { Logger } from 'winston';
 
 @Injectable()
 export class SchedulesService {
+  /**
+   * Creates an instance of SchedulesService.
+   * @param {TasksService} tasksService - The TasksService instance.
+   * @param {UtilsService} utilsService - The UtilsService instance.
+   * @param {SchedulerRegistry} schedulerRegistry - The SchedulerRegistry instance.
+   * @param {Logger} logger - The Winston logger instance.
+   */
   constructor(
     private tasksService: TasksService,
     private utilsService: UtilsService,
     private schedulerRegistry: SchedulerRegistry,
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
 
   private readonly scheduleConfFilePath: string = path.resolve(
     __dirname,
-    `../../${process.env.SCHEDULES_CONF_FILE_NAME}`,
+    `../../${process.env.SCHEDULES_CONF_FILE_NAME}`
   );
 
   /**
@@ -43,12 +47,8 @@ export class SchedulesService {
    * @returns {ResponseObjectDefault} - The response object containing the list of cron jobs.
    */
 
-  scheduleListCronJobs(
-    response,
-    directlyRespondToApiCall: boolean = true,
-  ): ResponseObjectDefault {
-    let returnObj: ResponseObjectDefault =
-      new ResponseObjectDefaultBuilder().build();
+  scheduleListCronJobs(response, directlyRespondToApiCall: boolean = true): ResponseObjectDefault {
+    let returnObj: ResponseObjectDefault = new ResponseObjectDefaultBuilder().build();
     const timeZoneSettings = {
       timeZone: 'America/New_York',
     };
@@ -57,10 +57,7 @@ export class SchedulesService {
     jobsGet.forEach((value, key, map) => {
       let next, last, future;
       try {
-        next = value
-          ?.nextDate()
-          ?.toJSDate()
-          ?.toLocaleString('en-US', timeZoneSettings);
+        next = value?.nextDate()?.toJSDate()?.toLocaleString('en-US', timeZoneSettings);
       } catch (err) {
         next = this.utilsService.defaultErrorHandlerString(err);
       }
@@ -74,7 +71,7 @@ export class SchedulesService {
       try {
         future = value
           ?.nextDates(4)
-          .map((date) => {
+          .map(date => {
             return date?.toJSDate()?.toLocaleString('en-US', timeZoneSettings);
           })
           .slice(1, 4);
@@ -103,9 +100,7 @@ export class SchedulesService {
    * @returns {Promise<ToolsBackupDatasourcesRequest[]>} - A promise that resolves to an array of ToolsBackupDatasourcesRequest objects.
    */
 
-  async scheduleReadConf(
-    confFilePath,
-  ): Promise<ToolsBackupDatasourcesRequest[]> {
+  async scheduleReadConf(confFilePath): Promise<ToolsBackupDatasourcesRequest[]> {
     try {
       const data = await fs.readFile(confFilePath, 'utf8');
       const confData: ToolsBackupDatasourcesRequest[] = JSON.parse(data);
@@ -135,10 +130,10 @@ export class SchedulesService {
           conf.accessKey,
           conf.groupName,
           {},
-          false,
+          false
         )) as ResponseObjectDefault;
         this.logger.info(
-          `Finished backup for ${conf.company.toUpperCase()} with result: ${this.utilsService.capitalizeFirstLetter(scheduledTaskResult.message)}`,
+          `Finished backup for ${conf.company.toUpperCase()} with result: ${this.utilsService.capitalizeFirstLetter(scheduledTaskResult.message)}`
         );
       }
     } catch (err) {
@@ -158,18 +153,16 @@ export class SchedulesService {
     try {
       const confData = await this.scheduleReadConf(this.scheduleConfFilePath);
       for (const conf of confData) {
-        this.logger.info(
-          `Executing monthly audit for ${conf.company.toUpperCase()}`,
-        );
+        this.logger.info(`Executing monthly audit for ${conf.company.toUpperCase()}`);
         const scheduledTaskResult = (await this.tasksService.executeTaskAudits(
           conf.company,
           conf.accessId,
           conf.accessKey,
           {},
-          false,
+          false
         )) as ResponseObjectDefault;
         this.logger.info(
-          `Finished monthly audit for ${conf.company.toUpperCase()} with result: ${this.utilsService.capitalizeFirstLetter(scheduledTaskResult.message)}`,
+          `Finished monthly audit for ${conf.company.toUpperCase()} with result: ${this.utilsService.capitalizeFirstLetter(scheduledTaskResult.message)}`
         );
         // The result needs to be formatted and sent as an email.
         // console.log(JSON.stringify(scheduledTaskResult));

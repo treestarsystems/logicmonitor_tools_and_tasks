@@ -24,7 +24,7 @@ export class SwaggerDocumentVersioned {
     private readonly apiPrefix: string,
     private readonly version: string,
     private readonly title: string,
-    private readonly description: string,
+    private readonly description: string
   ) {}
 
   private readonly companyName: string = process.env.SWAGGER_COMPANY_NAME;
@@ -79,7 +79,7 @@ export class SwaggerDocumentVersioned {
   private apiDocument: OpenAPIObject = SwaggerModule.createDocument(
     this.appObject,
     this.createDocument(),
-    this.SwaggerDocumentOptions,
+    this.SwaggerDocumentOptions
   );
 
   /**
@@ -95,7 +95,7 @@ export class SwaggerDocumentVersioned {
       `${this.apiPrefix}/${this.version}/docs`,
       this.appObject,
       this.apiDocument,
-      this.apiDocumentOptions,
+      this.apiDocumentOptions
     );
   }
 }

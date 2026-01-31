@@ -19,6 +19,10 @@ import { TasksService } from './tasks.service';
 @Controller('tasks')
 @ApiTags('Tasks')
 export class TasksController {
+  /**
+   * TasksController constructor.
+   * @param {TasksService} tasksService - The TasksService instance.
+   */
   constructor(private readonly tasksService: TasksService) {}
 
   /**
@@ -31,20 +35,19 @@ export class TasksController {
 
   @Post('backups')
   @ApiOperation({
-    summary:
-      'Execute all backups (datasources by group name, alert rules, and report).',
+    summary: 'Execute all backups (datasources by group name, alert rules, and report).',
   })
   @ApiResponse({ type: ResponseObjectDefault })
   async executeTaskBackupsPost(
     @Body() body: ToolsBackupDatasourcesRequest,
-    @Res() response: Response,
+    @Res() response: Response
   ): Promise<void> {
     await this.tasksService.executeTaskBackups(
       body.company,
       body.accessId,
       body.accessKey,
       body.groupName,
-      response,
+      response
     );
   }
 
@@ -62,13 +65,13 @@ export class TasksController {
   @ApiResponse({ type: ResponseObjectDefault })
   async executeTaskAuditsPost(
     @Body() body: GeneralRequest,
-    @Res() response: Response,
+    @Res() response: Response
   ): Promise<void> {
     await this.tasksService.executeTaskAudits(
       body.company,
       body.accessId,
       body.accessKey,
-      response,
+      response
     );
   }
 }

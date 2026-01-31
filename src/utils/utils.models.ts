@@ -1,12 +1,6 @@
 import { Optional } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsArray,
-  IsNumber,
-  IsObject,
-  IsString,
-  IsNotEmpty,
-} from 'class-validator';
+import { IsArray, IsNumber, IsObject, IsString, IsNotEmpty } from 'class-validator';
 
 /**
  * Interface representing a default response object.
@@ -67,9 +61,9 @@ interface RequestObjectLMApiInterface {
 
 /**
  * This is a base class used to store request data for LogicMonitor API calls.
- * @class {class}
- * @accessId {string} The access ID for the LogicMonitor account.
- * @accessKey The access key for the LogicMonitor account.
+ * @class BaseRequestObjectLM
+ * @property {string} accessId The access ID for the LogicMonitor account.
+ * @property {string} accessKey The access key for the LogicMonitor account.
  */
 
 export class BaseRequestObjectLM {
@@ -93,12 +87,12 @@ export class BaseRequestObjectLM {
 }
 
 /**
- * This class is used to repsond with data from the underlying API calls in a default format.
+ * This class is used to respond with data from the underlying API calls in a default format.
  * The data is stored in the following format:
- * @status The status of the API call (success|failure).
- * @httpStatus The HTTP status code of the API call.
- * @message The message from the API call.
- * @payload The payload from the API call.
+ * @property {string} status The status of the API call (success|failure).
+ * @property {number} httpStatus The HTTP status code of the API call.
+ * @property {string} message The message from the API call.
+ * @property {any[any]} payload The payload from the API call.
  */
 
 export class ResponseObjectDefault implements ResponseObjectDefaultInterface {
@@ -118,16 +112,14 @@ export class ResponseObjectDefault implements ResponseObjectDefaultInterface {
 
   @IsString()
   @ApiProperty({
-    description:
-      'The message from the API call. This can be a success or error message',
+    description: 'The message from the API call. This can be a success or error message',
     type: 'string',
   })
   message: string;
 
   @IsArray()
   @ApiProperty({
-    description:
-      'The payload from the API call. This can be an array of any type',
+    description: 'The payload from the API call. This can be an array of any type',
     enum: ['any (string|number|object|array|boolean|error object)'],
   })
   payload: any[any];
@@ -136,23 +128,22 @@ export class ResponseObjectDefault implements ResponseObjectDefaultInterface {
 /**
  * This class is used to store the data that is needed to make a call to the LogicMonitor API. This is only accessible via the backend.
  * The data is stored in the following format:
- * @method The method to use for the API call.
- * @accessId The access ID for the LogicMonitor account.
- * @accessKey The access key for the LogicMonitor account.
- * @epoch The current epoch time.
- * @resourcePath The path to the resource that the API call is being made to.
- * @queryParams The query parameters for the API call.
- * @requestData The data to send in the API call.
- * @url The URL for the API call.
- * @apiVersion The version of the API to use.
+ * @property {string} method The method to use for the API call.
+ * @property {string} accessId The access ID for the LogicMonitor account.
+ * @property {string} accessKey The access key for the LogicMonitor account.
+ * @property {number} epoch The current epoch time.
+ * @property {string} resourcePath The path to the resource that the API call is being made to.
+ * @property {string} queryParams The query parameters for the API call.
+ * @property {Object} requestData The data to send in the API call.
+ * @property {string} url The URL for the API call.
+ * @property {number} apiVersion The version of the API to use.
  */
 
 export class RequestObjectLMApi extends BaseRequestObjectLM {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    description:
-      'The method to use for the API call. This can be GET, POST, PUT, DELETE',
+    description: 'The method to use for the API call. This can be GET, POST, PUT, DELETE',
     type: 'string',
   })
   method: string;
@@ -160,8 +151,7 @@ export class RequestObjectLMApi extends BaseRequestObjectLM {
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
-    description:
-      'The current epoch time. This is used to authenticate the API call',
+    description: 'The current epoch time. This is used to authenticate the API call',
     type: 'string',
   })
   epoch: number;
@@ -169,8 +159,7 @@ export class RequestObjectLMApi extends BaseRequestObjectLM {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    description:
-      'The path to the resource that the underlying API call is being made to.',
+    description: 'The path to the resource that the underlying API call is being made to.',
     type: 'string',
   })
   resourcePath: string;
@@ -192,13 +181,11 @@ export class RequestObjectLMApi extends BaseRequestObjectLM {
   })
   requestData?: Object;
 
-  // @IsObject()
   @IsNotEmpty()
   @ApiProperty({
     description: 'The URL for the API call.',
     type: 'string',
   })
-  // url: Function;
   url: string;
 
   @IsNumber()
@@ -213,10 +200,10 @@ export class RequestObjectLMApi extends BaseRequestObjectLM {
 
 /**
  * This class is used to store request data for LogicMonitor API calls.
- * @company The company name for the LogicMonitor account.
- * @accessId The access ID for the LogicMonitor account.
- * @accessKey The access key for the LogicMonitor account.
- * @groupName The search string to filter the datasources by group name.
+ * @property {string} company The company name for the LogicMonitor account.
+ * @property {string} accessId The access ID for the LogicMonitor account.
+ * @property {string} accessKey The access key for the LogicMonitor account.
+ * @property {string} groupName The search string to filter the datasources by group name.
  */
 
 export class ToolsBackupDatasourcesRequest extends BaseRequestObjectLM {
@@ -239,17 +226,16 @@ export class ToolsBackupDatasourcesRequest extends BaseRequestObjectLM {
 
 /**
  * Extra request properties to send in the API call (resourcePath, queryParams, requestData).
- * @resourcePath The path to the resource that the underlying API call is being made to.
- * @queryParams The query parameters for the API call. This is used to filter the data being returned in some cases.
- * @requestData The data to send in the API call. This is used to create or update data in LogicMonitor.
+ * @property {string} resourcePath The path to the resource that the underlying API call is being made to.
+ * @property {string} queryParams The query parameters for the API call. This is used to filter the data being returned in some cases.
+ * @property {Object} requestData The data to send in the API call. This is used to create or update data in LogicMonitor.
  */
 
 export class RequestObjectLMApiExtraRequestProperties {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    description:
-      'The path to the resource that the underlying API call is being made to.',
+    description: 'The path to the resource that the underlying API call is being made to.',
     type: 'string',
   })
   resourcePath: string;
@@ -277,9 +263,9 @@ export class RequestObjectLMApiExtraRequestProperties {
 
 /**
  * This class is used to store request data for LogicMonitor API calls.
- * @company The company name for the LogicMonitor account.
- * @accessId The access ID for the LogicMonitor account.
- * @accessKey The access key for the LogicMonitor account.
+ * @property {string} company The company name for the LogicMonitor account.
+ * @property {string} accessId The access ID for the LogicMonitor account.
+ * @property {string} accessKey The access key for the LogicMonitor account.
  */
 
 export class GeneralRequest extends BaseRequestObjectLM {
@@ -294,10 +280,10 @@ export class GeneralRequest extends BaseRequestObjectLM {
 
 /**
  * This class is used to store request data for LogicMonitor API calls.
- * @company The company name for the LogicMonitor account.
- * @accessId The access ID for the LogicMonitor account.
- * @accessKey The access key for the LogicMonitor account.
- * @extraRequestProperties The extra request properties to send in the API call (resourcePath, queryParams, requestData).
+ * @property {string} company The company name for the LogicMonitor account.
+ * @property {string} accessId The access ID for the LogicMonitor account.
+ * @property {string} accessKey The access key for the LogicMonitor account.
+ * @property {Object} extraRequestProperties The extra request properties to send in the API call (resourcePath, queryParams, requestData).
  */
 
 export class ToolsBackupGeneralRequest extends GeneralRequest {
@@ -312,10 +298,10 @@ export class ToolsBackupGeneralRequest extends GeneralRequest {
 
 /**
  * Job cron data for the scheduleListCronJobs API call.
- * @jobName The name of the job.
- * @nextRun The next run time of the job in EST.
- * @lastRun The last run time of the job in EST.
- * @futureRun The future run times of the job in EST.
+ * @property {string} jobName The name of the job.
+ * @property {string} nextRun The next run time of the job in EST.
+ * @property {string} lastRun The last run time of the job in EST.
+ * @property {string} futureRun The future run times of the job in EST.
  */
 export class ScheduleListCronJobsResponse {
   @IsString()
@@ -424,10 +410,7 @@ export class RequestObjectLMApiBuilder {
    * @param {string} resourcePath - The resource path to set.
    * @returns {RequestObjectLMApiBuilder} The builder instance.
    */
-  public setUrl(
-    company: string,
-    resourcePath: string,
-  ): RequestObjectLMApiBuilder {
+  public setUrl(company: string, resourcePath: string): RequestObjectLMApiBuilder {
     this.requestObj.resourcePath = resourcePath;
     this.requestObj.url = `https://${company}.logicmonitor.com/santaba/rest${resourcePath}`;
     return this;
@@ -438,9 +421,7 @@ export class RequestObjectLMApiBuilder {
    * @param {Record<string, any>} requestData - The request data to set.
    * @returns {RequestObjectLMApiBuilder} The builder instance.
    */
-  public setRequestData(
-    requestData: Record<string, any>,
-  ): RequestObjectLMApiBuilder {
+  public setRequestData(requestData: Record<string, any>): RequestObjectLMApiBuilder {
     this.requestObj.requestData = requestData;
     return this;
   }

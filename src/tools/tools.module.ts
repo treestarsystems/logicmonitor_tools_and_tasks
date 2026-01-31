@@ -12,6 +12,13 @@ import {
   BackupSchemaDatasource,
   BackupSchemaGeneral,
 } from '../storage/schemas/storage-mongodb.schema';
+
+/**
+ * ToolsModule to handle all tools related operations.
+ * @class ToolsModule
+ * @memberof module:tools
+ * @public
+ */
 @Module({
   imports: [
     MongooseModule.forFeature([

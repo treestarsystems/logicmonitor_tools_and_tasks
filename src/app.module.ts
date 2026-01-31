@@ -15,9 +15,15 @@ import * as DailyRotateFile from 'winston-daily-rotate-file';
 
 // Define log format constants
 const timeStampFormat = 'YYYY-MM-DD HH:mm:ss';
-const logStringFormat = (info) =>
-  `${info.timestamp} [${info.level.toUpperCase()}]: ${info.message}`;
+const logStringFormat = info => `${info.timestamp} [${info.level.toUpperCase()}]: ${info.message}`;
 
+/**
+ * AppModule is the root module of the application.
+ * It imports all other modules and sets up global configurations.
+ * @class AppModule
+ * @memberof module:app
+ * @public
+ */
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -31,7 +37,7 @@ const logStringFormat = (info) =>
       wildcard: true,
     }),
     MongooseModule.forRoot(
-      `mongodb://${process.env.MONGODB_HOSTNAME}:${process.env.MONGODB_PORT}/${process.env.MONGODB_NAME}`,
+      `mongodb://${process.env.MONGODB_HOSTNAME}:${process.env.MONGODB_PORT}/${process.env.MONGODB_NAME}`
     ),
     UtilsModule,
     ToolsModule,
@@ -47,7 +53,7 @@ const logStringFormat = (info) =>
           format: winston.format.combine(
             winston.format.timestamp({ format: timeStampFormat }),
             winston.format.printf(logStringFormat),
-            winston.format.colorize({ all: true }),
+            winston.format.colorize({ all: true })
           ),
         }),
         // Daily rotating file transport for info level logs
@@ -61,7 +67,7 @@ const logStringFormat = (info) =>
           level: 'info',
           format: winston.format.combine(
             winston.format.timestamp({ format: timeStampFormat }),
-            winston.format.printf(logStringFormat),
+            winston.format.printf(logStringFormat)
           ),
         }),
       ],

@@ -20,9 +20,14 @@ import { Get, Query } from '@nestjs/common';
 
 @Controller('tools')
 export class ToolsController {
+  /**
+   * ToolsController constructor.
+   * @param {BackupServiceDatasources} backupServiceDatasources - The BackupServiceDatasources instance.
+   * @param {BackupServiceGeneral} backupServiceGeneral - The BackupServiceGeneral instance.
+   */
   constructor(
     private readonly backupServiceDatasources: BackupServiceDatasources,
-    private readonly backupServiceGeneral: BackupServiceGeneral,
+    private readonly backupServiceGeneral: BackupServiceGeneral
   ) {}
 
   /**
@@ -42,7 +47,7 @@ export class ToolsController {
   @ApiTags('Tools: Backup')
   async retrieveBackupsAll(
     @Query('company') company: string,
-    @Res() response: Response,
+    @Res() response: Response
   ): Promise<void> {
     await this.backupServiceGeneral.retrieveBackupsAll(company, response);
   }
@@ -57,21 +62,20 @@ export class ToolsController {
 
   @Post('backup/datasources/bygroupname')
   @ApiOperation({
-    summary:
-      'Backup datasources where the group name contain the groupName provided.',
+    summary: 'Backup datasources where the group name contain the groupName provided.',
   })
   @ApiResponse({ type: ResponseObjectDefault })
   @ApiTags('Tools: Backup')
   async backupDatasourcesPost(
     @Body() body: ToolsBackupDatasourcesRequest,
-    @Res() response: Response,
+    @Res() response: Response
   ): Promise<void> {
     await this.backupServiceDatasources.backupDatasourcesByGroupName(
       body.company,
       body.accessId,
       body.accessKey,
       body.groupName,
-      response,
+      response
     );
   }
 
@@ -95,7 +99,7 @@ export class ToolsController {
   async backupGeneralGetAlertRules(
     @Body() body: ToolsBackupGeneralRequest,
     @Req() request: Request,
-    @Res() response: Response,
+    @Res() response: Response
   ): Promise<void> {
     await this.backupServiceGeneral.backupGeneralGet(
       body.company,
@@ -103,7 +107,7 @@ export class ToolsController {
       body.accessKey,
       body.extraRequestProperties,
       request,
-      response,
+      response
     );
   }
 
@@ -127,7 +131,7 @@ export class ToolsController {
   async backupGeneralGetReports(
     @Body() body: ToolsBackupGeneralRequest,
     @Req() request: Request,
-    @Res() response: Response,
+    @Res() response: Response
   ): Promise<void> {
     await this.backupServiceGeneral.backupGeneralGet(
       body.company,
@@ -135,7 +139,7 @@ export class ToolsController {
       body.accessKey,
       body.extraRequestProperties,
       request,
-      response,
+      response
     );
   }
 }

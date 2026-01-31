@@ -9,6 +9,12 @@ import {
   BackupSchemaGeneral,
 } from './schemas/storage-mongodb.schema';
 
+/**
+ * StorageModule to handle all storage related tasks.
+ * @class StorageModule
+ * @memberof module:storage
+ * @public
+ */
 @Module({
   imports: [
     MongooseModule.forFeature([

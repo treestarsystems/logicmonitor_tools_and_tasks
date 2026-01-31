@@ -1,9 +1,4 @@
-import {
-  ExceptionFilter,
-  Catch,
-  ArgumentsHost,
-  HttpException,
-} from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
 import { UtilsService } from './utils/utils.service';
 
 /**
@@ -23,8 +18,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse();
     const status = exception.getStatus();
     const message: any = exception.getResponse();
-    response
-      .status(status)
-      .json(utilsService.defaultErrorHandlerHttp(message, status));
+    response.status(status).json(utilsService.defaultErrorHandlerHttp(message, status));
   }
 }
