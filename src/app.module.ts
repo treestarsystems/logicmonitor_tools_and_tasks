@@ -12,6 +12,8 @@ import { AuditsModule } from './audits/audits.module';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import * as DailyRotateFile from 'winston-daily-rotate-file';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 // Define log format constants
 const timeStampFormat = 'YYYY-MM-DD HH:mm:ss';
@@ -29,6 +31,10 @@ const logStringFormat = (info: winston.Logform.TransformableInfo): string =>
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'docs'),
+      serveRoot: '/code/docs',
     }),
     NestScheduleModule.forRoot(),
     EventEmitterModule.forRoot({
