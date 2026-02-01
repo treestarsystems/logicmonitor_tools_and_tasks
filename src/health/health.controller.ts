@@ -25,7 +25,7 @@ export class HealthController {
    * @returns {void} A promise that resolves when the health check is complete.
    * @function GET
    */
-  @Get('health/quick')
+  @Get('quick')
   @ApiOperation({
     summary: 'Execute quick health checks.',
   })
