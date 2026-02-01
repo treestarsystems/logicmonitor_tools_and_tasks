@@ -84,7 +84,19 @@ Before running or deploying the application, ensure you have the following depen
 
 ### **Environment Setup**
 
-1. **Create a `.env` File**: The application relies on environment variables for initial app
+1. **Configure container hosts**:
+
+   ```bash
+   sudo apt update
+   sudo apt install -y net-tools iputils-ping nano git screen podman podman-docker podman-compose python3-setuptools jq
+   echo -e "unqualified-search-registries = ["docker.io"]\n" >> /etc/containers/registries.conf
+   sudo systemctl --user start podman.socket
+   sudo systemctl --user enable podman.socket
+   sudo mkdir -p /opt/lmtt/{db,app}
+   sudo chmod 777 -R /opt/lmtt/*
+   ```
+
+2. **Create a `.env` File**: The application relies on environment variables for initial app
    configuration. Create a `.env` file by copying the included template `.env-rename` in the root
    directory and configure the necessary variables.
 
@@ -103,7 +115,7 @@ Before running or deploying the application, ensure you have the following depen
    SCHEDULES_CONF_FILE_NAME='schedule-conf.json'
    ```
 
-2. **Configure the `schedule-conf.json` File**: The application uses a file (`schedule-conf.json`)
+3. **Configure the `schedule-conf.json` File**: The application uses a file (`schedule-conf.json`)
    to store critical configuration information like company details, access credentials, and group
    names. This file is necessary for scheduling tasks that integrate with the LogicMonitor platform.
    - The file is located in the root directory.
@@ -140,7 +152,7 @@ Before running or deploying the application, ensure you have the following depen
 
    Ensure this file is properly configured before running the application.
 
-3. **Generate `docker-compose.yml`**: Use the template to generate a `docker-compose.yml` file. This
+4. **Generate `docker-compose.yml`**: Use the template to generate a `docker-compose.yml` file. This
    step will populate placeholders in the template with values from the `.env` file.
 
    Run:
