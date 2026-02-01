@@ -2,13 +2,18 @@
 
 > **A custom application for tools and tasks that use the LogicMonitor platform.**
 
-This repository contains a TypeScript-based using the [NestJS](https://github.com/nestjs/nest) framework. This application provides tools and functionalities leveraging the LogicMonitor platform. The application is designed to simplify operations, automate tasks, and improve efficiency for LogicMonitor users.
+This repository contains a TypeScript-based using the [NestJS](https://github.com/nestjs/nest)
+framework. This application provides tools and functionalities leveraging the LogicMonitor platform.
+The application is designed to simplify operations, automate tasks, and improve efficiency for
+LogicMonitor users.
 
 ---
 
 ## **Table of Contents**
 
 - [API Documentation](#api-documentation)
+  - [Swagger](#swagger)
+  - [TypeDoc](#typedoc)
 - [Features](#features)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
@@ -26,7 +31,13 @@ This repository contains a TypeScript-based using the [NestJS](https://github.co
 
 ## **API Documentation**
 
-Docs are served at http://localhost:3000/api/v1/docs
+### **Swagger**
+
+API: http://localhost:3000/api/v1/docs
+
+### **TypeDoc**
+
+Code: http://localhost:3000/code/docs
 
 ---
 
@@ -73,8 +84,9 @@ Before running or deploying the application, ensure you have the following depen
 
 ### **Environment Setup**
 
-1. **Create a `.env` File**:
-   The application relies on environment variables for initial app configuration. Create a `.env` file by copying the included template `.env-rename` in the root directory and configure the necessary variables.
+1. **Create a `.env` File**: The application relies on environment variables for initial app
+   configuration. Create a `.env` file by copying the included template `.env-rename` in the root
+   directory and configure the necessary variables.
 
    Example `.env`:
 
@@ -85,8 +97,9 @@ Before running or deploying the application, ensure you have the following depen
    DB_PORT=27017
    ```
 
-2. **Configure the `schedule-conf.json` File**:
-   The application uses a file (`schedule-conf.json`) to store critical configuration information like company details, access credentials, and group names. This file is necessary for scheduling tasks that integrate with the LogicMonitor platform.
+2. **Configure the `schedule-conf.json` File**: The application uses a file (`schedule-conf.json`)
+   to store critical configuration information like company details, access credentials, and group
+   names. This file is necessary for scheduling tasks that integrate with the LogicMonitor platform.
    - The file is located in the root directory.
    - Use the provided `schedule-conf.json-rename` as a template.
    - Copy the `schedule-conf.json-rename` file to `schedule-conf.json`:
@@ -121,8 +134,8 @@ Before running or deploying the application, ensure you have the following depen
 
    Ensure this file is properly configured before running the application.
 
-3. **Generate `docker-compose.yml`**:
-   Use the template to generate a `docker-compose.yml` file. This step will populate placeholders in the template with values from the `.env` file.
+3. **Generate `docker-compose.yml`**: Use the template to generate a `docker-compose.yml` file. This
+   step will populate placeholders in the template with values from the `.env` file.
 
    Run:
 
@@ -152,12 +165,12 @@ Here are some commonly used commands available in the `package.json` file:
 
 ## **Deployment**
 
-The application can be deployed using Docker or Podman. The process uses scripts within the `Docker` directory for containerized management.
+The application can be deployed using Docker or Podman. The process uses scripts within the `Docker`
+directory for containerized management.
 
 ### **Deploying with Docker/Podman**
 
-1. **Deploy Containers**:
-   Deploy the application by running:
+1. **Deploy Containers**: Deploy the application by running:
    ```bash
    npm run deploy
    ```
@@ -203,6 +216,7 @@ Author - [Michael of Tree Star Systems](mailto:aoe4eva@gmail.com)
 
 ## **License**
 
-NestJS is licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute this software following the terms of the license.
+NestJS is licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute
+this software following the terms of the license.
 
 ---
