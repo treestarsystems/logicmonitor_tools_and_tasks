@@ -89,7 +89,7 @@ Before running or deploying the application, ensure you have the following depen
    ```bash
    sudo apt update
    sudo apt install -y net-tools iputils-ping nano git screen podman podman-docker podman-compose python3-setuptools jq
-   echo -e "unqualified-search-registries = ["docker.io"]\n" >> /etc/containers/registries.conf
+   sudo echo -e "unqualified-search-registries = ["docker.io"]\n" >> /etc/containers/registries.conf
    sudo systemctl --user start podman.socket
    sudo systemctl --user enable podman.socket
    sudo mkdir -p /opt/lmtt/{db,app}
