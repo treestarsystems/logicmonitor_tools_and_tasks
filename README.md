@@ -153,7 +153,8 @@ Before running or deploying the application, ensure you have the following depen
    Ensure this file is properly configured before running the application.
 
 4. **Generate `docker-compose.yml`**: Use the template to generate a `docker-compose.yml` file. This
-   step will populate placeholders in the template with values from the `.env` file.
+   step will populate placeholders in the template with values from the `.env` file. Please note
+   that this step is done when you run `npm run deploy`.
 
    Run:
 
@@ -188,11 +189,13 @@ directory for containerized management.
 
 ### **Deploying with Docker/Podman**
 
-1. **Deploy Containers**: Deploy the application by running:
-   ```bash
-   npm run deploy
-   ```
-   This script builds and starts the containers as defined in the `docker-compose.yml` file.
+Deploy the application by running:
+
+```bash
+npm run deploy
+```
+
+This script builds and starts the containers as defined in the `docker-compose.yml` file.
 
 ---
 
