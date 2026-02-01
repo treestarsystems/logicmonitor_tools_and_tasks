@@ -23,8 +23,8 @@ LogicMonitor users.
 - [Deployment](#deployment)
   - [Deploying with Docker/Podman](#deploying-with-dockerpodman)
   - [Stopping Containers](#stopping-containers)
-  - [Checking Container Status](#checking-container-status)
-- [Contributing](#contributing)
+  - [Checking Container Status](#checking-app-deployment-status)
+- [Contributors](#contributors)
 - [License](#license)
 
 ---
