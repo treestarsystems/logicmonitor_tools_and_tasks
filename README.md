@@ -91,10 +91,16 @@ Before running or deploying the application, ensure you have the following depen
    Example `.env`:
 
    ```env
-   APP_NAME=LogicMonitorApp
    APP_PORT=3000
-   DB_HOST=db
-   DB_PORT=27017
+   MONGODB_HOSTNAME=localhost
+   MONGODB_PORT=27017
+   MONGODB_NAME=lmtt
+   MONGODB_USERNAME=admin
+   MONGODB_PASSWORD=password
+   SWAGGER_COMPANY_NAME='Company Name'
+   SWAGGER_COMPANY_SITE='https://www.company.com'
+   SWAGGER_COMPANY_EMAIL='info@example.com'
+   SCHEDULES_CONF_FILE_NAME='schedule-conf.json'
    ```
 
 2. **Configure the `schedule-conf.json` File**: The application uses a file (`schedule-conf.json`)
