@@ -56,7 +56,7 @@ services:
       mongodb:
         condition: service_healthy
     healthcheck:
-      test: ['CMD-SHELL', 'curl -s -f http://localhost:3000/health/quick || exit 1']
+      test: ['CMD-SHELL', 'curl -s -f http://localhost:3000/api/v1/health/quick || exit 1']
       interval: 30s
       timeout: 5s
       retries: 3
