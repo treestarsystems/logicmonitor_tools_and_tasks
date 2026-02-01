@@ -20,14 +20,14 @@ export class HealthController {
   constructor(private readonly healthService: HealthService) {}
 
   /**
-   * Execute all health checks (datasources by group name, alert rules, and report).
+   * Return a quick health response for this service.
    * @param {Response} response - The response object.
-   * @returns {void} A promise that resolves when the health check is complete.
+   * @returns {void} Executes the health check.
    * @function GET
    */
   @Get('quick')
   @ApiOperation({
-    summary: 'Execute quick health checks.',
+    summary: 'Return a quick health response for this service.',
   })
   @ApiResponse({
     type: ResponseObjectDefault,

@@ -11,10 +11,10 @@ import { ResponseObjectDefault, ResponseObjectDefaultBuilder } from '../utils/ut
 @Injectable()
 export class HealthService {
   /**
-   * Executes quick health checks for datasources, reports, and alert rules.
-   * @param {Response} response - The response object to send the result.
-   * @param {boolean} [directlyRespondToApiCall=true] - Whether to directly respond to the API call or return the returnObj.
-   * @returns {ResponseObjectDefault| void} - A promise that resolves to void or a ResponseObjectDefault.
+   * Builds and returns (or sends) a static success response for a basic health check endpoint.
+   * @param {Response} response - The response object used to send the result when responding directly.
+   * @param {boolean} [directlyRespondToApiCall=true] - Whether to directly respond to the API call or return the response object.
+   * @returns {ResponseObjectDefault| void} - Returns either void or a ResponseObjectDefault, depending on the directlyRespondToApiCall flag.
    */
   executeHealthCheckQuick(
     response: Response,
