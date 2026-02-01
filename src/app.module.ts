@@ -9,6 +9,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { SchedulesModule } from './schedules/schedules.module';
 import { StorageModule } from './storage/storage.module';
 import { AuditsModule } from './audits/audits.module';
+import { HealthModule } from './health/health.module';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import * as DailyRotateFile from 'winston-daily-rotate-file';
@@ -52,6 +53,7 @@ const logStringFormat = (info: winston.Logform.TransformableInfo): string =>
     SchedulesModule,
     StorageModule,
     AuditsModule,
+    HealthModule,
     WinstonModule.forRoot({
       transports: [
         // Console transport for warnings and above
