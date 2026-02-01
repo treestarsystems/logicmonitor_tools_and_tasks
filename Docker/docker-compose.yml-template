@@ -25,6 +25,11 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: "0.25"
 
   lmtt-app:
     build:
@@ -61,6 +66,11 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: "0.25"
 
 volumes:
   mongodb_data:
