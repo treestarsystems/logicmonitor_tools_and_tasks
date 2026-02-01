@@ -84,7 +84,7 @@ Before running or deploying the application, ensure you have the following depen
 
 ### **Environment Setup**
 
-1. **Configure container hosts**:
+1. **Configure container host**:
 
    ```bash
    sudo apt update
