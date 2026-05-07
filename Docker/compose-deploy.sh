@@ -43,14 +43,14 @@ log() {
   echo "$emoji [$timestamp] $message"
 }
 
-# Checks whether podman-compose or docker-compose is available
+# Checks whether podman compose or docker-compose is available
 check_compose_tool() {
-  if command -v podman-compose &>/dev/null; then
-    echo "podman-compose"
+  if command -v podman &>/dev/null; then
+    echo "podman compose"
   elif command -v docker-compose &>/dev/null; then
     echo "docker-compose"
   else
-    log "Neither podman-compose nor docker-compose is installed. Please install one to proceed." "ERROR"
+    log "Neither podman nor docker-compose is installed. Please install one to proceed." "ERROR"
     exit 1
   fi
 }
@@ -131,6 +131,8 @@ stop_containers() {
   local compose_tool
   compose_tool=$(check_compose_tool)
 
+  echo "$comopse_tool"
+
   log "Stopping containers with $compose_tool:"
   (
     $compose_tool down
@@ -157,8 +159,8 @@ case "$1" in
     parse_env_file
     generate_docker_compose
     prepare_build_dir
-    deploy_containers
-    cleanup
+#    deploy_containers
+#    cleanup
     ;;
   "stop")
     stop_containers

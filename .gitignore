@@ -59,6 +59,7 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 #Docker
 docker-compose.yml
+Docker/build
 
 # Tem Files
 *.swp
@@ -69,3 +70,4 @@ lmtt-app-logs
 #Docs
 /docs
 /docs_md
+
