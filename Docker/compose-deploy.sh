@@ -159,8 +159,8 @@ case "$1" in
     parse_env_file
     generate_docker_compose
     prepare_build_dir
-   deploy_containers
-   cleanup
+    deploy_containers
+    cleanup
     ;;
   "stop")
     stop_containers
