@@ -34,12 +34,6 @@ REQUIRED_FILES=(
 
 # ========== Functions ==========
 
-# Create necessary directories
-prepare_necessary_dir() {
-  log "Preparing necessary directories:"
-  mkdir -p "NECESSARY_DIR_APP_LOG" "NECESSARY_DIR_DB_LOG" "NECESSARY_DIR_DB_DATA"
-}
-
 # Logs messages with timestamps
 log() {
   local message="$1"
@@ -93,6 +87,15 @@ generate_docker_compose() {
 
   echo "$content" > "$OUTPUT_COMPOSE"
   log "Generated Docker/docker-compose.yml successfully" "SUCCESS"
+}
+
+# Create necessary directories
+prepare_necessary_dir() {
+  log "Preparing necessary directories"
+  mkdir -p "$NECESSARY_DIR_APP_LOG" "$NECESSARY_DIR_DB_LOG" "$NECESSARY_DIR_DB_DATA"
+  log "- Dir Created: $NECESSARY_DIR_APP_LOG"
+  log "- Dir Created: $NECESSARY_DIR_DB_LOG"
+  log "- Dir Created: $NECESSARY_DIR_DB_DATA"
 }
 
 # Creates build directory and copies necessary files
