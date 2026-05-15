@@ -7,6 +7,12 @@ set -e
 DOCKER_DIR="$(dirname "$(readlink -f "$0")")"
 PROJECT_ROOT="$(realpath "$DOCKER_DIR/..")"
 BUILD_DIR="$DOCKER_DIR/build"
+NECESSARY_DIR_ROOT="/opt/lmtt"
+NECESSARY_DIR_ROOT_APP="$NECESSARY_DIR_ROOT/app"
+NECESSARY_DIR_ROOT_DB="$NECESSARY_DIR_ROOT/db"
+NECESSARY_DIR_APP_LOG="$NECESSARY_DIR_ROOT_APP/logs"
+NECESSARY_DIR_DB_LOG="$NECESSARY_DIR_ROOT_DB/logs"
+NECESSARY_DIR_DB_DATA="$NECESSARY_DIR_ROOT_DB/data"
 ENV_FILE="$PROJECT_ROOT/.env"
 COMPOSE_TEMPLATE="$DOCKER_DIR/docker-compose.yml-template"
 OUTPUT_COMPOSE="$DOCKER_DIR/docker-compose.yml"
@@ -27,6 +33,12 @@ REQUIRED_FILES=(
 )
 
 # ========== Functions ==========
+
+# Create necessary directories
+prepare_necessary_dir() {
+  log "Preparing necessary directories:"
+  mkdir -p "NECESSARY_DIR_APP_LOG" "NECESSARY_DIR_DB_LOG" "NECESSARY_DIR_DB_DATA"
+}
 
 # Logs messages with timestamps
 log() {
@@ -159,6 +171,7 @@ case "$1" in
     parse_env_file
     generate_docker_compose
     prepare_build_dir
+    prepare_necessary_dir
     deploy_containers
     cleanup
     ;;
