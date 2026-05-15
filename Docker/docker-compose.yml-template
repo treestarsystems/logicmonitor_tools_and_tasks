@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   mongodb:
-    image: mongodb/mongodb-community-server:4.4-ubuntu2204
+    image: docker.io/mongodb/mongodb-community-server:4.4-ubuntu2204
     hostname: lmtt-db
     container_name: lmtt-db
     restart: unless-stopped
