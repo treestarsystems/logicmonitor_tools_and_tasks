@@ -28,6 +28,7 @@ REQUIRED_FILES=(
   "$PROJECT_ROOT/nest-cli.json"
   # Docker files
   "$DOCKER_DIR/Dockerfile-lmtt-app"
+  "$DOCKER_DIR/Dockerfile-lmtt-db"
   "$DOCKER_DIR/docker-compose.yml"
   "$DOCKER_DIR/mongod.conf"
 )
