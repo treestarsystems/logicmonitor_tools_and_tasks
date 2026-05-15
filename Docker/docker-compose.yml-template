@@ -1,6 +1,9 @@
 version: '3.8'
 services:
   mongodb:
+    build:
+      context: .
+      dockerfile: Dockerfile-lmtt-db
     image: docker.io/mongodb/mongodb-community-server:4.4-ubuntu2204
     hostname: lmtt-db
     container_name: lmtt-db
@@ -13,7 +16,7 @@ services:
 #      MONGODB_INITDB_ROOT_PASSWORD: $MONGODB_PASSWORD
       MONGODB_INITDB_DATABASE: $MONGODB_NAME
     volumes:
-      - ./mongod.conf:/etc/mongod.conf:z
+#      - ./mongod.conf:/etc/mongod.conf:z
       - /opt/lmtt/db/logs:/var/log/mongodb:z
       - /opt/lmtt/db/data:/data/db:z
     networks:
