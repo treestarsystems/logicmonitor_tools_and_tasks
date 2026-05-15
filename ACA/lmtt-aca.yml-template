@@ -1,0 +1,52 @@
+type: Microsoft.App/containerApps
+location: eastus
+name: logicmonitor-tools-and-tasks
+properties:
+  managedEnvironmentId: /subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.App/managedEnvironments/<environment-name>
+
+  configuration:
+    ingress:
+      external: true
+      targetPort: 3000
+      transport: auto
+      allowInsecure: false
+
+    registries:
+      - server: <acr-name>.azurecr.io
+        username: <acr-username>
+        passwordSecretRef: acr-password
+
+    secrets:
+      - name: acr-password
+        value: <acr-password>
+      - name: mongo-uri
+        value: <mongodb-connection-string>
+      - name: logicmonitor-access-id
+        value: <logicmonitor-access-id>
+      - name: logicmonitor-access-key
+        value: <logicmonitor-access-key>
+
+  template:
+    revisionSuffix: v1
+    containers:
+      - name: logicmonitor-tools-and-tasks
+        image: <acr-name>.azurecr.io/logicmonitor-tools-and-tasks:latest
+        env:
+          - name: NODE_ENV
+            value: production
+          - name: PORT
+            value: "3000"
+          # - name: MONGO_URI
+          #   secretRef: mongo-uri
+          # - name: LOGICMONITOR_ACCESS_ID
+          #   secretRef: logicmonitor-access-id
+          # - name: LOGICMONITOR_ACCESS_KEY
+          #   secretRef: logicmonitor-access-key
+
+        resources:
+          cpu: 0.5
+          memory: 1Gi
+
+    scale:
+      minReplicas: 1
+      maxReplicas: 3
