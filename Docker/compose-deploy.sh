@@ -94,6 +94,8 @@ generate_docker_compose() {
 prepare_necessary_dir() {
   log "Preparing necessary directories"
   mkdir -p "$NECESSARY_DIR_APP_LOG" "$NECESSARY_DIR_DB_LOG" "$NECESSARY_DIR_DB_DATA"
+  # Assign permissions for container to write data to host system file mount
+  chown -R 1000:1000 $NECESSARY_DIR_ROOT_DB
   log "- Dir Created: $NECESSARY_DIR_APP_LOG"
   log "- Dir Created: $NECESSARY_DIR_DB_LOG"
   log "- Dir Created: $NECESSARY_DIR_DB_DATA"

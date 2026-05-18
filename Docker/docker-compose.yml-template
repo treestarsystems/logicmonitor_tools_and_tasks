@@ -16,7 +16,6 @@ services:
 #      MONGODB_INITDB_ROOT_PASSWORD: $MONGODB_PASSWORD
       MONGODB_INITDB_DATABASE: $MONGODB_NAME
     volumes:
-#      - ./mongod.conf:/etc/mongod.conf:z
       - /opt/lmtt/db/logs:/var/log/mongodb:z
       - /opt/lmtt/db/data:/data/db:z
     networks:
@@ -32,7 +31,7 @@ services:
       resources:
         limits:
           memory: 128M
-          cpus: "0.25"
+          cpus: "0.50"
 
   lmtt-app:
     build:
