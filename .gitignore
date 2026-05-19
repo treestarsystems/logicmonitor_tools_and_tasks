@@ -61,9 +61,6 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 docker-compose.yml
 Docker/build
 
-#Azure Container Registry (ACA)
-lmtt-app-aca.yml
-lmtt-db-aca.yml
 # Tem Files
 *.swp
 
