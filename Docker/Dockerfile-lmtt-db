@@ -1,0 +1,2 @@
+FROM docker.io/mongodb/mongodb-community-server:4.4-ubuntu2204
+COPY mongod.conf /etc/mongod.conf

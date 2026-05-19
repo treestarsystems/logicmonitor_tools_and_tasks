@@ -1,7 +1,10 @@
 version: '3.8'
 services:
   mongodb:
-    image: mongodb/mongodb-community-server:4.4-ubuntu2204
+    build:
+      context: .
+      dockerfile: Dockerfile-lmtt-db
+    image: docker.io/mongodb/mongodb-community-server:4.4-ubuntu2204
     hostname: lmtt-db
     container_name: lmtt-db
     restart: unless-stopped
@@ -13,9 +16,8 @@ services:
 #      MONGODB_INITDB_ROOT_PASSWORD: $MONGODB_PASSWORD
       MONGODB_INITDB_DATABASE: $MONGODB_NAME
     volumes:
-      - ./mongod.conf:/etc/mongod.conf:z
-      - /opt/lmtt/db/logs:/var/log/mongodb:z
-      - /opt/lmtt/db/data:/data/db:z
+      - /opt/lmtt/db/logs:/var/log/mongodb:Z
+      - /opt/lmtt/db/data:/data/db:Z
     networks:
       - lmtt-network
     command: /bin/bash -c 'mongod --config /etc/mongod.conf'
@@ -28,8 +30,8 @@ services:
     deploy:
       resources:
         limits:
-          memory: 128M
-          cpus: "0.25"
+          memory: 512M
+          cpus: "0.50"
 
   lmtt-app:
     build:
@@ -54,7 +56,7 @@ services:
       SCHEDULES_CONF_FILE_NAME: $SCHEDULES_CONF_FILE_NAME
       NODE_ENV: production
     volumes:
-      - /opt/lmtt/app/logs:/usr/src/app/lmtt-app-logs:z
+      - /opt/lmtt/app/logs:/usr/src/app/lmtt-app-logs:Z
     networks:
       - lmtt-network
     depends_on:
