@@ -179,7 +179,7 @@ case "$1" in
     prepare_build_dir
     prepare_necessary_dir
     deploy_containers
-    # cleanup
+    cleanup
     ;;
   "stop")
     stop_containers

@@ -16,8 +16,8 @@ services:
 #      MONGODB_INITDB_ROOT_PASSWORD: $MONGODB_PASSWORD
       MONGODB_INITDB_DATABASE: $MONGODB_NAME
     volumes:
-      - /opt/lmtt/db/logs:/var/log/mongodb:z
-      - /opt/lmtt/db/data:/data/db:z
+      - /opt/lmtt/db/logs:/var/log/mongodb:Z
+      - /opt/lmtt/db/data:/data/db:Z
     networks:
       - lmtt-network
     command: /bin/bash -c 'mongod --config /etc/mongod.conf'
@@ -30,7 +30,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 128M
+          memory: 512M
           cpus: "0.50"
 
   lmtt-app:
@@ -56,7 +56,7 @@ services:
       SCHEDULES_CONF_FILE_NAME: $SCHEDULES_CONF_FILE_NAME
       NODE_ENV: production
     volumes:
-      - /opt/lmtt/app/logs:/usr/src/app/lmtt-app-logs:z
+      - /opt/lmtt/app/logs:/usr/src/app/lmtt-app-logs:Z
     networks:
       - lmtt-network
     depends_on:
